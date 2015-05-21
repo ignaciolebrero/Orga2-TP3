@@ -1,0 +1,12 @@
+instalar git -> sudo apt-get install git
+crear carpeta nueva
+dentro de la carpeta -> git init 
+			git fetch <url del repo>
+			git pull <url del repo>
+
+para subir -> git add <archivo 1> ... <archivo n> / git add . (agrega todo lo modificado)
+	   -> git commit -m "<comentario del commit>"
+	   -> git push <url del repo>
+
+otros -> git status (dice como estan los archivos con respecto al ultimo commit que hayan bajado, si hacen fetch levanta los commits pero no modifica lo que tengan bajado)
+	 git reset --hard (vuela todo al carajo y te lo devuelve al ultimo commit que tengan)(para un merge a lo negro viene bien XD)
