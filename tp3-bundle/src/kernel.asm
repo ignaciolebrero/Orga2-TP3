@@ -1,11 +1,7 @@
-; ** por compatibilidad se omiten tildes **
-; ==============================================================================
-; TRABAJO PRACTICO 3 - System Programming - ORGANIZACION DE COMPUTADOR II - FCEN
-; ==============================================================================
-
 %include "imprimir.mac"
 
 global start
+global screen_pintar_rect
 extern GDT_DESC
 ;extern habilitar_A20
 
@@ -51,25 +47,33 @@ start:
     MOV eax,cr0
     OR eax,1
     MOV cr0,eax
-
     ; Saltar a modo protegido
     jmp 0x40:modoprotegido
+	
+
+
     modoprotegido:
 BITS 32
-    xchg bx,bx
+
     xor eax, eax
-    mov ax, 0x0048
+    mov ax, 0x50
     mov ds, ax
     mov es, ax
     mov gs, ax
+    mov ss, ax
+    mov ax, 0x60
     mov fs, ax
+    
 
     ; Establecer la base de la pila
-    mov bp, 0x27000
+	mov ebp, 0x27000
+	mov esp, ebp
 
     ; Imprimir mensaje de bienvenida
-    imprimir_texto_mp iniciando_mp_msg, iniciando_mp_len, 0x07, 0, 0
+ imprimir_texto_mp iniciando_mp_msg, iniciando_mp_len, 0x07, 2, 0
 
+
+call screen_pintar_rect
     ; Inicializar el juego
 
     ; Inicializar pantalla
@@ -110,4 +114,3 @@ BITS 32
 
 ;; -------------------------------------------------------------------------- ;;
 
-%include "a20.asm"

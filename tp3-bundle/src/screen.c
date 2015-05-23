@@ -82,4 +82,28 @@ void print_dec(uint numero, int size, uint x, uint y, unsigned short attr) {
     }
 }
 
+void screen_pintar_rect(unsigned char c, unsigned char color, int fila, int columna, int alto, int ancho){
+int i= fila;
+while (i>0){
+	screen_pintar_linea_h(c, color, i, columna, ancho);
+	i--;
+	}
+}
+
+void screen_pintar_linea_h(unsigned char c, unsigned char color, int fila, int columna, int ancho){
+
+
+	int i=0;
+	while (i<ancho){
+		p[columna][i].c=color;
+		i++;
+		}
+
+
+
+
+
+
+
+}
 
