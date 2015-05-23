@@ -1,7 +1,7 @@
 %include "imprimir.mac"
 
 global start
-global screen_pintar_rect
+extern screen_pintar_rect
 extern GDT_DESC
 ;extern habilitar_A20
 
@@ -38,7 +38,7 @@ start:
     imprimir_texto_mr iniciando_mr_msg, iniciando_mr_len, 0x07, 0, 0
 
     ; Habilitar A20
-    call habilitar_A20
+    habilitar_A20
 
     ; Cargar la GDT
     lgdt [GDT_DESC]
