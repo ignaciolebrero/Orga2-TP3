@@ -1,9 +1,11 @@
 %include "imprimir.mac"
 
 global start
+
 extern screen_pintar_rect
+extern screen_inicializar
+extern idt_inicializar
 extern GDT_DESC
-;extern habilitar_A20
 
 ;; Saltear seccion de datos
 jmp start
@@ -51,8 +53,7 @@ start:
     jmp 0x40:modoprotegido
 	
 
-
-    modoprotegido:
+modoprotegido:
 BITS 32
 
     xor eax, eax
@@ -70,13 +71,13 @@ BITS 32
 	mov esp, ebp
 
     ; Imprimir mensaje de bienvenida
- imprimir_texto_mp iniciando_mp_msg, iniciando_mp_len, 0x07, 2, 0
+    imprimir_texto_mp iniciando_mp_msg, iniciando_mp_len, 0x07, 2, 0
 
 
-call screen_pintar_rect
     ; Inicializar el juego
 
     ; Inicializar pantalla
+    call screen_inicializar
 
     ; Inicializar el manejador de memoria
 
@@ -93,7 +94,7 @@ call screen_pintar_rect
     ; Inicializar el scheduler
 
     ; Inicializar la IDT
-
+    call idt_inicializar
     ; Cargar IDT
 
     ; Configurar controlador de interrupciones
