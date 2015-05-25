@@ -40,7 +40,9 @@ _isr%1:
 ;;
 ;; Rutina de atención de las EXCEPCIONES
 ;; -------------------------------------------------------------------------- ;;
-ISR 0
+_isr0:
+	
+	iret
 
 ;;
 ;; Rutina de atención del RELOJ

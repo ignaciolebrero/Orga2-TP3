@@ -27,6 +27,7 @@ extern idt_entry idt[];
 extern idt_descriptor IDT_DESC;
 
 void idt_inicializar();
+void IDT_ENTRY(int);
 
 
 #endif  /* !__IDT_H__ */
