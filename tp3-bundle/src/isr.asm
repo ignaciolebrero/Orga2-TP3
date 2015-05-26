@@ -10,6 +10,7 @@ BITS 32
 
 sched_tarea_offset:     dd 0x00
 sched_tarea_selector:   dw 0x00
+stringmsg:				dd 0x00,0x00
 
 ;; PIC
 extern fin_intr_pic1
@@ -18,6 +19,8 @@ extern fin_intr_pic1
 extern sched_tick
 extern sched_tarea_actual
 
+;; Screen
+extern print
 
 ;;
 ;; Definición de MACROS
@@ -40,10 +43,18 @@ _isr%1:
 ;;
 ;; Rutina de atención de las EXCEPCIONES
 ;; -------------------------------------------------------------------------- ;;
+;TODO: preguntar si es mas comodo pasarlo a un archivo en C hacer call a las funciones de ahi apra las interrupciones (suena mas facil de programar)
+;TODO:revisar si compila, funciona, eclosiona(?)
 _isr0:
-	
+	pushad
+		mov [stringmsg], 'divide per cero',0
+		push stringmsg
+		push 50
+		push 50
+		push 0xA
+		call print
+	popad
 	iret
-
 ;;
 ;; Rutina de atención del RELOJ
 ;; -------------------------------------------------------------------------- ;;

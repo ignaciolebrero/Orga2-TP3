@@ -6,6 +6,7 @@ extern screen_pintar_rect
 extern screen_inicializar
 extern idt_inicializar
 extern GDT_DESC
+extern IDT_DESC
 
 ;; Saltear seccion de datos
 jmp start
@@ -95,10 +96,15 @@ BITS 32
 
     ; Inicializar la IDT
     call idt_inicializar
+    
     ; Cargar IDT
+    lidt [IDT_DESC]
 
     ; Configurar controlador de interrupciones
-
+    mov al, 0xff
+    out 0xa1, al
+    out 0x21, al
+    
     ; Cargar tarea inicial
 
     ; Habilitar interrupciones

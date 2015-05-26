@@ -1,4 +1,3 @@
-
 /* ** por compatibilidad se omiten tildes **
 ================================================================================
  TRABAJO PRACTICO 3 - System Programming - ORGANIZACION DE COMPUTADOR II - FCEN
@@ -34,7 +33,12 @@ idt_descriptor IDT_DESC = {
     }
 */
 
-//TODO: preguntar, son todos las interrupciones segmentos iguales? o tienen distintos privilegios? que la compuerta tengo un nivel de privilegios diferente en que afecta?
+/*/
+ * TODO: preguntar:
+    * Son todos las interrupciones segmentos iguales? o tienen distintos privilegios? que la compuerta tengo un nivel de privilegios diferente en que afecta?
+    * Se cuales son fault, trap y abort, a la hora de diferenciarlas se hace en el segmento pero el isr?????
+/*/
+
 //ver: apuntes/compuerta de interrupcion.png
 #define IDT_ENTRY(numero)                                                                                        \
     idt[numero].offset_0_15  = (unsigned short) ((unsigned int)(&_isr ## numero) & (unsigned int) 0xFFFF);        \
@@ -42,7 +46,25 @@ idt_descriptor IDT_DESC = {
     idt[numero].attr         = (unsigned short) 0x8700; /* P-DPL-0D110-000-|||| / 1-000-01110-000-|||| / 1000 - 0111 - 0000*/ \
     idt[numero].offset_16_31 = (unsigned short) ((unsigned int)(&_isr ## numero) >> 16 & (unsigned int) 0xFFFF);
 
-void idt_inicializar() {
-    // Excepciones
-    IDT_ENTRY(0);
-}
+void idt_inicializar() { //TODO: falta separar IDT_ENTRY por cada una en particular
+    // Excepciones | 9, 15 y 21 en adelante quedan reservadas
+    IDT_ENTRY(0);  // Divide error
+  /*  IDT_ENTRY(1);  // Debug Exception
+    IDT_ENTRY(2);  // NMI Interrupt
+    IDT_ENTRY(3);  // Breakpoint
+    IDT_ENTRY(4);  // Overflow
+    IDT_ENTRY(5);  // BOUND Range Exceeded
+    IDT_ENTRY(6);  // Invalid Opcode
+    IDT_ENTRY(7);  // Device not Available
+    IDT_ENTRY(8);  // Double fault (tarjeta roja :P)
+    IDT_ENTRY(10); // Invalid TSS
+    IDT_ENTRY(11); // Segment Not Present
+    IDT_ENTRY(12); // Stack-Segment Fault
+    IDT_ENTRY(13); // General Protection
+    IDT_ENTRY(14); // Page Fault
+    IDT_ENTRY(16); // x87 FPU floating-Point Error
+    IDT_ENTRY(17); // Alignment Check
+    IDT_ENTRY(18); // Machine Check
+    IDT_ENTRY(19); // SIMD floating-Point Exception
+    IDT_ENTRY(20); // Virtualization Exception
+*/}
