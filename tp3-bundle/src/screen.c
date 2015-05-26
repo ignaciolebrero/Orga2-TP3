@@ -85,56 +85,61 @@ void print_dec(uint numero, int size, uint x, uint y, unsigned short attr) {
 
 void screen_pintar_rect(uchar c, uchar color, int fila, int columna, int alto, int ancho){
     int i = fila;
-    while (i < alto){
+    while (i > alto){
     	screen_pintar_linea_h(c, color, i, columna, ancho);
-    	i++;
+    	i--;
 	}
 }
 
 void screen_pintar_linea_h(uchar c, uchar color, int fila, int columna, int ancho){
-	int i = 0;
-	while (i < ancho){
-		screen_pintar(c, color, fila, columna);
-		i++;
+	int i = columna;
+	while (i > ancho){
+		screen_pintar(c, color, i, columna);
+        i--;
 	}
 }
 
 void screen_inicializar(){
-    screen_pintar_rect(0, C_FG_BLACK     , 0 , 0 , 50, 80);   //toda la pantalla
-    screen_pintar_rect(0, C_FG_LIGHT_GREY, 0 , 0 , 44, 80);   //el_mapa
-    screen_pintar_rect(0, C_FG_BLUE      , 44, 29, 50, 36); //equuipo azul
-    screen_pintar_rect(0, C_FG_RED       , 44, 38, 44, 35); //equipo rojo
+    draw_map();
+    draw_footer();
+    draw_red_team();
+    draw_blue_team();
+     
 }
 
-
-/*
- *Estas funciones quedan por si en un futuro nesecitamos abstraer las funcionalidades
- */
-/*
-void draw_screen(uchar color){
+void draw_map(){
     int i, j;
     for(i = 0; i < 44; i++){ //filas 0-43 
         for(j = 0; j < 80; j++){ //columnas 0-79
-            screen_pintar(0, C_FG_LIGHT_GREY, i / 50, i % 50);
+            screen_pintar(32, C_BG_LIGHT_GREY,i ,j);
         }
     }
 }
 
-void draw_map(uchar color){
-    int i, j;
-    for(i = 0; i < 44; i++){ //filas 0-43 
-        for(j = 0; j < 80; j++){ //columnas 0-79
-            screen_pintar(0, C_FG_LIGHT_GREY, i / 50, i % 50);
-        }
-    }
-}
-
-void clear_map(){
+void draw_footer(){
     //dibujo el area de notificaciones
+    int i, j;
     for(i = 44; i < 50; i++){ //filas 44-49 
         for(j = 0; j < 80; j++){ //columnas 80
-            screen_pintar(0, C_FG_LIGHT_GREY, i / 50, i % 50);
+            screen_pintar(32, C_BG_BLACK, i,j);
         }
     }    
 }
-*/
+
+void draw_red_team(){
+    int i, j;
+    for (i=44; i<50; i++){
+        for (j=29; j<36; j++){
+            screen_pintar(32, C_BG_BLUE, i, j);
+        }
+    }
+}
+
+void draw_blue_team(){
+    int i, j;
+    for (i=44; i<50; i++){
+        for (j=38; j<45; j++){
+            screen_pintar(32, C_BG_RED, i, j);
+        }
+    }
+}

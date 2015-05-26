@@ -41,14 +41,14 @@ start:
     imprimir_texto_mr iniciando_mr_msg, iniciando_mr_len, 0x07, 0, 0
 
     ; Habilitar A20
-    habilitar_A20
+    call habilitar_A20
 
     ; Cargar la GDT
     lgdt [GDT_DESC]
 
     ; Setear el bit PE del registro CR0
     MOV eax,cr0
-    OR eax,1
+    OR  eax,1
     MOV cr0,eax
     ; Saltar a modo protegido
     jmp 0x40:modoprotegido
@@ -56,16 +56,14 @@ start:
 
 modoprotegido:
 BITS 32
-
-    xor eax, eax
-    mov ax, 0x50
-    mov ds, ax
-    mov es, ax
-    mov gs, ax
-    mov ss, ax
-    mov ax, 0x60
-    mov fs, ax
-    
+    xor  eax, eax
+    mov  ax, 0x50
+    mov  ds, ax
+    mov  es, ax
+    mov  gs, ax
+    mov  ss, ax
+    mov  ax, 0x60
+    mov  fs, ax
 
     ; Establecer la base de la pila
 	mov ebp, 0x27000
@@ -105,6 +103,11 @@ BITS 32
     out 0xa1, al
     out 0x21, al
     
+    mov ebx, 0
+    xor eax, eax
+    xchg bx,bx
+    div ebx
+
     ; Cargar tarea inicial
 
     ; Habilitar interrupciones
@@ -121,3 +124,4 @@ BITS 32
 
 ;; -------------------------------------------------------------------------- ;;
 
+%include "a20.asm"

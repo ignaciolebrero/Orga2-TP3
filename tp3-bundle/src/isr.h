@@ -9,7 +9,7 @@
 #define __ISR_H__
 
 void _isr0();
-/*void _isr1();
+void _isr1();
 void _isr2();
 void _isr3();
 void _isr4();
@@ -26,6 +26,6 @@ void _isr16();
 void _isr17();
 void _isr18();
 void _isr19();
-void _isr20();*/
+void _isr20();
 
 #endif  /* !__ISR_H__ */

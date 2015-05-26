@@ -49,7 +49,7 @@ idt_descriptor IDT_DESC = {
 void idt_inicializar() { //TODO: falta separar IDT_ENTRY por cada una en particular
     // Excepciones | 9, 15 y 21 en adelante quedan reservadas
     IDT_ENTRY(0);  // Divide error
-  /*  IDT_ENTRY(1);  // Debug Exception
+    IDT_ENTRY(1);  // Debug Exception
     IDT_ENTRY(2);  // NMI Interrupt
     IDT_ENTRY(3);  // Breakpoint
     IDT_ENTRY(4);  // Overflow
@@ -67,4 +67,4 @@ void idt_inicializar() { //TODO: falta separar IDT_ENTRY por cada una en particu
     IDT_ENTRY(18); // Machine Check
     IDT_ENTRY(19); // SIMD floating-Point Exception
     IDT_ENTRY(20); // Virtualization Exception
-*/}
+}
