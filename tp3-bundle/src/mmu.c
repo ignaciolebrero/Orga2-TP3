@@ -19,3 +19,24 @@
 
 /* Direcciones fisicas de directorios y tablas de paginas del KERNEL */
 /* -------------------------------------------------------------------------- */
+
+void mmu_inicializar(){
+	uint i;
+	uint* pageDirectory = (uint*) 0x27000;
+	uint* pageTable 	= (uint*) 0x28000;
+
+	for(i = 1024; i>0; i--){
+	  *(pageDirectory + (i*4) - 4) = 0x00000002;
+	}
+
+	*(pageDirectory) = (uint) pageTable + 0x3; //TODO: revisar, se puede remper aca
+
+	uint page = (uint) 0x1400;
+	for(i = 1024; i>0; i--){
+	  *(pageTable + (i*4) - 4) = page;
+	  *(pageTable + (i*4) - 4) = *(pageTable + (i*4) - 4) + (uint) 0x00000003;
+	  page = page - (uint) 0x1000;
+	}	
+
+	*(pageTable + 512*4) = 0x27003;
+}

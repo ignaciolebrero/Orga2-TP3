@@ -5,6 +5,7 @@ global start
 extern screen_pintar_rect
 extern screen_inicializar
 extern idt_inicializar
+extern mmu_inicializar
 extern GDT_DESC
 extern IDT_DESC
 
@@ -72,19 +73,25 @@ BITS 32
     ; Imprimir mensaje de bienvenida
     imprimir_texto_mp iniciando_mp_msg, iniciando_mp_len, 0x07, 2, 0
 
-
     ; Inicializar el juego
 
     ; Inicializar pantalla
     call screen_inicializar
 
     ; Inicializar el manejador de memoria
+    call mmu_inicializar ;TODO: revisar, es medio magico esto
 
     ; Inicializar el directorio de paginas
 
     ; Cargar directorio de paginas
 
     ; Habilitar paginacion
+    ;mov eax, page_directory
+    ;mov cr3, eax
+
+    ;mov eax, cr0
+    ;or eax, 0x800000 ;pagination on!
+    ;mov cr0, eax
 
     ; Inicializar tss
 
@@ -103,11 +110,6 @@ BITS 32
     out 0xa1, al
     out 0x21, al
     
-    mov ebx, 0
-    xor eax, eax
-    xchg bx,bx
-    div ebx
-
     ; Cargar tarea inicial
 
     ; Habilitar interrupciones
