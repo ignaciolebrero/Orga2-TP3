@@ -47,8 +47,27 @@ extern sched_tarea_actual
 extern print
 
 ;; Msjs de excepciones
-cero_mr_msg 		dw 'diviste por 0 guachin',0
-cero_mr_len 		equ $ - cero_mr_msg
+cero_mr_msg 		dw 'diviste por 0 ',0
+;cero_mr_len 		equ $ - cero_mr_msg
+uno_mr_msg 		dw 'Debug Exception ',0
+dos_mr_msg 		dw 'NMI Interrupt ',0
+tres_mr_msg 		dw 'Breakpoint',0
+cuatro_mr_msg 		dw 'Overflow ',0
+cinco_mr_msg 		dw 'BOUND Range Exceeded ',0
+seis_mr_msg 		dw 'Invalid Opcode ',0
+siete_mr_msg 		dw 'Device not Available ',0
+ocho_mr_msg 		dw 'Double fault ',0
+diez_mr_msg 		dw 'Invalid TSS ',0
+once_mr_msg 		dw 'Segment Not Present ',0
+doce_mr_msg 		dw 'Stack-Segment Fault ',0
+trece_mr_msg 		dw 'General Protection ',0
+catorce_mr_msg		dw 'Page Fault ',0
+diezseis_mr_msg		dw 'x87 FPU floating-Point Error ',0
+diezsiete_mr_msg	dw 'Alignment Check',0
+diezocho_mr_msg		dw 'Machine Check ',0
+dieznueve_mr_msg	dw 'SIMD floating-Point Exception ',0
+veinte_mr_msg		dw 'Virtualization Exception ',0
+
 
 ;;
 ;; Definición de MACROS
