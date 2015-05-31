@@ -5,7 +5,9 @@ global start
 extern screen_pintar_rect
 extern screen_inicializar
 extern idt_inicializar
+extern mmu_inicializar
 extern mmu_inicializar_dir_kernel
+extern inicializar_dir_pirata
 extern GDT_DESC
 extern IDT_DESC
 

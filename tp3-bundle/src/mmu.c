@@ -21,7 +21,7 @@ void mmu_inicializar(){
 	
 }
 
-void mmu_inicializar_dir_pirata(){
+void inicializar_dir_pirata(){
 
 }
 
@@ -42,14 +42,13 @@ void mmu_inicializar_dir_kernel(){
 
 	uint* actualTable;
 	uint* actualPage;
-	uint* actualDir;
 
 	//inicializa pageDirectory
 	for(i = 1024; i>0; i--){
 	  *(pageDirectory + (i*4) - 4) = 0x00000002;
 	}
 
-	//setea primero 4MB
+	//setea primeros 4MB
 	*(pageDirectory) = (uint) pageTable + 0x3; //TODO: revisar, se puede remper aca
 
 	//inicializa pageTable
@@ -62,11 +61,15 @@ void mmu_inicializar_dir_kernel(){
 
 	uint j;
 	//identity mapping??
-	for (j=0; j < 0x003FFFFF; j++){
-		actualTable = ( *(pageDirectory + (uint*) (j>>22))) >> 12;
-		actualPage  = ( *(actualTable   + (uint*) ((j<<10)>>22))) >> 12;
-		actualDir   = ( *(actualPage 	+ (uint*) ((j<<20) >>20)) );		
-	    *actualDir  = j;
+	for (j=0; j < 0x3FFFFF; j++){
+		uint* table = (uint*) ((uint) pageDirectory + (j>>22));
+		actualTable = (uint*) ((uint)*table >> 12 );
+
+		uint* page = (uint*) ((uint) actualTable   + ((j<<10)>>22));
+		actualPage  = (uint*) ((uint)*page >> 12);
+
+		uint* dir = (uint*) ((uint) actualPage    + ((j<<20) >>20));
+	    *dir = j;
 	}		
 
 }
