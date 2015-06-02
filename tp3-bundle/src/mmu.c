@@ -43,20 +43,16 @@ uint* mmu_gimme_gimme_page_wachin(){
 	return result;
 }
 
-void inicializar_dir_pirata(uint cr3, char team){
-	/*uint i;
-	uint* pageDirectory = (uint*) 0x2000;
-	uint* pageTable 	= (uint*) 0x28000;
-	*/
-	//*pageDirectory = //creamos los directorios? y se los asignamos a este cr3????	
+void inicializar_dir_pirata(uint cr3){
+	uint* pageDirectory   = cr3 & 0X000;		
 }
 
 void mmu_mapear_pagina(uint virt, uint cr3, uint fisica, uint attrs){
 	//parsea offsets dentro de directorio de paginas
+	uint pageDirectory = cr3 & 0X000;
 	uint pageDirOffset, pageTableOffset;
 	PDE_INDEX(virt, pageDirOffset);
 	PTE_INDEX(virt, pageTableOffset);
-	uint pageDirectory   = cr3   >> 12;
 
 	//recorre directorios
 	uint* pageTable   = (uint*)  *( (uint*) pageDirectory) + pageDirOffset;
@@ -75,12 +71,13 @@ void mmu_unmapear_pagina(uint virt, uint cr3){
 	uint pageDirOffset, pageTableOffset;
 	PDE_INDEX(virt, pageDirOffset);
 	PTE_INDEX(virt, pageTableOffset);
-	uint pageDirectory   = cr3   >> 12;
+	uint pageDirectory   = cr3 & 0X000;
 
 	//recorre directorios
 	uint*  pageTable = (uint*)  *( (uint*) pageDirectory) + pageDirOffset;
 	uint** page	 	 = (uint**) *( (uint*) ((uint) pageTable + pageTableOffset));
 	
+	//mata pagina
 	*page = NULL;
 	tlbflush();
 }
@@ -89,9 +86,9 @@ void mmu_unmapear_pagina(uint virt, uint cr3){
 /* -------------------------------------------------------------------------- */
 void mmu_inicializar_dir_kernel(){
 	uint i;
-	uint* pageDirectory = (uint*) 0x27000;
-	uint* pageTable 	= (uint*) 0x28000;
-	
+	uint* pageDirectory = (uint*) KERNEL_PAGE_DIRECTORY;
+	uint* pageTable 	= (uint*) KERNEL_PAGE_TABLE;
+
 	*pageDirectory = (uint) 0x28003;
 
 	uint j = (uint) 0x0;

@@ -68,3 +68,4 @@ void idt_inicializar() { //TODO: falta separar IDT_ENTRY por cada una en particu
     IDT_ENTRY(19); // SIMD floating-Point Exception
     IDT_ENTRY(20); // Virtualization Exception
 }
+    

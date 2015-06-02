@@ -16,12 +16,17 @@
 #define MAPA_BASE_FISICA  0x500000
 #define MAPA_BASE_VIRTUAL 0x800000
 
+#define KERNEL_PAGE_DIRECTORY 0X27000
+#define KERNEL_PAGE_TABLE	  0X28000
+
 typedef struct pageManager{
 	uint  cantidad;
 	uint* primera_libre;
 } __attribute__((__packed__)) pageManager;
 
 pageManager paginas_libres; 
+
+uint* mmu_gimme_gimme_page_wachin();
 
 void mmu_inicializar();
 
