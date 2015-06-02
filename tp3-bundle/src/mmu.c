@@ -25,21 +25,21 @@ void inicializar_dir_pirata(){
 
 }
 
-void mmu_mapear_pagina(){
+void mmu_mapear_pagina(uint virt, uint cr3, uint fisica, uint attrs){
 	//parsea offsets dentro de directorio de paginas
 	uint pageDirOffset   = virt >> 22;
 	uint pageTableOffset = (virt << 10) >> 22;
 	uint pageDirectory   = cr3 >> 12;
 
 	//recorre directorios
-	uint* pageTable   = *( (uint*) pageDirectory) + pageDirOffset;
-	uint* page 	 	  = *( (uint*) ((uint) pageTable + pageTableOffset));
+	uint* pageTable   = (uint*) *( (uint*) pageDirectory) + pageDirOffset;
+	uint** page	 	  = (uint**) *( (uint*) ((uint) pageTable + pageTableOffset));
 	
 	//arma pagina
-	float pageSegment = ((uint) *page << 12) + attrs; //TODO: attrrs tiene 16 bits y los attrs del segmento de pagina tienen 12.... la parte alta viene en 0's, como se deberia manejar??? 
+	uint* pageSegment = (uint*) ((fisica << 12) + attrs); //TODO: attrrs tiene 16 bits y los attrs del segmento de pagina tienen 12.... la parte alta viene en 0's, como se deberia manejar??? 
 
 	//asigna segmento de pagina
-	page = pageSegment; //TODO: WHAT???? esto vale???? D:
+	*page = pageSegment; //TODO: WHAT???? esto vale???? D:
 }
 
 void mmu_unmapear_pagina(){
