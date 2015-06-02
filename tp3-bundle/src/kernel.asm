@@ -91,20 +91,20 @@ BITS 32
     ; Cargar directorio de paginas
 
     ; Habilitar paginacion
+    xchg bx,bx
     mov eax, 0x27000
     mov cr3, eax
 
     mov eax, cr0
-    or eax, 0x800000 ;pagination on!
+    or eax, 0x80000000 ;pagination on!
     mov cr0, eax
-    xchg bx,bx
 
     imprimir_texto_mp iniciando_gr_msg, iniciando_gr_len, 0xE, 0, 64; SERIA HERMOSO, ENCONTRAR EL COLOR PARA QUE QUEDE NARANJA/ROJO EN EL FONDO Y ADELANTE AMARILLO, LO HARIA MAS REALISTA.
 
     ; Inicializar tss
-    call mmu_inicializar
+    ;call mmu_inicializar
     ; Inicializar tss de la tarea Idle
-    call inicializar_dir_pirata
+    ;call inicializar_dir_pirata
     ; mover el cr3 actual por el elemento que devuelve la funcion, en teoria lo hace en la pila, no?
     ; Inicializar el scheduler
 

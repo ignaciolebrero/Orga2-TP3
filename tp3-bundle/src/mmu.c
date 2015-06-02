@@ -28,11 +28,27 @@
  */
 
 void mmu_inicializar(){
-	
+	paginas_libres.cantidad 	 = 768; //1024-256
+	paginas_libres.primera_libre = (uint*) 0x100000;
+}
+
+uint* mmu_gimme_gimme_page_wachin(){
+	uint* result = NULL;
+	if (paginas_libres.cantidad > 0) {
+		result = paginas_libres.primera_libre;
+		
+		paginas_libres.primera_libre ++; //WARNING: si muere puede ser aca por el ++, va de a 4?
+		paginas_libres.cantidad --;
+	} 
+	return result;
 }
 
 void inicializar_dir_pirata(uint cr3, char team){
-	//que tareas se ponen aca? setteo solo el principio(cuadrado arriba a la izquierda ó abajo a la derecha)?? se mapea al 0x4000? pero si mapeo un equipo ahi, donde mapeo el otro?
+	/*uint i;
+	uint* pageDirectory = (uint*) 0x2000;
+	uint* pageTable 	= (uint*) 0x28000;
+	*/
+	//*pageDirectory = //creamos los directorios? y se los asignamos a este cr3????	
 }
 
 void mmu_mapear_pagina(uint virt, uint cr3, uint fisica, uint attrs){
@@ -75,10 +91,12 @@ void mmu_inicializar_dir_kernel(){
 	uint i;
 	uint* pageDirectory = (uint*) 0x27000;
 	uint* pageTable 	= (uint*) 0x28000;
-
-	for(i = 1024; i>0; i--){// inicializo cada elemento del PD.
-	  *(pageDirectory + (i*4) - 4) = 0x0;
-	}
 	
-	*(pageDirectory) = *(pageTable + (i*4) - 4) + (uint) 0x3;
+	*pageDirectory = (uint) 0x28003;
+
+	uint j = (uint) 0x0;
+	for(i=0; i< 1024 ; i++){
+		*(pageTable + i) =  j + (uint) 0x3;
+		j = j + (uint) 0x1000;
+	}
 }

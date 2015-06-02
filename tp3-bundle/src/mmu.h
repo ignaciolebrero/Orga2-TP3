@@ -16,6 +16,13 @@
 #define MAPA_BASE_FISICA  0x500000
 #define MAPA_BASE_VIRTUAL 0x800000
 
+typedef struct pageManager{
+	uint  cantidad;
+	uint* primera_libre;
+} __attribute__((__packed__)) pageManager;
+
+pageManager paginas_libres; 
+
 void mmu_inicializar();
 
 void inicializar_dir_pirata(uint cr3, char team);
