@@ -7,6 +7,16 @@
 
 #include "mmu.h"
 #include "i386.h"
+
+
+/* Macros */
+/* -------------------------------------------------------------------------- */
+#define PDE_INDEX(virt, res) \
+ 	res = virt >> 22;   
+
+#define PTE_INDEX(virt, res) \
+	res = (virt << 10) >> 22;
+
 /* Atributos paginas */
 /* -------------------------------------------------------------------------- */
 
@@ -21,29 +31,42 @@ void mmu_inicializar(){
 	
 }
 
-void inicializar_dir_pirata(){
-
+void inicializar_dir_pirata(uint cr3, char team){
+	//que tareas se ponen aca? setteo solo el principio(cuadrado arriba a la izquierda ó abajo a la derecha)?? se mapea al 0x4000? pero si mapeo un equipo ahi, donde mapeo el otro?
 }
 
 void mmu_mapear_pagina(uint virt, uint cr3, uint fisica, uint attrs){
 	//parsea offsets dentro de directorio de paginas
-	uint pageDirOffset   = virt >> 22;
-	uint pageTableOffset = (virt << 10) >> 22;
-	uint pageDirectory   = cr3 >> 12;
+	uint pageDirOffset, pageTableOffset;
+	PDE_INDEX(virt, pageDirOffset);
+	PTE_INDEX(virt, pageTableOffset);
+	uint pageDirectory   = cr3   >> 12;
 
 	//recorre directorios
-	uint* pageTable   = (uint*) *( (uint*) pageDirectory) + pageDirOffset;
-	uint* page	 	  = (uint*) *( (uint*) ((uint) pageTable + pageTableOffset));
+	uint* pageTable   = (uint*)  *( (uint*) pageDirectory) + pageDirOffset;
+	uint** page	 	  = (uint**) *( (uint*) ((uint) pageTable + pageTableOffset));
 	
 	//arma pagina
 	uint* pageSegment = (uint*) ((fisica << 12) + attrs); //TODO: attrrs tiene 16 bits y los attrs del segmento de pagina tienen 12.... la parte alta viene en 0's, como se deberia manejar??? 
 
 	//asigna segmento de pagina
-	page = pageSegment; //TODO: WHAT???? esto vale???? D:
+	*page = pageSegment; //TODO: WHAT????
+	tlbflush();
 }
 
-void mmu_unmapear_pagina(){
+void mmu_unmapear_pagina(uint virt, uint cr3){
+	//parsea offsets dentro de directorio de paginas
+	uint pageDirOffset, pageTableOffset;
+	PDE_INDEX(virt, pageDirOffset);
+	PTE_INDEX(virt, pageTableOffset);
+	uint pageDirectory   = cr3   >> 12;
 
+	//recorre directorios
+	uint*  pageTable = (uint*)  *( (uint*) pageDirectory) + pageDirOffset;
+	uint** page	 	 = (uint**) *( (uint*) ((uint) pageTable + pageTableOffset));
+	
+	*page = NULL;
+	tlbflush();
 }
 
 /* Direcciones fisicas de directorios y tablas de paginas del KERNEL */

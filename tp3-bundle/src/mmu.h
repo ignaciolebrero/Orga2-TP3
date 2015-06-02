@@ -18,5 +18,10 @@
 
 void mmu_inicializar();
 
+void inicializar_dir_pirata(uint cr3, char team);
+	
+void mmu_mapear_pagina(uint virt, uint cr3, uint fisica, uint attrs);
+
+void mmu_unmapear_pagina(uint virt, uint cr3);
 
 #endif	/* !__MMU_H__ */
