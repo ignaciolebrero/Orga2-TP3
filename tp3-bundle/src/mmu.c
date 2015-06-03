@@ -37,25 +37,38 @@ uint* mmu_gimme_gimme_page_wachin(){
 	if (paginas_libres.cantidad > 0) {
 		result = paginas_libres.primera_libre;
 		
-		paginas_libres.primera_libre ++; //WARNING: si muere puede ser aca por el ++, va de a 4?
+		paginas_libres.primera_libre += (uint) 0x1000; //0x1000 es unapagina en memoria, sera asi??
 		paginas_libres.cantidad --;
 	} 
 	return result;
 }
 
 void inicializar_dir_pirata(uint cr3){
-	uint* pageDirectory   = cr3 & 0X000;		
+	uint* pageDirectory = mmu_gimme_gimme_page_wachin();
+
+	//inicializa pagedirectory sin entradas
+	for(i=0; i< 1024 ; i++){
+		*(pageDirectory + i) = (uint) 0x02;
+	}
+
+	cr3 = pageDirectory; //esto es asi directo?????????
 }
 
 void mmu_mapear_pagina(uint virt, uint cr3, uint fisica, uint attrs){
 	//parsea offsets dentro de directorio de paginas
-	uint pageDirectory = cr3 & 0X000;
-	uint pageDirOffset, pageTableOffset;
+	uint* pageDirectory = (uint*) (cr3 & 0X000);
+	uint  pageDirOffset, pageTableOffset;
 	PDE_INDEX(virt, pageDirOffset);
 	PTE_INDEX(virt, pageTableOffset);
 
 	//recorre directorios
-	uint* pageTable   = (uint*)  *( (uint*) pageDirectory) + pageDirOffset;
+	uint* pageTable   = (uint*)  *(pageDirectory) + pageDirOffset;
+	//por si todavia no se creo la pagetable
+	if (pageTable == NULL) {
+		*( (uint*) pageDirectory) + pageDirOffset = mmu_gimme_gimme_page_wachin();
+		pageTable =  *( (uint*) pageDirectory) + pageDirOffset;
+	}
+	
 	uint** page	 	  = (uint**) *( (uint*) ((uint) pageTable + pageTableOffset));
 	
 	//arma pagina
@@ -88,6 +101,10 @@ void mmu_inicializar_dir_kernel(){
 	uint i;
 	uint* pageDirectory = (uint*) KERNEL_PAGE_DIRECTORY;
 	uint* pageTable 	= (uint*) KERNEL_PAGE_TABLE;
+
+	for(i=0; i< 1024 ; i++){
+		*(pageDirectory + i) = (uint) 0x02;
+	}
 
 	*pageDirectory = (uint) 0x28003;
 
