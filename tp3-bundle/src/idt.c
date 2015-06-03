@@ -67,5 +67,8 @@ void idt_inicializar() { //TODO: falta separar IDT_ENTRY por cada una en particu
     IDT_ENTRY(18); // Machine Check
     IDT_ENTRY(19); // SIMD floating-Point Exception
     IDT_ENTRY(20); // Virtualization Exception
+    IDT_ENTRY(32);// TICK
+    IDT_ENTRY(33);//TECLADO
+    IDT_ENTRY(70);//REVISAR ESTO ES LA INTERRUPCION DE SOFT
 }
     

@@ -30,7 +30,12 @@ global _isr17
 global _isr18
 global _isr19
 global _isr20
-
+global _isr32
+global _isr33
+global _isr70
+extern game_tick
+extern resetear_pic
+extern habilitar_pic
 
 ;; scheduler
 sched_tarea_offset:     dd 0x00
@@ -94,13 +99,6 @@ _isr%1:
 ;TODO:revisar si compila, funciona, eclosiona(?)
 _isr0:
 	pushad
-
-	push cero_mr_msg
-	push 0
-	push 0
-	push 0x60
-	call print 
-	xchg bx,bx
 	popad
 	iret
 
@@ -191,6 +189,39 @@ _isr19:
 
 _isr20:
 	pushad
+	popad
+	iret
+
+_isr32:
+	pushad
+	call fin_intr_pic1
+	call game_tick
+	popad
+	iret
+_isr33:
+	pushad
+	call fin_intr_pic1
+	in al, 0x60
+	cmp al , 0x2A
+	je .rutinals
+	cmp byte al, 0x36
+	je .rutinars
+pop:
+	popad
+	iret
+
+_isr33.rutinals:
+
+	jmp pop	
+
+_isr33.rutinars:
+
+	jmp pop
+
+
+_isr70:
+	pushad
+	mov eax, 0x42
 	popad
 	iret
 

@@ -10,6 +10,9 @@ extern mmu_inicializar_dir_kernel
 extern inicializar_dir_pirata
 extern GDT_DESC
 extern IDT_DESC
+extern resetear_pic
+extern habilitar_pic
+extern screen_actualizar_reloj_global
 
 ;; Saltear seccion de datos
 jmp start
@@ -119,9 +122,14 @@ BITS 32
     out 0xa1, al
     out 0x21, al
     
+
     ; Cargar tarea inicial
 
     ; Habilitar interrupciones
+
+	call resetear_pic
+	call habilitar_pic
+	sti
 
     ; Saltar a la primera tarea: Idle
 
