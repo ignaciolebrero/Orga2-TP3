@@ -30,7 +30,7 @@ uint* mmu_gimme_gimme_page_wachin();
 
 void mmu_inicializar();
 
-void inicializar_dir_pirata(uint cr3, char team);
+void inicializar_dir_pirata(uint cr3);
 	
 void mmu_mapear_pagina(uint virt, uint cr3, uint fisica, uint attrs);
 

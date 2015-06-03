@@ -45,34 +45,35 @@ uint* mmu_gimme_gimme_page_wachin(){
 
 void inicializar_dir_pirata(uint cr3){
 	uint* pageDirectory = mmu_gimme_gimme_page_wachin();
-
+	uint i;
 	//inicializa pagedirectory sin entradas
 	for(i=0; i< 1024 ; i++){
 		*(pageDirectory + i) = (uint) 0x02;
 	}
 
-	cr3 = pageDirectory; //esto es asi directo?????????
+	cr3 = (uint) pageDirectory; //esto es asi directo?????????
 }
 
 void mmu_mapear_pagina(uint virt, uint cr3, uint fisica, uint attrs){
-	//parsea offsets dentro de directorio de paginas
-	uint* pageDirectory = (uint*) (cr3 & 0X000);
-	uint  pageDirOffset, pageTableOffset;
+	uint pageDirectory = cr3 & 0X000;
+	uint pageDirOffset, pageTableOffset;
 	PDE_INDEX(virt, pageDirOffset);
 	PTE_INDEX(virt, pageTableOffset);
 
 	//recorre directorios
-	uint* pageTable   = (uint*)  *(pageDirectory) + pageDirOffset;
-	//por si todavia no se creo la pagetable
-	if (pageTable == NULL) {
-		*( (uint*) pageDirectory) + pageDirOffset = mmu_gimme_gimme_page_wachin();
-		pageTable =  *( (uint*) pageDirectory) + pageDirOffset;
+	uint* pageTable   = (uint*)  *( (uint*) pageDirectory) + pageDirOffset;
+
+	//revisa si existe la pagina	
+	if (*pageTable == ( (uint) 0x02) ) {
+		pageTable  = mmu_gimme_gimme_page_wachin();
+		* (uint*) (*( (uint*) pageDirectory) + pageDirOffset) = (uint) pageTable; //preguntar por esto......es muy turbio
 	}
 	
-	uint** page	 	  = (uint**) *( (uint*) ((uint) pageTable + pageTableOffset));
+	uint** page	= (uint**) *( (uint*) ((uint) pageTable + pageTableOffset));
 	
+
 	//arma pagina
-	uint* pageSegment = (uint*) ((fisica << 12) + attrs); //TODO: attrrs tiene 16 bits y los attrs del segmento de pagina tienen 12.... la parte alta viene en 0's, como se deberia manejar??? 
+	uint* pageSegment = (uint*) (fisica + attrs); //TODO: attrrs tiene 16 bits y los attrs del segmento de pagina tienen 12.... la parte alta viene en 0's, como se deberia manejar??? 
 
 	//asigna segmento de pagina
 	*page = pageSegment; //TODO: WHAT????
