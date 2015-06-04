@@ -83,9 +83,9 @@ void mmu_mapear_pagina(uint virt, uint cr3, uint fisica, uint attrs){
 void mmu_unmapear_pagina(uint virt, uint cr3){
 	//parsea offsets dentro de directorio de paginas
 	uint pageDirOffset, pageTableOffset;
+	uint pageDirectory = cr3 & 0X000;
 	PDE_INDEX(virt, pageDirOffset);
 	PTE_INDEX(virt, pageTableOffset);
-	uint pageDirectory   = cr3 & 0X000;
 
 	//recorre directorios
 	uint*  pageTable = (uint*)  *( (uint*) pageDirectory) + pageDirOffset;
@@ -103,15 +103,13 @@ void mmu_inicializar_dir_kernel(){
 	uint* pageDirectory = (uint*) KERNEL_PAGE_DIRECTORY;
 	uint* pageTable 	= (uint*) KERNEL_PAGE_TABLE;
 
-	for(i=0; i< 1024 ; i++){
-		*(pageDirectory + i) = (uint) 0x02;
-	}
-
-	*pageDirectory = (uint) 0x28003;
-
-	uint j = (uint) 0x0;
-	for(i=0; i< 1024 ; i++){
-		*(pageTable + i) =  j + (uint) 0x3;
-		j = j + (uint) 0x1000;
+	for(i=0; i<3; i++){
+		*(pageDirectory + i) = ((uint) 0x28000 + (i * (uint)0x1000) ) + 0x3;
+		uint j = (uint) 0x0;
+		for(i=0; i< 1024 ; i++){
+			*(pageTable + i) =  j + (uint) 0x3;
+			j = j + (uint) 0x1000;
+		}
+		pageTable += (uint) 0x1000;
 	}
 }
