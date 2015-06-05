@@ -5,6 +5,7 @@ global start
 extern screen_pintar_rect
 extern screen_inicializar
 extern idt_inicializar
+extern tss_inicializar
 extern mmu_inicializar
 extern mmu_inicializar_dir_kernel
 extern inicializar_dir_pirata
@@ -124,6 +125,7 @@ BITS 32
     
 
     ; Cargar tarea inicial
+    call tss_inicializar
 
     ; Habilitar interrupciones
 

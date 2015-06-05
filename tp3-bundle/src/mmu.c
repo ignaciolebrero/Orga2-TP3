@@ -55,7 +55,7 @@ void inicializar_dir_pirata(uint cr3){
 }
 
 void mmu_mapear_pagina(uint virt, uint cr3, uint fisica, uint attrs){
-	uint pageDirectory = cr3 & 0X000;
+	uint pageDirectory = cr3 & 0XFFFFF000;
 	uint pageDirOffset, pageTableOffset;
 	PDE_INDEX(virt, pageDirOffset);
 	PTE_INDEX(virt, pageTableOffset);
@@ -83,7 +83,7 @@ void mmu_mapear_pagina(uint virt, uint cr3, uint fisica, uint attrs){
 void mmu_unmapear_pagina(uint virt, uint cr3){
 	//parsea offsets dentro de directorio de paginas
 	uint pageDirOffset, pageTableOffset;
-	uint pageDirectory = cr3 & 0X000;
+	uint pageDirectory = cr3 & 0XFFFFF000;
 	PDE_INDEX(virt, pageDirOffset);
 	PTE_INDEX(virt, pageTableOffset);
 
