@@ -6,6 +6,8 @@
 
 %include "imprimir.mac"
 
+extern inicializar_dir_pirata
+extern mmu_mapear_pagina
 extern print
 
 BITS 32
@@ -201,7 +203,7 @@ _isr32:
 _isr33:
 	pushad
 	call fin_intr_pic1
-	in al, 0x60
+	in  al, 0x60
 	cmp al , 0x2A
 	je .rutinals
 	cmp byte al, 0x36
@@ -211,11 +213,18 @@ pop:
 	iret
 
 _isr33.rutinals:
-
+	;mov  ebx, cr3
+	;push ebx
+	;call inicializar_dir_pirata
+	;push 0xFFFFFFFF
+	;push cr3
+	;push 0x0B8000
+	;push 0x3
+	;call mmu_mapear_pagina
+	;xchg bx,bx
 	jmp pop	
 
 _isr33.rutinars:
-
 	jmp pop
 
 

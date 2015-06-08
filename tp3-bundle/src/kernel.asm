@@ -5,6 +5,7 @@ global start
 extern screen_pintar_rect
 extern screen_inicializar
 extern idt_inicializar
+extern tss_inicializar
 extern mmu_inicializar
 extern mmu_inicializar_dir_kernel
 extern inicializar_dir_pirata
@@ -64,14 +65,14 @@ start:
 
 modoprotegido:
 BITS 32
-    xor  eax, eax
-    mov  ax, 0x50
-    mov  ds, ax
-    mov  es, ax
-    mov  gs, ax
-    mov  ss, ax
-    mov  ax, 0x60
-    mov  fs, ax
+    xor eax, eax
+    mov ax, 0x50
+    mov ds, ax
+    mov es, ax
+    mov gs, ax
+    mov ss, ax
+    mov ax, 0x60
+    mov fs, ax
 
     ; Establecer la base de la pila
     mov ebp, 0x27000
@@ -99,21 +100,23 @@ BITS 32
     mov cr3, eax
 
     mov eax, cr0
-    or eax, 0x80000000 ;pagination on!
+    or  eax, 0x80000000 ;pagination on!
     mov cr0, eax
 
-    imprimir_texto_mp iniciando_gr_msg, iniciando_gr_len, 0xE, 0, 64; SERIA HERMOSO, ENCONTRAR EL COLOR PARA QUE QUEDE NARANJA/ROJO EN EL FONDO Y ADELANTE AMARILLO, LO HARIA MAS REALISTA.
+    imprimir_texto_mp iniciando_gr_msg, iniciando_gr_len, 0xE, 0, 64
 
     ; Inicializar tss
-    ;call mmu_inicializar
+    call mmu_inicializar
+    
     ; Inicializar tss de la tarea Idle
-    ;call inicializar_dir_pirata
+    call inicializar_dir_pirata
     ; mover el cr3 actual por el elemento que devuelve la funcion, en teoria lo hace en la pila, no?
+    
     ; Inicializar el scheduler
 
     ; Inicializar la IDT
     call idt_inicializar
-    
+
     ; Cargar IDT
     lidt [IDT_DESC]
 
@@ -121,17 +124,17 @@ BITS 32
     mov al, 0xff
     out 0xa1, al
     out 0x21, al
-    
 
     ; Cargar tarea inicial
+    call tss_inicializar ;en el punto b) y c) las direcciones son las virtuales o las fisicas?? supongo que las virtuales porque ya activamos paginacion :P
 
     ; Habilitar interrupciones
-
 	call resetear_pic
 	call habilitar_pic
 	sti
 
     ; Saltar a la primera tarea: Idle
+    jmp 0x70:0 ;ponele que anda
 
     ; Ciclar infinitamente (por si algo sale mal...)
     mov eax, 0xFFFF
