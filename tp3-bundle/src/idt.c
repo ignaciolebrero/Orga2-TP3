@@ -33,12 +33,6 @@ idt_descriptor IDT_DESC = {
     }
 */
 
-/*/
- * TODO: preguntar:
-    * Son todos las interrupciones segmentos iguales? o tienen distintos privilegios? que la compuerta tengo un nivel de privilegios diferente en que afecta?
-    * Se cuales son fault, trap y abort, a la hora de diferenciarlas se hace en el segmento pero el isr?????
-/*/
-
 //ver: apuntes/compuerta de interrupcion.png
 #define IDT_ENTRY(numero)                                                                                        \
     idt[numero].offset_0_15  = (unsigned short) ((unsigned int)(&_isr ## numero) & (unsigned int) 0xFFFF);        \

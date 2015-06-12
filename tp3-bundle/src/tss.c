@@ -25,7 +25,7 @@ tss tss_jugadorB[MAX_CANT_PIRATAS_VIVOS];
 void inicializar_idle_cr3(){ //punto B, creo que esta "bien" hecho
     uint mem_fisica = (uint) 0x00016000;
     uint mem_virt   = (uint) 0x00016000;
-    uint cr3   = 0;// (uint) get_cr3();
+    uint cr3   = 0x27000;;
     uint attrs = 0;
 
     mmu_mapear_pagina(mem_virt, cr3, mem_fisica, attrs);
@@ -135,18 +135,18 @@ void tss_inicializar() {
 void inicializar_tarea(uint tarea){
     tss_jugadorB[tarea].ptl      = 0;
     tss_jugadorB[tarea].unused0  = 0;
-    tss_jugadorB[tarea].esp0     = 0;
-    tss_jugadorB[tarea].ss0      = 0;
+    tss_jugadorB[tarea].esp0     = (uint) mmu_gimme_gimme_page_wachin();
+    tss_jugadorB[tarea].ss0      = (ushort) 0x27000;
     tss_jugadorB[tarea].unused1  = 0;
     tss_jugadorB[tarea].esp1     = 0;
     tss_jugadorB[tarea].ss1      = 0;
     tss_jugadorB[tarea].unused2  = 0;
     tss_jugadorB[tarea].esp2     = 0;
-    tss_jugadorB[tarea].ss2      = 0;
+    tss_jugadorB[tarea].ss2      = (ushort) 0x1000 ;//+ (uint) x;
     tss_jugadorB[tarea].unused3  = 0;
     tss_jugadorB[tarea].cr3      = 0;
     tss_jugadorB[tarea].eip      = 0;
-    tss_jugadorB[tarea].eflags   = 0;
+    tss_jugadorB[tarea].eflags   = (uint) 0x202;
     tss_jugadorB[tarea].eax      = 0;
     tss_jugadorB[tarea].ecx      = 0;
     tss_jugadorB[tarea].edx      = 0;

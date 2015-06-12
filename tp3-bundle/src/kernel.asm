@@ -95,7 +95,6 @@ BITS 32
     ; Cargar directorio de paginas
 
     ; Habilitar paginacion
-    xchg bx,bx
     mov eax, 0x27000
     mov cr3, eax
 
@@ -127,14 +126,17 @@ BITS 32
 
     ; Cargar tarea inicial
     call tss_inicializar ;en el punto b) y c) las direcciones son las virtuales o las fisicas?? supongo que las virtuales porque ya activamos paginacion :P
+    mov ax, 0x68
+    ltr ax
 
     ; Habilitar interrupciones
-	call resetear_pic
-	call habilitar_pic
-	sti
+    call resetear_pic
+    call habilitar_pic
+    sti
 
     ; Saltar a la primera tarea: Idle
-    jmp 0x70:0 ;ponele que anda
+    xchg bx, bx
+    jmp 0x70
 
     ; Ciclar infinitamente (por si algo sale mal...)
     mov eax, 0xFFFF

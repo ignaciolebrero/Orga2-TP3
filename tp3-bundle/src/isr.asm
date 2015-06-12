@@ -8,6 +8,9 @@
 
 extern inicializar_dir_pirata
 extern mmu_mapear_pagina
+extern habilitar_pic
+extern resetear_pic
+extern game_tick
 extern print
 
 BITS 32
@@ -35,9 +38,6 @@ global _isr20
 global _isr32
 global _isr33
 global _isr70
-extern game_tick
-extern resetear_pic
-extern habilitar_pic
 
 ;; scheduler
 sched_tarea_offset:     dd 0x00
@@ -56,8 +56,8 @@ extern print
 ;; Msjs de excepciones
 cero_mr_msg 		dw 'diviste por 0 ',0
 ;cero_mr_len 		equ $ - cero_mr_msg
-uno_mr_msg 		dw 'Debug Exception ',0
-dos_mr_msg 		dw 'NMI Interrupt ',0
+uno_mr_msg 			dw 'Debug Exception ',0
+dos_mr_msg 			dw 'NMI Interrupt ',0
 tres_mr_msg 		dw 'Breakpoint',0
 cuatro_mr_msg 		dw 'Overflow ',0
 cinco_mr_msg 		dw 'BOUND Range Exceeded ',0
@@ -197,9 +197,22 @@ _isr20:
 _isr32:
 	pushad
 	call fin_intr_pic1
+	
 	call game_tick
+	call sched_tick
+
+	str cx
+	cmp ax, cx
+	je .fin
+
+	;mov [], ax
+	;jmp far []
+	;offset - 32bits de 0
+	
+	.fin:	
 	popad
-	iret
+iret
+
 _isr33:
 	pushad
 	call fin_intr_pic1
@@ -208,25 +221,16 @@ _isr33:
 	je .rutinals
 	cmp byte al, 0x36
 	je .rutinars
-pop:
-	popad
-	iret
 
 _isr33.rutinals:
-	;mov  ebx, cr3
-	;push ebx
-	;call inicializar_dir_pirata
-	;push 0xFFFFFFFF
-	;push cr3
-	;push 0x0B8000
-	;push 0x3
-	;call mmu_mapear_pagina
-	;xchg bx,bx
 	jmp pop	
 
 _isr33.rutinars:
 	jmp pop
 
+pop:
+	popad
+	iret
 
 _isr70:
 	pushad
