@@ -52,6 +52,7 @@ void inicializar_dir_pirata(uint cr3, uint fisicmem, uint elteam){
 		*(pageDirectory + i) = (uint) 0x02;
 	}
 
+	//TODO: arreglar, casi lo cuelgo :P
 	/*mmu_mapear_pagina((uint) 0x4000, cr3, fisicmem, (uint) 0x3); //mapea la direccion de codigo a 0x4000 //los atributos son 0x03?
 	cr3 = (uint) pageDirectory; //esto es asi directo?????????
 

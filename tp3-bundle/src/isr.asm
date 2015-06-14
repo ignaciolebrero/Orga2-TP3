@@ -9,6 +9,7 @@
 extern inicializar_dir_pirata
 extern mmu_mapear_pagina
 extern habilitar_pic
+extern agregar_tarea
 extern resetear_pic
 extern game_tick
 extern print
@@ -199,7 +200,7 @@ _isr32:
 	call fin_intr_pic1
 	
 	call game_tick
-	call sched_tick
+	call sched_tick ;lo que devuelve es un selector de segmento, no?
 
 	str cx
 	cmp ax, cx
@@ -213,19 +214,25 @@ _isr32:
 	popad
 iret
 
-_isr33:
+_isr33: 
 	pushad
 	call fin_intr_pic1
 	in  al, 0x60
-	cmp al , 0x2A
+	cmp al, 0x2A
 	je .rutinals
 	cmp byte al, 0x36
 	je .rutinars
 
 _isr33.rutinals:
+	;push JUGADOR_A
+	;push selector de la nueva tarea
+	;call agregar_tarea
 	jmp pop	
 
 _isr33.rutinars:
+	;push JUGADOR_B
+	;push selector de la nueva tarea
+	;call agregar_tarea
 	jmp pop
 
 pop:

@@ -2,17 +2,18 @@
 
 global start
 
-extern screen_pintar_rect
-extern screen_inicializar
-extern idt_inicializar
-extern tss_inicializar
-extern mmu_inicializar
-extern mmu_inicializar_dir_kernel
-extern inicializar_dir_pirata
 extern GDT_DESC
 extern IDT_DESC
 extern resetear_pic
 extern habilitar_pic
+extern idt_inicializar
+extern tss_inicializar
+extern mmu_inicializar
+extern screen_pintar_rect
+extern screen_inicializar
+extern inicializar_scheduler
+extern inicializar_dir_pirata
+extern mmu_inicializar_dir_kernel
 extern screen_actualizar_reloj_global
 
 ;; Saltear seccion de datos
@@ -112,6 +113,7 @@ BITS 32
     ; mover el cr3 actual por el elemento que devuelve la funcion, en teoria lo hace en la pila, no?
     
     ; Inicializar el scheduler
+    call inicializar_scheduler
 
     ; Inicializar la IDT
     call idt_inicializar
