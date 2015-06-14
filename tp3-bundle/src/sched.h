@@ -12,15 +12,21 @@
 
 #endif	/* !__SCHED_H__ */
 
-typedef struct tarea_schededuler{
+typedef struct tarea_scheduler{
 	uint *tareas[8];
 	uint pos;
 	ushort cantidad_tareas;
-}tareaSched;
+}tarea_scheduler;
 
 typedef struct sched_tareas{
 	uint* tareas_systema[2];
 	tarea_scheduler tareasA;
-	tarea_Scheduler tareasB;
+	tarea_scheduler tareasB;
 	uint tareaActual;
 } sched_tareas;
+
+void inicializar_scheduler();
+uint* sched_tick();
+uint* proximaTarea(tarea_scheduler);
+void agregar_tarea(uint*, uint);
+void colocar_nueva_tarea(uint*, tarea_scheduler);

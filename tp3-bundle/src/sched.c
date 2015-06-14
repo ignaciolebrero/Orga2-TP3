@@ -18,23 +18,23 @@ void inicializar_scheduler(){
 	}
 
 	scheduler.tareasA.pos = -1;
-	scheduler.tareasA.cant_tareas = 0;
+	scheduler.tareasA.cantidad_tareas = 0;
 	scheduler.tareasB.pos = -1;
-	scheduler.tareasB.cant_tareas = 0;
+	scheduler.tareasB.cantidad_tareas = 0;
 
-	scheduler.tareas_System[0] = (uint*) 0x68; //inicial
-	scheduler.tareas_system[1] = (uint*) 0x70; //idle
+	scheduler.tareas_systema[0] = (uint*) 0x68; //inicial
+	scheduler.tareas_systema[1] = (uint*) 0x70; //idle
 
 	scheduler.tareaActual = 5;
 }
 
 uint* sched_tick(){
-	if ((scheduler.tareaActual == JUGADOR_A) && (scheduler.tareasB.cant_tareas > 0)) {
+	if ((scheduler.tareaActual == JUGADOR_A) && (scheduler.tareasB.cantidad_tareas > 0)) {
 		scheduler.tareaActual = JUGADOR_B;
-		return (proximaTarea(Jugador_B));
-	} else if (scheduler.tareasA.cant_tareas > 0){
+		return (proximaTarea(scheduler.tareasB));
+	} else if (scheduler.tareasA.cantidad_tareas > 0){
 		scheduler.tareaActual = JUGADOR_A;
-		return (proximaTarea(Jugador_A));
+		return (proximaTarea(scheduler.tareasA));
 	}
 	return NULL;
 }
@@ -59,8 +59,8 @@ void agregar_tarea(uint* selector, uint jugador){
 void colocar_nueva_tarea(uint* selector, tarea_scheduler jugador){
 	if (jugador.cantidad_tareas > 8) {
 		do {
-			tarea.pos++;
-			if (tarea.pos == 8) { tarea.pos = 0; }
+			jugador.pos++;
+			if (jugador.pos == 8) { jugador.pos = 0; }
 		} while(jugador.tareas[jugador.pos] != NULL);
 		
 		jugador.tareas[jugador.pos] = selector;
