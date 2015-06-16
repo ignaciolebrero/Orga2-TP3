@@ -76,7 +76,8 @@ diezocho_mr_msg		dw 'Machine Check ',0
 dieznueve_mr_msg	dw 'SIMD floating-Point Exception ',0
 veinte_mr_msg		dw 'Virtualization Exception ',0
 
-
+selector: dd 0
+offset:   dw 0
 ;;
 ;; Definición de MACROS
 ;; -------------------------------------------------------------------------- ;;
@@ -206,8 +207,8 @@ _isr32:
 	cmp ax, cx
 	je .fin
 
-	;mov [], ax
-	;jmp far []
+	mov [selector], ax
+	jmp far [offset]
 	;offset - 32bits de 0
 	
 	.fin:	

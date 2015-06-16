@@ -30,6 +30,7 @@ iniciando_mp_len equ    $ - iniciando_mp_msg
 
 iniciando_gr_msg db     'Grupo Crash Bash'
 iniciando_gr_len equ    $ - iniciando_gr_msg 
+
 ;;
 ;; Seccion de código.
 ;; -------------------------------------------------------------------------- ;;
@@ -57,9 +58,9 @@ start:
     lgdt [GDT_DESC]
 
     ; Setear el bit PE del registro CR0
-    MOV eax,cr0
-    OR  eax,1
-    MOV cr0,eax
+    mov eax,cr0
+    or  eax,1
+    mov cr0,eax
     ; Saltar a modo protegido
     jmp 0x40:modoprotegido
     
@@ -109,8 +110,7 @@ BITS 32
     call mmu_inicializar
     
     ; Inicializar tss de la tarea Idle
-    call inicializar_dir_pirata
-    ; mover el cr3 actual por el elemento que devuelve la funcion, en teoria lo hace en la pila, no?
+    call tss_inicializar
     
     ; Inicializar el scheduler
     call inicializar_scheduler
@@ -127,7 +127,6 @@ BITS 32
     out 0x21, al
 
     ; Cargar tarea inicial
-    call tss_inicializar ;en el punto b) y c) las direcciones son las virtuales o las fisicas?? supongo que las virtuales porque ya activamos paginacion :P
     mov ax, 0x68
     ltr ax
 
@@ -138,7 +137,7 @@ BITS 32
 
     ; Saltar a la primera tarea: Idle
     xchg bx, bx
-    jmp 0x70
+    jmp far [0x70]
 
     ; Ciclar infinitamente (por si algo sale mal...)
     mov eax, 0xFFFF

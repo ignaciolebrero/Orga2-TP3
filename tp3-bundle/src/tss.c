@@ -33,41 +33,41 @@ void inicializar_idle_cr3(){ //punto B, creo que esta "bien" hecho
 
 void tss_inicializar() {
 	//tss inicial es basura(no nos importa)
-	tss_inicial.ptl 	 = 0;
-	tss_inicial.unused0  = 0;
-    tss_inicial.esp0 	 = 0;
-    tss_inicial.ss0 	 = 0;
+	  tss_inicial.ptl 	   = 0;
+	  tss_inicial.unused0  = 0;
+    tss_inicial.esp0 	   = 0;
+    tss_inicial.ss0 	   = 0;
     tss_inicial.unused1  = 0;
-    tss_inicial.esp1 	 = 0;
-    tss_inicial.ss1 	 = 0;
+    tss_inicial.esp1 	   = 0;
+    tss_inicial.ss1 	   = 0;
     tss_inicial.unused2  = 0;
-    tss_inicial.esp2 	 = 0;
-    tss_inicial.ss2 	 = 0;
+    tss_inicial.esp2 	   = 0;
+    tss_inicial.ss2 	   = 0;
     tss_inicial.unused3  = 0;
-    tss_inicial.cr3 	 = 0;
-    tss_inicial.eip 	 = 0;
+    tss_inicial.cr3 	   = 0;
+    tss_inicial.eip 	   = 0;
     tss_inicial.eflags   = 0;
-    tss_inicial.eax 	 = 0;
-    tss_inicial.ecx 	 = 0;
-    tss_inicial.edx 	 = 0;
-    tss_inicial.ebx 	 = 0;
-    tss_inicial.esp 	 = 0;
-    tss_inicial.ebp 	 = 0;
-    tss_inicial.esi 	 = 0;
-    tss_inicial.edi 	 = 0;
-    tss_inicial.es 		 = 0;
+    tss_inicial.eax 	   = 0;
+    tss_inicial.ecx 	   = 0;
+    tss_inicial.edx 	   = 0;
+    tss_inicial.ebx 	   = 0;
+    tss_inicial.esp 	   = 0;
+    tss_inicial.ebp 	   = 0;
+    tss_inicial.esi 	   = 0;
+    tss_inicial.edi 	   = 0;
+    tss_inicial.es 		   = 0;
     tss_inicial.unused4  = 0;
-    tss_inicial.cs 		 = 0;
+    tss_inicial.cs 		   = 0;
     tss_inicial.unused5  = 0;
-    tss_inicial.ss 		 = 0;
+    tss_inicial.ss 		   = 0;
     tss_inicial.unused6  = 0;
-    tss_inicial.ds 		 = 0;
+    tss_inicial.ds 		   = 0;
     tss_inicial.unused7  = 0;
-    tss_inicial.fs 		 = 0;
+    tss_inicial.fs 		   = 0;
     tss_inicial.unused8  = 0;
-    tss_inicial.gs 		 = 0;
+    tss_inicial.gs 		   = 0;
     tss_inicial.unused9  = 0;
-    tss_inicial.ldt 	 = 0;
+    tss_inicial.ldt 	   = 0;
     tss_inicial.unused10 = 0;
     tss_inicial.dtrap 	 = 0;
     tss_inicial.iomap 	 = 0; 
@@ -82,7 +82,7 @@ void tss_inicializar() {
 
     //TODO: arreglar los get
     tss_idle.ptl 	  = 0;// (uint) get_ptl();
-	tss_idle.unused0  = 0;
+	  tss_idle.unused0  = 0;
     tss_idle.esp0 	  = 0x27000;
     tss_idle.ss0 	  = 0;
     tss_idle.unused1  = 0;
@@ -92,9 +92,9 @@ void tss_inicializar() {
     tss_idle.esp2 	  = 0;
     tss_idle.ss2 	  = 0;
     tss_idle.unused3  = 0;
-    tss_idle.cr3 	  = 0;// (uint) get_cr3();
+    tss_idle.cr3 	  = 0x27000;// (uint) get_cr3();
     tss_idle.eip 	  = 0;// (uint) get_eip();
-    tss_idle.eflags   = 0;// (uint) get_eflags();
+    tss_idle.eflags = 0;// (uint) get_eflags();
     tss_idle.eax 	  = 0;
     tss_idle.ecx 	  = 0;
     tss_idle.edx 	  = 0;
@@ -146,15 +146,19 @@ uint inicializar_tarea(uint jugador, ushort jugador_posicion){
    jugador_actual[jugador_posicion].esp2     = 0;
    jugador_actual[jugador_posicion].ss2      = (ushort) 0x1000 ;//+ (uint) x;
    jugador_actual[jugador_posicion].unused3  = 0;
-   jugador_actual[jugador_posicion].cr3      = 0;
-   jugador_actual[jugador_posicion].eip      = 0;
+   
+   jugador_actual[jugador_posicion].cr3      = (uint) mmu_gimme_gimme_page_wachin();
+   uint cr3 = jugador_actual[jugador_posicion].cr3;
+   inicializar_dir_pirata(cr3, (uint)0x1000 + jugador + ((uint)0x1000*jugador),  jugador);
+   
+   jugador_actual[jugador_posicion].eip      = 0x400000;
    jugador_actual[jugador_posicion].eflags   = (uint) 0x202;
    jugador_actual[jugador_posicion].eax      = 0;
    jugador_actual[jugador_posicion].ecx      = 0;
    jugador_actual[jugador_posicion].edx      = 0;
    jugador_actual[jugador_posicion].ebx      = 0;
-   jugador_actual[jugador_posicion].esp      = 0;
-   jugador_actual[jugador_posicion].ebp      = 0;
+   jugador_actual[jugador_posicion].esp      = 0x401000-0x12;
+   jugador_actual[jugador_posicion].ebp      = 0x401000-0x12;
    jugador_actual[jugador_posicion].esi      = 0;
    jugador_actual[jugador_posicion].edi      = 0;
    jugador_actual[jugador_posicion].es       = 0;
