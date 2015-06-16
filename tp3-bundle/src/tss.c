@@ -25,7 +25,7 @@ tss tss_jugadorB[MAX_CANT_PIRATAS_VIVOS];
 void inicializar_idle_cr3(){ //punto B, creo que esta "bien" hecho
     uint mem_fisica = (uint) 0x00016000;
     uint mem_virt   = (uint) 0x00016000;
-    uint cr3   = 0x27000;;
+    uint cr3   = 0x27000;
     uint attrs = 0;
 
     mmu_mapear_pagina(mem_virt, cr3, mem_fisica, attrs);
@@ -81,20 +81,20 @@ void tss_inicializar() {
     gdt[13].limit_16_19 = (unsigned char)  ( ((uint) &tss_inicial + (sizeof(tss_inicial) - 1)) >> 16); // pregutnar!!! la estructura lo corta?
 
     //TODO: arreglar los get
-    tss_idle.ptl 	  = 0;// (uint) get_ptl();
+    tss_idle.ptl 	    = 0;
 	  tss_idle.unused0  = 0;
     tss_idle.esp0 	  = 0x27000;
-    tss_idle.ss0 	  = 0;
+    tss_idle.ss0 	    = 0;
     tss_idle.unused1  = 0;
     tss_idle.esp1 	  = 0;
-    tss_idle.ss1 	  = 0;
+    tss_idle.ss1 	    = 0;
     tss_idle.unused2  = 0;
     tss_idle.esp2 	  = 0;
-    tss_idle.ss2 	  = 0;
+    tss_idle.ss2 	    = 0;
     tss_idle.unused3  = 0;
-    tss_idle.cr3 	  = 0x27000;// (uint) get_cr3();
-    tss_idle.eip 	  = 0;// (uint) get_eip();
-    tss_idle.eflags = 0;// (uint) get_eflags();
+    tss_idle.cr3 	  = 0x27000;
+    tss_idle.eip 	  = 0x16000;
+    tss_idle.eflags = 0x202;
     tss_idle.eax 	  = 0;
     tss_idle.ecx 	  = 0;
     tss_idle.edx 	  = 0;
@@ -103,17 +103,17 @@ void tss_inicializar() {
     tss_idle.ebp 	  = 0;
     tss_idle.esi 	  = 0;
     tss_idle.edi 	  = 0;
-    tss_idle.es 	  = 0;
+    tss_idle.es 	  = 0x50;
     tss_idle.unused4  = 0;
-    tss_idle.cs 	  = 0;
+    tss_idle.cs 	  = 0x50;
     tss_idle.unused5  = 0;
-    tss_idle.ss 	  = 0;
+    tss_idle.ss 	  = 0x50;
     tss_idle.unused6  = 0;
-    tss_idle.ds 	  = 0;
+    tss_idle.ds 	  = 0x50;
     tss_idle.unused7  = 0;
-    tss_idle.fs 	  = 0;
+    tss_idle.fs 	  = 0x50;
     tss_idle.unused8  = 0;
-    tss_idle.gs 	  = 0;
+    tss_idle.gs 	  = 0x50;
     tss_idle.unused9  = 0;
     tss_idle.ldt 	  = 0;
     tss_idle.unused10 = 0;
@@ -129,7 +129,7 @@ void tss_inicializar() {
     gdt[14].limit_16_19 = (unsigned char)  ( ((uint) &tss_idle + (sizeof(tss_idle) - 1)) >> 16); // pregutnar!!! la estructura lo corta?
 
     //setea dir virtual de la tarea idle en la tabla de directorios de paginas (cr3) del kernel
-    inicializar_idle_cr3();
+    //inicializar_idle_cr3();
 }
 
 uint inicializar_tarea(uint jugador, ushort jugador_posicion){
@@ -146,7 +146,7 @@ uint inicializar_tarea(uint jugador, ushort jugador_posicion){
    jugador_actual[jugador_posicion].esp2     = 0;
    jugador_actual[jugador_posicion].ss2      = (ushort) 0x1000 ;//+ (uint) x;
    jugador_actual[jugador_posicion].unused3  = 0;
-   
+
    jugador_actual[jugador_posicion].cr3      = (uint) mmu_gimme_gimme_page_wachin();
    uint cr3 = jugador_actual[jugador_posicion].cr3;
    inicializar_dir_pirata(cr3, (uint)0x1000 + jugador + ((uint)0x1000*jugador),  jugador);
@@ -161,17 +161,17 @@ uint inicializar_tarea(uint jugador, ushort jugador_posicion){
    jugador_actual[jugador_posicion].ebp      = 0x401000-0x12;
    jugador_actual[jugador_posicion].esi      = 0;
    jugador_actual[jugador_posicion].edi      = 0;
-   jugador_actual[jugador_posicion].es       = 0;
+   jugador_actual[jugador_posicion].es       = 0x50;
    jugador_actual[jugador_posicion].unused4  = 0;
-   jugador_actual[jugador_posicion].cs       = 0;
+   jugador_actual[jugador_posicion].cs       = 0x48;
    jugador_actual[jugador_posicion].unused5  = 0;
-   jugador_actual[jugador_posicion].ss       = 0;
+   jugador_actual[jugador_posicion].ss       = 0x50;
    jugador_actual[jugador_posicion].unused6  = 0;
-   jugador_actual[jugador_posicion].ds       = 0;
+   jugador_actual[jugador_posicion].ds       = 0x50;
    jugador_actual[jugador_posicion].unused7  = 0;
-   jugador_actual[jugador_posicion].fs       = 0;
+   jugador_actual[jugador_posicion].fs       = 0x50;
    jugador_actual[jugador_posicion].unused8  = 0;
-   jugador_actual[jugador_posicion].gs       = 0;
+   jugador_actual[jugador_posicion].gs       = 0x50;
    jugador_actual[jugador_posicion].unused9  = 0;
    jugador_actual[jugador_posicion].ldt      = 0;
    jugador_actual[jugador_posicion].unused10 = 0;

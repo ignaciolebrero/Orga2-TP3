@@ -157,7 +157,7 @@ gdt_entry gdt[GDT_COUNT] = {
         (unsigned char)     0x00,           /* base[31:24]  */
     },
     
-    [16] = (gdt_entry) {//tss libre ; 0x78
+    [16] = (gdt_entry) {//tss libre ; 0x80
         (unsigned short)    0x0000,         /* limit[0:15]  */
         (unsigned short)    0x0000,         /* base[0:15]   */
         (unsigned char)     0x00,           /* base[23:16]  */
@@ -173,7 +173,7 @@ gdt_entry gdt[GDT_COUNT] = {
         (unsigned char)     0x00,           /* base[31:24]  */
     },
     
-    [17] = (gdt_entry) {//tss libre ; 0x78
+    [17] = (gdt_entry) {//tss libre ; 0x88
         (unsigned short)    0x0000,         /* limit[0:15]  */
         (unsigned short)    0x0000,         /* base[0:15]   */
         (unsigned char)     0x00,           /* base[23:16]  */
@@ -189,7 +189,7 @@ gdt_entry gdt[GDT_COUNT] = {
         (unsigned char)     0x00,           /* base[31:24]  */
     },
     
-    [18] = (gdt_entry) {//tss libre ; 0x78
+    [18] = (gdt_entry) {//tss libre ; 0x90
         (unsigned short)    0x0000,         /* limit[0:15]  */
         (unsigned short)    0x0000,         /* base[0:15]   */
         (unsigned char)     0x00,           /* base[23:16]  */
@@ -205,7 +205,7 @@ gdt_entry gdt[GDT_COUNT] = {
         (unsigned char)     0x00,           /* base[31:24]  */
     },
     
-    [19] = (gdt_entry) {//tss libre ; 0x78
+    [19] = (gdt_entry) {//tss libre ; 0x98
         (unsigned short)    0x0000,         /* limit[0:15]  */
         (unsigned short)    0x0000,         /* base[0:15]   */
         (unsigned char)     0x00,           /* base[23:16]  */
@@ -221,7 +221,7 @@ gdt_entry gdt[GDT_COUNT] = {
         (unsigned char)     0x00,           /* base[31:24]  */
     },
     
-    [20] = (gdt_entry) {//tss libre ; 0x78
+    [20] = (gdt_entry) {//tss libre ; 0xA0
         (unsigned short)    0x0000,         /* limit[0:15]  */
         (unsigned short)    0x0000,         /* base[0:15]   */
         (unsigned char)     0x00,           /* base[23:16]  */
@@ -237,7 +237,7 @@ gdt_entry gdt[GDT_COUNT] = {
         (unsigned char)     0x00,           /* base[31:24]  */
     },
     
-    [21] = (gdt_entry) {//tss libre ; 0x78
+    [21] = (gdt_entry) {//tss libre ; 0xA8
         (unsigned short)    0x0000,         /* limit[0:15]  */
         (unsigned short)    0x0000,         /* base[0:15]   */
         (unsigned char)     0x00,           /* base[23:16]  */
@@ -253,7 +253,7 @@ gdt_entry gdt[GDT_COUNT] = {
         (unsigned char)     0x00,           /* base[31:24]  */
     },
     
-    [22] = (gdt_entry) {//tss libre ; 0x78
+    [22] = (gdt_entry) {//tss libre ; 0xB0
         (unsigned short)    0x0000,         /* limit[0:15]  */
         (unsigned short)    0x0000,         /* base[0:15]   */
         (unsigned char)     0x00,           /* base[23:16]  */
@@ -269,7 +269,7 @@ gdt_entry gdt[GDT_COUNT] = {
         (unsigned char)     0x00,           /* base[31:24]  */
     },
     
-    [23] = (gdt_entry) {//tss libre ; 0x78
+    [23] = (gdt_entry) {//tss libre ; 0xB8
         (unsigned short)    0x0000,         /* limit[0:15]  */
         (unsigned short)    0x0000,         /* base[0:15]   */
         (unsigned char)     0x00,           /* base[23:16]  */
@@ -285,7 +285,7 @@ gdt_entry gdt[GDT_COUNT] = {
         (unsigned char)     0x00,           /* base[31:24]  */
     },
     
-    [24] = (gdt_entry) {//tss libre ; 0x78
+    [24] = (gdt_entry) {//tss libre ; 0xC0
         (unsigned short)    0x0000,         /* limit[0:15]  */
         (unsigned short)    0x0000,         /* base[0:15]   */
         (unsigned char)     0x00,           /* base[23:16]  */
@@ -301,7 +301,7 @@ gdt_entry gdt[GDT_COUNT] = {
         (unsigned char)     0x00,           /* base[31:24]  */
     },
     
-    [25] = (gdt_entry) {//tss libre ; 0x78
+    [25] = (gdt_entry) {//tss libre ; 0xC8
         (unsigned short)    0x0000,         /* limit[0:15]  */
         (unsigned short)    0x0000,         /* base[0:15]   */
         (unsigned char)     0x00,           /* base[23:16]  */
@@ -317,7 +317,7 @@ gdt_entry gdt[GDT_COUNT] = {
         (unsigned char)     0x00,           /* base[31:24]  */
     },
     
-    [26] = (gdt_entry) {//tss libre ; 0x78
+    [26] = (gdt_entry) {//tss libre ; 0xD0
         (unsigned short)    0x0000,         /* limit[0:15]  */
         (unsigned short)    0x0000,         /* base[0:15]   */
         (unsigned char)     0x00,           /* base[23:16]  */
@@ -333,7 +333,7 @@ gdt_entry gdt[GDT_COUNT] = {
         (unsigned char)     0x00,           /* base[31:24]  */
     },
     
-    [27] = (gdt_entry) {//tss libre ; 0x78
+    [27] = (gdt_entry) {//tss libre ; 0xD8
         (unsigned short)    0x0000,         /* limit[0:15]  */
         (unsigned short)    0x0000,         /* base[0:15]   */
         (unsigned char)     0x00,           /* base[23:16]  */
@@ -349,7 +349,7 @@ gdt_entry gdt[GDT_COUNT] = {
         (unsigned char)     0x00,           /* base[31:24]  */
     },
     
-    [28] = (gdt_entry) {//tss libre ; 0x78
+    [28] = (gdt_entry) {//tss libre ; 0xE0
         (unsigned short)    0x0000,         /* limit[0:15]  */
         (unsigned short)    0x0000,         /* base[0:15]   */
         (unsigned char)     0x00,           /* base[23:16]  */
@@ -365,7 +365,7 @@ gdt_entry gdt[GDT_COUNT] = {
         (unsigned char)     0x00,           /* base[31:24]  */
     },
     
-    [29] = (gdt_entry) {//tss libre ; 0x78
+    [29] = (gdt_entry) {//tss libre ; 0xE8
         (unsigned short)    0x0000,         /* limit[0:15]  */
         (unsigned short)    0x0000,         /* base[0:15]   */
         (unsigned char)     0x00,           /* base[23:16]  */

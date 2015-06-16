@@ -136,8 +136,6 @@ BITS 32
     sti
 
     ; Saltar a la primera tarea: Idle
-    xchg bx, bx
-    jmp far [0x70]
 
     ; Ciclar infinitamente (por si algo sale mal...)
     mov eax, 0xFFFF

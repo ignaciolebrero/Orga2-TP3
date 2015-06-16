@@ -20,7 +20,7 @@ LS_INLINE unsigned int syscall_mover(direccion d) {
     __asm __volatile(
         "mov $1, %%eax \n"
         "mov %0, %%ecx \n"
-        "int $0x66     \n"
+        "int $0x46     \n"
         : /* no output*/
         : "m" (d)
         : "eax"
@@ -36,7 +36,7 @@ LS_INLINE unsigned int syscall_cavar() {
 
     __asm __volatile(
         "mov $2, %%eax \n"
-        "int $0x66     \n"
+        "int $0x46     \n"
         : /* no output*/
         :
         : "eax"
@@ -53,7 +53,7 @@ LS_INLINE unsigned int syscall_posicion(int idx) {
     __asm __volatile(
         "mov $3, %%eax \n"
         "mov %0, %%ecx \n"
-        "int $0x66     \n"
+        "int $0x46     \n"
         : /* no output*/
         : "m" (idx)
         : "eax"

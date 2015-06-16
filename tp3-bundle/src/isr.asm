@@ -16,6 +16,9 @@ extern print
 
 BITS 32
 
+selector: dd 0
+offset:   dw 0
+
 ;; Excepciones
 global _isr0
 global _isr1
@@ -76,8 +79,6 @@ diezocho_mr_msg		dw 'Machine Check ',0
 dieznueve_mr_msg	dw 'SIMD floating-Point Exception ',0
 veinte_mr_msg		dw 'Virtualization Exception ',0
 
-selector: dd 0
-offset:   dw 0
 ;;
 ;; Definición de MACROS
 ;; -------------------------------------------------------------------------- ;;
@@ -198,17 +199,18 @@ _isr20:
 
 _isr32:
 	pushad
+	xchg bx,bx
 	call fin_intr_pic1
 	
 	call game_tick
 	call sched_tick ;lo que devuelve es un selector de segmento, no?
 
-	str cx
+	str cx	
 	cmp ax, cx
 	je .fin
 
 	mov [selector], ax
-	jmp far [offset]
+	jmp [offset]
 	;offset - 32bits de 0
 	
 	.fin:	

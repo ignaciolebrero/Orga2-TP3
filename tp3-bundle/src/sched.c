@@ -36,7 +36,7 @@ uint* sched_tick(){
 		scheduler.tareaActual = JUGADOR_A;
 		return (proximaTarea(scheduler.tareasA));
 	}
-	return NULL;
+	return (uint*) (0x70);
 }
 
 uint* proximaTarea(tarea_scheduler tarea) {
