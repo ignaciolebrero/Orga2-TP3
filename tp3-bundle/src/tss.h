@@ -55,6 +55,11 @@ typedef struct str_tss {
     unsigned short  iomap;
 } __attribute__((__packed__, aligned (8))) tss;
 
+ushort obtener_segmento_disponible();
 void tss_inicializar();
+uint inicializar_tarea(uint, ushort);
+tss* tss_obtener_jugador(uint);
+
+
 
 #endif  /* !__TSS_H__ */

@@ -121,54 +121,86 @@ void tss_inicializar() {
     tss_idle.iomap 	  = 0xFFFF;
 
     //setea el segmento de tss idle
-    gdt[14].base_0_15   = (unsigned short) ( (uint) &tss_idle & 0xFFFF);
-    gdt[14].base_23_16  = (unsigned char)  ( (uint) &tss_idle >> 16); 
-    gdt[14].base_31_24  = (unsigned char)  ( (uint) &tss_idle >> 24); 
+    gdt[14].base_0_15   = (unsigned short) ( (uint) &tss_idle & 0xFFFF );
+    gdt[14].base_23_16  = (unsigned char)  ( (uint) &tss_idle >> 16 ); 
+    gdt[14].base_31_24  = (unsigned char)  ( (uint) &tss_idle >> 24 ); 
    
-    gdt[14].limit_0_15  = (unsigned short) ( ((uint) &tss_idle + (sizeof(tss_inicial) - 1)) & 0xFFFF);
-    gdt[14].limit_16_19 = (unsigned char)  ( ((uint) &tss_idle + (sizeof(tss_inicial) - 1)) >> 16); // pregutnar!!! la estructura lo corta?
+    gdt[14].limit_0_15  = (unsigned short) ( ((uint) &tss_idle + (sizeof(tss_idle) - 1)) & 0xFFFF);
+    gdt[14].limit_16_19 = (unsigned char)  ( ((uint) &tss_idle + (sizeof(tss_idle) - 1)) >> 16); // pregutnar!!! la estructura lo corta?
 
     //setea dir virtual de la tarea idle en la tabla de directorios de paginas (cr3) del kernel
     inicializar_idle_cr3();
 }
 
-void inicializar_tarea(uint tarea){
-    tss_jugadorB[tarea].ptl      = 0;
-    tss_jugadorB[tarea].unused0  = 0;
-    tss_jugadorB[tarea].esp0     = (uint) mmu_gimme_gimme_page_wachin();
-    tss_jugadorB[tarea].ss0      = (ushort) 0x27000;
-    tss_jugadorB[tarea].unused1  = 0;
-    tss_jugadorB[tarea].esp1     = 0;
-    tss_jugadorB[tarea].ss1      = 0;
-    tss_jugadorB[tarea].unused2  = 0;
-    tss_jugadorB[tarea].esp2     = 0;
-    tss_jugadorB[tarea].ss2      = (ushort) 0x1000 ;//+ (uint) x;
-    tss_jugadorB[tarea].unused3  = 0;
-    tss_jugadorB[tarea].cr3      = 0;
-    tss_jugadorB[tarea].eip      = 0;
-    tss_jugadorB[tarea].eflags   = (uint) 0x202;
-    tss_jugadorB[tarea].eax      = 0;
-    tss_jugadorB[tarea].ecx      = 0;
-    tss_jugadorB[tarea].edx      = 0;
-    tss_jugadorB[tarea].ebx      = 0;
-    tss_jugadorB[tarea].esp      = 0;
-    tss_jugadorB[tarea].ebp      = 0;
-    tss_jugadorB[tarea].esi      = 0;
-    tss_jugadorB[tarea].edi      = 0;
-    tss_jugadorB[tarea].es       = 0;
-    tss_jugadorB[tarea].unused4  = 0;
-    tss_jugadorB[tarea].cs       = 0;
-    tss_jugadorB[tarea].unused5  = 0;
-    tss_jugadorB[tarea].ss       = 0;
-    tss_jugadorB[tarea].unused6  = 0;
-    tss_jugadorB[tarea].ds       = 0;
-    tss_jugadorB[tarea].unused7  = 0;
-    tss_jugadorB[tarea].fs       = 0;
-    tss_jugadorB[tarea].unused8  = 0;
-    tss_jugadorB[tarea].gs       = 0;
-    tss_jugadorB[tarea].unused9  = 0;
-    tss_jugadorB[tarea].ldt      = 0;
-    tss_jugadorB[tarea].unused10 = 0;
-    tss_jugadorB[tarea].dtrap    = 0;
-    tss_jugadorB[tarea].iomap    = 0;  
+uint inicializar_tarea(uint jugador, ushort jugador_posicion){
+   tss *jugador_actual = tss_obtener_jugador(jugador);
+
+   jugador_actual[jugador_posicion].ptl      = 0;
+   jugador_actual[jugador_posicion].unused0  = 0;
+   jugador_actual[jugador_posicion].esp0     = (uint) mmu_gimme_gimme_page_wachin();
+   jugador_actual[jugador_posicion].ss0      = (ushort) 0x27000;
+   jugador_actual[jugador_posicion].unused1  = 0;
+   jugador_actual[jugador_posicion].esp1     = 0;
+   jugador_actual[jugador_posicion].ss1      = 0;
+   jugador_actual[jugador_posicion].unused2  = 0;
+   jugador_actual[jugador_posicion].esp2     = 0;
+   jugador_actual[jugador_posicion].ss2      = (ushort) 0x1000 ;//+ (uint) x;
+   jugador_actual[jugador_posicion].unused3  = 0;
+   jugador_actual[jugador_posicion].cr3      = 0;
+   jugador_actual[jugador_posicion].eip      = 0;
+   jugador_actual[jugador_posicion].eflags   = (uint) 0x202;
+   jugador_actual[jugador_posicion].eax      = 0;
+   jugador_actual[jugador_posicion].ecx      = 0;
+   jugador_actual[jugador_posicion].edx      = 0;
+   jugador_actual[jugador_posicion].ebx      = 0;
+   jugador_actual[jugador_posicion].esp      = 0;
+   jugador_actual[jugador_posicion].ebp      = 0;
+   jugador_actual[jugador_posicion].esi      = 0;
+   jugador_actual[jugador_posicion].edi      = 0;
+   jugador_actual[jugador_posicion].es       = 0;
+   jugador_actual[jugador_posicion].unused4  = 0;
+   jugador_actual[jugador_posicion].cs       = 0;
+   jugador_actual[jugador_posicion].unused5  = 0;
+   jugador_actual[jugador_posicion].ss       = 0;
+   jugador_actual[jugador_posicion].unused6  = 0;
+   jugador_actual[jugador_posicion].ds       = 0;
+   jugador_actual[jugador_posicion].unused7  = 0;
+   jugador_actual[jugador_posicion].fs       = 0;
+   jugador_actual[jugador_posicion].unused8  = 0;
+   jugador_actual[jugador_posicion].gs       = 0;
+   jugador_actual[jugador_posicion].unused9  = 0;
+   jugador_actual[jugador_posicion].ldt      = 0;
+   jugador_actual[jugador_posicion].unused10 = 0;
+   jugador_actual[jugador_posicion].dtrap    = 0;
+   jugador_actual[jugador_posicion].iomap    = 0xFFFF;
+
+    ushort gdt_posicion = obtener_segmento_disponible();
+
+    //setea segmento libre
+    gdt[gdt_posicion].base_0_15   = (unsigned short) ( (uint) jugador_actual & 0xFFFF );
+    gdt[gdt_posicion].base_23_16  = (unsigned char)  ( (uint) jugador_actual >> 16 ); 
+    gdt[gdt_posicion].base_31_24  = (unsigned char)  ( (uint) jugador_actual >> 24 ); 
+   
+    gdt[gdt_posicion].limit_0_15  = (unsigned short) ( ((uint) jugador_actual + (sizeof(jugador_actual) - 1)) & 0xFFFF);
+    gdt[gdt_posicion].limit_16_19 = (unsigned char)  ( ((uint) jugador_actual + (sizeof(jugador_actual) - 1)) >> 16); // pregutnar!!! la estructura lo corta?
+
+    gdt[gdt_posicion].p   = 1;
+    gdt[gdt_posicion].avl = 1;
+
+    //devuelve selector
+    return (gdt_posicion << 3);
+}
+
+ushort obtener_segmento_disponible(){
+    int i = 15;
+    while( gdt[i].p == 1 ) { i++; }
+    return i;
+}
+
+tss* tss_obtener_jugador(uint jugador){
+    tss* jugador_actual = (tss*) (&tss_jugadorA);
+    if (jugador == JUGADOR_B) { 
+        jugador_actual = (tss*) &tss_jugadorB; 
+    }
+    return jugador_actual;
 }

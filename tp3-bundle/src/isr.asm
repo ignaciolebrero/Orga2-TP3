@@ -224,15 +224,13 @@ _isr33:
 	je .rutinars
 
 _isr33.rutinals:
-	;push JUGADOR_A
-	;push selector de la nueva tarea
-	;call agregar_tarea
+	push 0;jugadorA
+	call agregar_tarea
 	jmp pop	
 
 _isr33.rutinars:
-	;push JUGADOR_B
-	;push selector de la nueva tarea
-	;call agregar_tarea
+	push 1;jugadorB
+	call agregar_tarea
 	jmp pop
 
 pop:
