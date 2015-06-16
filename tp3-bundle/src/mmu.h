@@ -30,10 +30,12 @@ uint* mmu_gimme_gimme_page_wachin();
 
 void mmu_inicializar();
 
-void inicializar_dir_pirata(uint cr3, uint fisicmem, uint elteam);
+void inicializar_dir_pirata(uint* cr3, uint fisicmem, uint elteam);
 	
 void mmu_mapear_pagina(uint virt, uint cr3, uint fisica, uint attrs);
 
 void mmu_unmapear_pagina(uint virt, uint cr3);
+
+void init_table(uint* table);
 
 #endif	/* !__MMU_H__ */

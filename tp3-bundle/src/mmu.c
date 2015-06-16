@@ -36,14 +36,13 @@ uint* mmu_gimme_gimme_page_wachin(){
 	uint* result = NULL;
 	if (paginas_libres.cantidad > 0) {
 		result = paginas_libres.primera_libre;
-		
 		paginas_libres.primera_libre += (uint) 0x1000; //0x1000 es unapagina en memoria, sera asi??
 		paginas_libres.cantidad --;
 	} 
 	return result;
 }
 
-void inicializar_dir_pirata(uint cr3, uint fisicmem, uint elteam){
+void inicializar_dir_pirata(uint* cr3, uint fisicmem, uint elteam){
 	uint* pageDirectory = mmu_gimme_gimme_page_wachin();
 
 	//inicializa pagedirectory sin entradas
@@ -51,21 +50,20 @@ void inicializar_dir_pirata(uint cr3, uint fisicmem, uint elteam){
 	for(i=0; i<1024 ; i++){
 		*(pageDirectory + i) = (uint) 0x02;
 	}
-
-	mmu_mapear_pagina((uint) 0x4000, cr3, fisicmem, (uint) 0x3); //mapea la direccion de codigo a 0x4000 //los atributos son 0x03?
-	cr3 = (uint) pageDirectory; //esto es asi directo?????????
+	*cr3 = (uint) pageDirectory; //esto es asi directo?????????
+	mmu_mapear_pagina((uint) 0x4000, *cr3, fisicmem, (uint) 0x3); //mapea la direccion de codigo a 0x4000 //los atributos son 0x03?
 	if (elteam == JUGADOR_A) {
-		mmu_mapear_pagina( (uint) 0x800000, cr3, (uint) 0x500000, (uint) 0x03);
+		mmu_mapear_pagina( (uint) 0x800000, *cr3, (uint) 0x500000, (uint) 0x03);
 
-		mmu_mapear_pagina( (uint) 0x800000 + (uint) 0x1000 * 01, cr3, (uint) 0x500000 + (uint) 0x1000 * 01, (uint) 0x03);
-		mmu_mapear_pagina( (uint) 0x800000 + (uint) 0x1000 * 80, cr3, (uint) 0x500000 + (uint) 0x1000 * 80, (uint) 0x03);
-		mmu_mapear_pagina( (uint) 0x800000 + (uint) 0x1000 * 81, cr3, (uint) 0x500000 + (uint) 0x1000 * 81, (uint) 0x03);
+		mmu_mapear_pagina( (uint) 0x800000 + (uint) 0x1000 * 01, *cr3, (uint) 0x500000 + (uint) 0x1000 * 01, (uint) 0x03);
+		mmu_mapear_pagina( (uint) 0x800000 + (uint) 0x1000 * 80, *cr3, (uint) 0x500000 + (uint) 0x1000 * 80, (uint) 0x03);
+		mmu_mapear_pagina( (uint) 0x800000 + (uint) 0x1000 * 81, *cr3, (uint) 0x500000 + (uint) 0x1000 * 81, (uint) 0x03);
 	} else {
-		mmu_mapear_pagina( (uint) 0x1520000, cr3, (uint) 0x121FFFF, (uint) 0x03);
-
-		mmu_mapear_pagina( (uint) 0x1520000 - (uint) 0x1000 * 01, cr3, (uint) 0x121FFFF - (uint) 0x1000 * 01, (uint) 0x03);
-		mmu_mapear_pagina( (uint) 0x1520000 - (uint) 0x1000 * 80, cr3, (uint) 0x121FFFF - (uint) 0x1000 * 80, (uint) 0x03);
-		mmu_mapear_pagina( (uint) 0x1520000 - (uint) 0x1000 * 81, cr3, (uint) 0x121FFFF - (uint) 0x1000 * 81, (uint) 0x03);
+		mmu_mapear_pagina( ((uint) 0x1520000-1), *cr3, ((uint) 0x121FFFF-1), (uint) 0x03);
+		
+		mmu_mapear_pagina( ((uint) 0x1520000-1) - (uint) 0x1000 * 01, *cr3, ((uint) 0x121FFFF-1) - (uint) 0x1000 * 01, (uint) 0x03);
+		mmu_mapear_pagina( ((uint) 0x1520000-1) - (uint) 0x1000 * 80, *cr3, ((uint) 0x121FFFF-1) - (uint) 0x1000 * 80, (uint) 0x03);
+		mmu_mapear_pagina( ((uint) 0x1520000-1) - (uint) 0x1000 * 81, *cr3, ((uint) 0x121FFFF-1) - (uint) 0x1000 * 81, (uint) 0x03);
 	}	
 }
 
@@ -76,16 +74,18 @@ void mmu_mapear_pagina(uint virt, uint cr3, uint fisica, uint attrs){
 	PTE_INDEX(virt, pageTableOffset);
 
 	//recorre directorios
-	uint*  pageTable = (uint*)  ( *( (uint*) (pageDirectory + pageDirOffset))); // limpio atributos
+	uint*  pageTable = (uint*) *( (uint*) (pageDirectory + pageDirOffset)); // limpio atributos
 
 	//revisa si existe la pagina
 	uint presentBit = *pageTable & 1;	
 	if (presentBit == 0) { //preguntar por el bit de presente
 		pageTable  = mmu_gimme_gimme_page_wachin();
-		* (uint*) (*( (uint*) pageDirectory) + pageDirOffset) = (uint) pageTable; //preguntar por esto......es muy turbio
+		init_table(pageTable);
+		breakpoint();
+		* (uint*) *( (uint*) (pageDirectory + pageDirOffset)) = (uint) pageTable + 0x3; //preguntar por esto......es muy turbio
 	}
 	
-	uint** page	= (uint**) *( (uint*) ((uint) pageTable + pageTableOffset));	
+	uint** page	= (uint**) *( (uint*) ((uint) pageTable + pageTableOffset));
 
 	//arma pagina
 	uint* pageSegment = (uint*) (fisica + attrs); 
@@ -118,9 +118,7 @@ void mmu_inicializar_dir_kernel(){
 	uint* pageDirectory = (uint*) KERNEL_PAGE_DIRECTORY;
 	uint* pageTable 	= (uint*) KERNEL_PAGE_TABLE;
 
-	for(i=0; i<1024; i++){
-		*(pageDirectory + i) = (uint) 0x2;
-	}
+	init_table(pageDirectory);
 
 	for(i=0; i<3; i++){
 		*(pageDirectory + i) = ((uint) 0x28000 + (i * (uint)0x1000) ) + 0x3;
@@ -132,3 +130,10 @@ void mmu_inicializar_dir_kernel(){
 		pageTable += (uint) 0x1000;
 	}
 }
+
+void init_table(uint* table){
+	uint i;
+	for(i=0; i<1024; i++){
+		*(table + i) = (uint) 0x2;
+	}
+} 

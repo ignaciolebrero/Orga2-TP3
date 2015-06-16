@@ -6,6 +6,7 @@ extern GDT_DESC
 extern IDT_DESC
 extern resetear_pic
 extern habilitar_pic
+extern agregar_tarea
 extern idt_inicializar
 extern tss_inicializar
 extern mmu_inicializar
@@ -136,6 +137,12 @@ BITS 32
     sti
 
     ; Saltar a la primera tarea: Idle
+    ;xchg bx,bx
+    ;push 0
+    ;call agregar_tarea
+    ;jmp far [0x78]
+    xchg bx,bx
+    jmp 0x70:0
 
     ; Ciclar infinitamente (por si algo sale mal...)
     mov eax, 0xFFFF

@@ -84,7 +84,7 @@ void tss_inicializar() {
     tss_idle.ptl 	    = 0;
 	  tss_idle.unused0  = 0;
     tss_idle.esp0 	  = 0x27000;
-    tss_idle.ss0 	    = 0;
+    tss_idle.ss0 	    = 0x50;
     tss_idle.unused1  = 0;
     tss_idle.esp1 	  = 0;
     tss_idle.ss1 	    = 0;
@@ -99,13 +99,13 @@ void tss_inicializar() {
     tss_idle.ecx 	  = 0;
     tss_idle.edx 	  = 0;
     tss_idle.ebx 	  = 0;
-    tss_idle.esp 	  = 0;
-    tss_idle.ebp 	  = 0;
+    tss_idle.esp 	  = 0x27000;
+    tss_idle.ebp 	  = 0x27000;
     tss_idle.esi 	  = 0;
     tss_idle.edi 	  = 0;
     tss_idle.es 	  = 0x50;
     tss_idle.unused4  = 0;
-    tss_idle.cs 	  = 0x50;
+    tss_idle.cs 	  = 0x40;
     tss_idle.unused5  = 0;
     tss_idle.ss 	  = 0x50;
     tss_idle.unused6  = 0;
@@ -146,9 +146,8 @@ uint inicializar_tarea(uint jugador, ushort jugador_posicion){
    jugador_actual[jugador_posicion].esp2     = 0;
    jugador_actual[jugador_posicion].ss2      = (ushort) 0x1000 ;//+ (uint) x;
    jugador_actual[jugador_posicion].unused3  = 0;
-
-   jugador_actual[jugador_posicion].cr3      = (uint) mmu_gimme_gimme_page_wachin();
-   uint cr3 = jugador_actual[jugador_posicion].cr3;
+   
+   uint* cr3 = &jugador_actual[jugador_posicion].cr3;
    inicializar_dir_pirata(cr3, (uint)0x1000 + jugador + ((uint)0x1000*jugador),  jugador);
    
    jugador_actual[jugador_posicion].eip      = 0x400000;
@@ -188,8 +187,7 @@ uint inicializar_tarea(uint jugador, ushort jugador_posicion){
     gdt[gdt_posicion].limit_0_15  = (unsigned short) ( ((uint) jugador_actual + (sizeof(jugador_actual) - 1)) & 0xFFFF);
     gdt[gdt_posicion].limit_16_19 = (unsigned char)  ( ((uint) jugador_actual + (sizeof(jugador_actual) - 1)) >> 16); // pregutnar!!! la estructura lo corta?
 
-    gdt[gdt_posicion].p   = 1;
-    gdt[gdt_posicion].avl = 1;
+    gdt[gdt_posicion].p = 1;
 
     //devuelve selector
     return (gdt_posicion << 3);

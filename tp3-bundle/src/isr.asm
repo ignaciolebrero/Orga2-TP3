@@ -199,7 +199,6 @@ _isr20:
 
 _isr32:
 	pushad
-	xchg bx,bx
 	call fin_intr_pic1
 	
 	call game_tick
@@ -209,6 +208,7 @@ _isr32:
 	cmp ax, cx
 	je .fin
 
+	xchg bx,bx
 	mov [selector], ax
 	jmp [offset]
 	;offset - 32bits de 0
@@ -238,6 +238,7 @@ _isr33.rutinars:
 
 pop:
 	popad
+	xchg bx, bx
 	iret
 
 _isr70:

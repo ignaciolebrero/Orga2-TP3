@@ -49,6 +49,11 @@ uint* proximaTarea(tarea_scheduler tarea) {
 }
 
 void agregar_tarea(uint jugador){
+	if(hay_tareas_disponibles(&scheduler.tareasA) == FALSE
+	&& hay_tareas_disponibles(&scheduler.tareasB) == FALSE){
+		scheduler.tareaActual = jugador;
+	}
+
 	tarea_scheduler* jugador_actual = scheduler_obtener_jugador(jugador);
 	if ( hay_tareas_disponibles(jugador_actual) == TRUE ){
 		ushort posicion_jugador;
