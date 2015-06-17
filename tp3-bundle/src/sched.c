@@ -13,80 +13,77 @@ sched_tareas scheduler;
 void inicializar_scheduler(){
 	int i;
 	for(i=0; i<8; i++){
-		scheduler.tareasA.tareas[i] = 0;
-		scheduler.tareasB.tareas[i] = 0;
+		scheduler.jugador_A.tareas[i].selector = NULL;
+		scheduler.jugador_B.tareas[i].selector = NULL;
+		scheduler.jugador_A.tareas[i].id = NULL_ID;
+		scheduler.jugador_B.tareas[i].id = NULL_ID;
+
 	}
 
-	scheduler.tareasA.pos = -1;
-	scheduler.tareasB.pos = -1;
-	scheduler.tareasA.cantidad_tareas = 0;
-	scheduler.tareasB.cantidad_tareas = 0;
+	scheduler.jugador_A.pos = -1;
+	scheduler.jugador_B.pos = -1;
+	scheduler.jugador_A.cantidad_tareas = 0;
+	scheduler.jugador_B.cantidad_tareas = 0;
 
 	scheduler.tareas_systema[0] = (uint*) 0x68; //inicial
 	scheduler.tareas_systema[1] = (uint*) 0x70; //idle
 
-	scheduler.tareaActual = 5;
+	scheduler.tarea_actual = 5;
+	scheduler.id_actual    = 0;
 }
 
 uint* sched_tick(){
-	if ((scheduler.tareaActual == JUGADOR_A) && (scheduler.tareasB.cantidad_tareas > 0)) {
-		scheduler.tareaActual = JUGADOR_B;
-		return (proximaTarea(scheduler.tareasB));
-	} else if (scheduler.tareasA.cantidad_tareas > 0){
-		scheduler.tareaActual = JUGADOR_A;
-		return (proximaTarea(scheduler.tareasA));
+	if ((scheduler.tarea_actual == JUGADOR_A) && (scheduler.jugador_B.cantidad_tareas > 0)) {
+		scheduler.tarea_actual = JUGADOR_B;
+		return proximaTarea(scheduler.jugador_B);
+	} else if (scheduler.jugador_A.cantidad_tareas > 0){
+		scheduler.tarea_actual = JUGADOR_A;
+		return proximaTarea(scheduler.jugador_A);
 	}
-	return (uint*) (0x70);
+	return (uint*) 0x70;
 }
 
 uint* proximaTarea(tarea_scheduler tarea) {
 	do {
 		tarea.pos++;
 		if (tarea.pos == 8) { tarea.pos = 0; }
-	} while (tarea.tareas[tarea.pos] == 0);
+	} while (tarea.tareas[tarea.pos].id == NULL_ID);
 	
-	return tarea.tareas[tarea.pos];
+	return tarea.tareas[tarea.pos].selector;
 }
 
-void agregar_tarea(uint jugador){
-	if(hay_tareas_disponibles(&scheduler.tareasA) == FALSE
-	&& hay_tareas_disponibles(&scheduler.tareasB) == FALSE){
-		scheduler.tareaActual = jugador;
+void sched_agregar_tarea(uint jugador, uint posicion_jugador){
+	if(sched_hay_tareas_disponibles(&scheduler.jugador_A) == FALSE
+	&& sched_hay_tareas_disponibles(&scheduler.jugador_B) == FALSE){
+		scheduler.tarea_actual = jugador;
 	}
 
 	tarea_scheduler* jugador_actual = scheduler_obtener_jugador(jugador);
-	if ( hay_tareas_disponibles(jugador_actual) == TRUE ){
-		ushort posicion_jugador;
+	if ( sched_hay_tareas_disponibles(jugador_actual) == TRUE ){
 		uint   selector;
 
-		posicion_jugador = obtener_posicion_libre(jugador_actual);
-		selector 		 = inicializar_tarea(jugador, posicion_jugador);
-		colocar_nueva_tarea(selector, jugador_actual, posicion_jugador);
+		selector = inicializar_tarea(jugador, posicion_jugador);
+		sched_colocar_nueva_tarea(selector, jugador_actual, posicion_jugador);
 	}
 }
 
-void colocar_nueva_tarea(uint selector, tarea_scheduler* jugador, ushort posicion_jugador){
-	(*jugador).tareas[posicion_jugador] = (uint*) selector;
+void sched_colocar_nueva_tarea(uint selector, tarea_scheduler* jugador, ushort posicion_jugador){
+	(*jugador).tareas[posicion_jugador].selector = (uint*) selector;
+	(*jugador).tareas[posicion_jugador].id 		 = scheduler.id_actual;
 	(*jugador).cantidad_tareas++;
-}
 
-ushort obtener_posicion_libre(tarea_scheduler* jugador_actual){
-    ushort i = 0;
-    while( (*jugador_actual).tareas[i] != 0 ) { i++; } //TODO: revisar! esta chequeando por si iomap esta en cero, cuando desseteamos la tarea esto deberia ir en 0, hay otra manera de hacerlo??
-    return i;
+	scheduler.id_actual = (scheduler.id_actual + 1) % MAX_ID; //por ahi hay que matar el id
 }
 
 tarea_scheduler* scheduler_obtener_jugador(uint jugador){
-	tarea_scheduler* jugador_actual;
 	if (jugador == JUGADOR_A) {
-		jugador_actual = (tarea_scheduler*) &scheduler.tareasA; 
+		return (tarea_scheduler*) &scheduler.jugador_A; 
 	} else {
-		jugador_actual = (tarea_scheduler*) &scheduler.tareasB;
+		return (tarea_scheduler*) &scheduler.jugador_B;
 	}
-	return jugador_actual;
 }
 
-char hay_tareas_disponibles(tarea_scheduler* jugador_actual){
-	char result = (*jugador_actual).cantidad_tareas < 8;
-	return result;
+
+char sched_hay_tareas_disponibles(tarea_scheduler* jugador){
+	return jugador->cantidad_tareas > 0;
 }

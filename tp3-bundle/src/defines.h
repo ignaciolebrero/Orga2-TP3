@@ -22,22 +22,21 @@ typedef unsigned int   uint;
 
 /* Constantes basicas */
 /* -------------------------------------------------------------------------- */
-#define PAGE_SIZE               0x00001000
-#define TASK_SIZE               4096
+#define PAGE_SIZE   0x00001000
+#define TASK_SIZE   4096
 
-#define BOOTSECTOR              0x00001000 /* direccion fisica de comienzo del bootsector (copiado) */
-#define KERNEL                  0x00001200 /* direccion fisica de comienzo del kernel */
-
+#define BOOTSECTOR  0x00001000 /* direccion fisica de comienzo del bootsector (copiado) */
+#define KERNEL      0x00001200 /* direccion fisica de comienzo del kernel */
 
 /* Indices en la gdt */
 /* -------------------------------------------------------------------------- */
-#define GDT_COUNT 30
+#define GDT_COUNT 32
 
-#define GDT_IDX_NULL_DESC           0
+#define GDT_IDX_NULL_DESC 0
 
 /* Offsets en la gdt */
 /* -------------------------------------------------------------------------- */
-#define GDT_OFF_NULL_DESC           (GDT_IDX_NULL_DESC      << 3)
+#define GDT_OFF_NULL_DESC           (GDT_IDX_NULL_DESC << 3)
 
 /* Selectores de segmentos */
 /* -------------------------------------------------------------------------- */

@@ -200,9 +200,9 @@ ushort obtener_segmento_disponible(){
 }
 
 tss* tss_obtener_jugador(uint jugador){
-    tss* jugador_actual = (tss*) (&tss_jugadorA);
-    if (jugador == JUGADOR_B) { 
-        jugador_actual = (tss*) &tss_jugadorB; 
+    if (jugador == JUGADOR_A) { 
+        return (tss*) &tss_jugadorA;
+    } else {
+        return (tss*) &tss_jugadorB; 
     }
-    return jugador_actual;
 }

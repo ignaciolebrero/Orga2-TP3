@@ -28,6 +28,16 @@ void screen_actualizar_reloj_global()
     screen_pintar(reloj[reloj_global], C_BW, 49, 79);
 }
 
+void screen_actualizar_reloj_pirata(jugador_t *j, pirata_t *pirata){
+    pirata->clock = (pirata->clock + 1) % reloj_size;
+
+    if (j->index == 0) {
+        screen_pintar(reloj[pirata->clock], C_BG_BLUE, 45, 10 + (pirata->id*4) );
+    } else {
+        screen_pintar(reloj[pirata->clock], C_BG_RED , 45, 10 + (pirata->id*4) );
+    }
+}
+
 void screen_pintar(uchar c, uchar color, uint fila, uint columna)
 {
     p[fila][columna].c = c;

@@ -7,9 +7,10 @@
 %include "imprimir.mac"
 
 extern inicializar_dir_pirata
+extern game_syscall_manejar
+extern game_atender_teclado
 extern mmu_mapear_pagina
 extern habilitar_pic
-extern agregar_tarea
 extern resetear_pic
 extern game_tick
 extern print
@@ -197,25 +198,46 @@ _isr20:
 	popad
 	iret
 
+_isr70:
+	pushad
+	mov eax, 0x42
+	popad
+	iret
+
+
+;;
+;; Rutina de atención del RELOJ
+;; -------------------------------------------------------------------------- ;;
+
 _isr32:
 	pushad
-	call fin_intr_pic1
-	
-	call game_tick
-	call sched_tick ;lo que devuelve es un selector de segmento, no?
+		call fin_intr_pic1
+		
+		;str  ax
+		;push ax
+		;call obtener_id_pirata
 
-	str cx	
-	cmp ax, cx
-	je .fin
+		;push ax
+		call game_tick
+		
+		call sched_tick ;lo que devuelve es un selector de segmento, no?
 
-	xchg bx,bx
-	mov [selector], ax
-	jmp [offset]
-	;offset - 32bits de 0
-	
-	.fin:	
+		str cx	
+		cmp ax, cx
+		je .fin
+
+		xchg bx,bx
+		mov [selector], ax
+		jmp [offset]
+		;offset - 32bits de 0
+		
+		.fin:	
 	popad
-iret
+	iret
+
+;;
+;; Rutina de atención del TECLADO
+;; -------------------------------------------------------------------------- ;;
 
 _isr33: 
 	pushad
@@ -228,12 +250,12 @@ _isr33:
 
 _isr33.rutinals:
 	push 0;jugadorA
-	call agregar_tarea
+	call game_atender_teclado
 	jmp pop	
 
 _isr33.rutinars:
 	push 1;jugadorB
-	call agregar_tarea
+	call game_atender_teclado
 	jmp pop
 
 pop:
@@ -241,23 +263,14 @@ pop:
 	xchg bx, bx
 	iret
 
-_isr70:
-	pushad
-	mov eax, 0x42
-	popad
-	iret
-
-
-;;
-;; Rutina de atención del RELOJ
-;; -------------------------------------------------------------------------- ;;
-
-;;
-;; Rutina de atención del TECLADO
-;; -------------------------------------------------------------------------- ;;
-
 ;;
 ;; Rutinas de atención de las SYSCALLS
 ;; -------------------------------------------------------------------------- ;;
 
-
+_isr46:
+	pushad
+		push eax
+		push ecx
+		call game_syscall_manejar
+	popad
+	iret
