@@ -57,7 +57,19 @@ uint game_posicion_valida(int x, int y) {
 
 pirata_t* id_pirata2pirata(uint id_pirata)
 {
-	return piratas[id_pirata];
+	pirata_t* pirata = NULL;
+	uint i = 0;
+	while( (i < 8) && (pirata == NULL) ) {
+		if ( jugadorA.piratas[i]->id == id_pirata ) {
+			pirata = jugadorA.piratas[i];
+		}
+
+		if ( jugadorB.piratas[i]->id == id_pirata ) {
+			pirata = jugadorB.piratas[i];
+		}
+		i++;
+	}
+	return pirata;
 }
 
 uint game_dir2xy(direccion dir, int *x, int *y)
@@ -232,14 +244,14 @@ void game_explorar_posicion(jugador_t *jugador, int c, int f)
 	uint i = 0;
 	for (i=0; i<8; i++){
 		game_pirata_habilitar_posicion(jugador, jugador->piratas[i], c  , f);
+		game_pirata_habilitar_posicion(jugador, jugador->piratas[i], c+1, f);
+		game_pirata_habilitar_posicion(jugador, jugador->piratas[i], c-1, f);
 		game_pirata_habilitar_posicion(jugador, jugador->piratas[i], c  , f-1);
 		game_pirata_habilitar_posicion(jugador, jugador->piratas[i], c  , f+1);
 		game_pirata_habilitar_posicion(jugador, jugador->piratas[i], c+1, f+1);
 		game_pirata_habilitar_posicion(jugador, jugador->piratas[i], c+1, f-1);
 		game_pirata_habilitar_posicion(jugador, jugador->piratas[i], c-1, f+1);
 		game_pirata_habilitar_posicion(jugador, jugador->piratas[i], c-1, f-1);
-		game_pirata_habilitar_posicion(jugador, jugador->piratas[i], c+1, f);
-		game_pirata_habilitar_posicion(jugador, jugador->piratas[i], c-1, f);
 	}
 }
 
@@ -259,8 +271,13 @@ uint game_syscall_cavar(uint id)
 
 uint game_syscall_pirata_posicion(uint id, int idx)
 {
-    // ~ completar ~
-    return 0;
+	pirata_t* pirata;
+    if (idx == -1) {
+    	pirata = id_pirata2pirata(id);
+    } else {
+    	pirata = id_pirata2pirata(idx);
+    }
+    return game_lineal2xy(pirata->pos);
 }
 
 uint game_syscall_manejar(uint syscall, uint param1)
@@ -269,12 +286,12 @@ uint game_syscall_manejar(uint syscall, uint param1)
     //uint posicion;
     switch(syscall){
     	case(0x1):
-    //		dir = param1;
+    	    //dir = param1;
     	break;
     	case(0x2):
     	break;
     	case(0x3):	
-    //		posicion = param1;
+    		//posicion = param1;
     	break;
     }
     return 0;
@@ -290,15 +307,18 @@ pirata_t* game_pirata_en_posicion(uint x, uint y)
 	uint i = 0;
 	while (i<8 && pirata == NULL) {
 		int xl, yl;
+
 		game_dir2xy(jugadorA.piratas[i]->pos, &xl, &yl);
-		if (xl == x && yl == y) {
+		if ( xl == x && yl == y ) {
 			pirata = jugadorA.piratas[i];
 		}
 
 		game_dir2xy(jugadorB.piratas[i]->pos, &xl, &yl);
-		if (xl == x && yl == y) {
+		if ( xl == x && yl == y ) {
 			pirata = jugadorB.piratas[i];
 		}		
+
+		i++;
 	}
 	return pirata;
 }
