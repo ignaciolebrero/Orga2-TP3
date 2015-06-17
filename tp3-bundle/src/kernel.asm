@@ -10,6 +10,7 @@ extern agregar_tarea
 extern idt_inicializar
 extern tss_inicializar
 extern mmu_inicializar
+extern game_inicializar
 extern screen_pintar_rect
 extern screen_inicializar
 extern inicializar_scheduler
@@ -85,12 +86,13 @@ BITS 32
     imprimir_texto_mp iniciando_mp_msg, iniciando_mp_len, 0x07, 2, 0
 
     ; Inicializar el juego
+    call game_inicializar
 
     ; Inicializar pantalla
     call screen_inicializar
 
     ; Inicializar el manejador de memoria
-    ;call mmu_inicializar 
+    call mmu_inicializar 
 
     ; Inicializar el directorio de paginas
     call mmu_inicializar_dir_kernel
