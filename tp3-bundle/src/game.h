@@ -30,22 +30,23 @@ typedef struct juego{
 
 typedef struct pirata_t
 {
-    int  pos;
+    struct jugador_t *jugador;
+    unsigned char type;
     uint index;
     uint id;
     uint clock;
-    unsigned char type;
-    struct jugador_t *jugador;
+    int  pos;
     // id unica, posicion, tipo, reloj
 } pirata_t;
 
 typedef struct jugador_t
 {
-    uint index;
     pirata_t *piratas[MAX_CANT_PIRATAS_VIVOS];
     pirata_t *mineros_pendientes[MAX_CANT_PIRATAS_VIVOS]; // porque hay hasta 8 botines
+    char posiciones_descubiertas[MAPA_ALTO * MAPA_ANCHO];
     uint pos_puerto;
-    //posiciones exploradas
+    uint puntuacion;
+    uint index;
     // coordenadas puerto, posiciones exploradas, mineros pendientes, etc
 } jugador_t;
 
@@ -80,6 +81,6 @@ void game_tick(uint id_pirata);
 void game_terminar_si_es_hora();
 void game_atender_teclado(unsigned char tecla);
 uint game_dir2xy(direccion dir, int *x, int *y);
-
+uint obtener_posicion_botin(uint);
 
 #endif  /* !__GAME_H__ */

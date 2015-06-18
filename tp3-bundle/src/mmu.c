@@ -51,7 +51,6 @@ void inicializar_dir_pirata(uint* cr3, uint fisicmem, uint elteam){
 		*(pageDirectory + i) = (uint) 0x02;
 	}
 	*cr3 = (uint) pageDirectory; //esto es asi directo?????????
-	breakpoint();
 	mmu_mapear_pagina((uint) 0x400000, *cr3, fisicmem, (uint) 0x3); //mapea la direccion de codigo a 0x4000 //los atributos son 0x03?
 	if (elteam == JUGADOR_A) {
 		mmu_mapear_pagina( (uint) 0x800000, *cr3, (uint) 0x500000, (uint) 0x03);
@@ -80,7 +79,6 @@ void mmu_mapear_pagina(uint virt, uint cr3, uint fisica, uint attrs){
 	//revisa si existe la pagina
 	uint presentBit = *pageTable & 1;	
 	if (presentBit == 0) { //preguntar por el bit de presente
-		breakpoint();
 		pageTable  = mmu_gimme_gimme_page_wachin();
 		init_table(pageTable);
 		* (uint*) *( (uint*) (pageDirectory + pageDirOffset)) = (uint) pageTable + 0x3; //preguntar por esto......es muy turbio

@@ -13,15 +13,15 @@ TRABAJO PRACTICO 3 - System Programming - ORGANIZACION DE COMPUTADOR II - FCEN
 #include <stdarg.h>
 
 
-#define POS_INIT_A_X                      1
-#define POS_INIT_A_Y                      1
-#define POS_INIT_B_X         MAPA_ANCHO - 2
-#define POS_INIT_B_Y          MAPA_ALTO - 2
+#define POS_INIT_A_X     		 1
+#define POS_INIT_A_Y     		 1
+#define POS_INIT_B_X     		 MAPA_ANCHO - 2
+#define POS_INIT_B_Y     		 MAPA_ALTO  - 2
 
-#define CANT_POSICIONES_VISTAS            9
-#define MAX_SIN_CAMBIOS                 999
+#define CANT_POSICIONES_VISTAS   9
+#define MAX_SIN_CAMBIOS          999
 
-#define BOTINES_CANTIDAD 8
+#define BOTINES_CANTIDAD 		 8
 
 uint botines[BOTINES_CANTIDAD][3] = { // TRIPLAS DE LA FORMA (X, Y, MONEDAS)
     {30,  3, 50}, {30, 38, 50}, {15, 21, 100}, {45, 21, 100} ,
@@ -45,7 +45,12 @@ uint game_xy2lineal (uint x, uint y) {
 	return (y * MAPA_ANCHO + x);
 }
 
-uint game_lineal2xy (uint pos) {
+void game_lineal2xy (uint pos, int *x, int *y) {
+	*x = pos % MAPA_ANCHO;
+	*y = pos / MAPA_ANCHO;
+}
+
+uint game_lineal2xy_formato (uint pos) {
 	uint x = pos % MAPA_ANCHO;
 	uint y = pos / MAPA_ANCHO;
 	return (y << 8 | x);
@@ -118,6 +123,11 @@ void game_jugador_inicializar_mapa(jugador_t *jug)
 {
 	jug->pos_puerto = 0;
 	jug->pos_puerto = game_xy2lineal(POS_INIT_B_X, POS_INIT_B_Y);
+
+	uint i;
+	for (i=0; i<80*44; i++){
+		jug->posiciones_descubiertas[i] = FALSE;
+	}
 }
 
 void game_inicializar()
@@ -139,6 +149,8 @@ void game_inicializar()
 
 	jugadorA.index = 0;
 	jugadorB.index = 1;
+	jugadorA.puntuacion = 0;
+	jugadorB.puntuacion = 0;
 
 	game.id_proximo_pirata = 0;
 }
@@ -207,7 +219,6 @@ void game_pirata_inicializar(uint type, uint jugador)
 void game_tick(uint id_pirata)
 {
 	if (id_pirata < NULL_ID_PIRATA) {
-		breakpoint();
 		pirata_t* pirata = id_pirata2pirata(id_pirata);
 		screen_actualizar_reloj_pirata(pirata->jugador, pirata);
 	}
@@ -233,8 +244,14 @@ void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, int x, int y)
 
 void game_pirata_habilitar_posicion(jugador_t *j, pirata_t *pirata, int x, int y)
 {
-	if (pirata->id != NULL_ID_PIRATA && game_posicion_valida(x,y)) {
-
+	uint pos = game_xy2lineal(x, y);
+	if ( pirata->id != NULL_ID_PIRATA 
+		 && game_posicion_valida(x,y) 
+		 && !j->posiciones_descubiertas[pos] ){
+			//mapear_posicion(pirata->id, pos); TODO: falta hacer esto en scheduler o tss
+			if( obtener_posicion_botin(pos) < BOTINES_CANTIDAD ) {
+				//game_pirata_inicializar(); TODO: falta modificarla para que ponga en la pila del minero el x e y
+			}
 	}
 }
 
@@ -255,16 +272,41 @@ void game_explorar_posicion(jugador_t *jugador, int c, int f)
 	}
 }
 
-
 uint game_syscall_pirata_mover(uint id, direccion dir)
 {
-    // ~ completar
+    pirata_t* pirata = id_pirata2pirata(id);
+
+	int x, y, pirx, piry;
+	game_dir2xy(dir, &x, &y);
+	game_lineal2xy(pirata->pos, &pirx, &piry);
+
+	if ( game_posicion_valida(x + pirx, y + piry) ) {
+		if ( !pirata->jugador->posiciones_descubiertas[ game_xy2lineal(x + pirx, y + piry) ] ) {
+			if (pirata->type == PIRATA_MINERO) { 
+				game_pirata_exploto(id);
+			} else {
+				game_explorar_posicion(pirata->jugador, x + pirx, y + piry);	
+			}
+		}
+		//mover_codigo_pirata(id, dir); TODO: falta implementarlo en tss o scheduler
+	}
+
     return 0;
 }
 
 uint game_syscall_cavar(uint id)
 {
-    // ~ completar ~
+    pirata_t* pirata = id_pirata2pirata(id);
+
+    uint i = obtener_posicion_botin(pirata->pos);
+
+    if ( i < BOTINES_CANTIDAD ) {
+    	pirata->jugador->puntuacion++;
+    	botines[i][2]--;
+    	if ( botines[i][2] == 0 ) {
+    		game_pirata_exploto(id);
+    	}
+    }
 
 	return 0;
 }
@@ -277,28 +319,46 @@ uint game_syscall_pirata_posicion(uint id, int idx)
     } else {
     	pirata = id_pirata2pirata( (uint) idx);
     }
-    return game_lineal2xy(pirata->pos);
+    return game_lineal2xy_formato(pirata->pos);
 }
 
 uint game_syscall_manejar(uint syscall, uint param1)
 {
-   // direccion dir;
-    //uint posicion;
+    uint posicion, id;
+    direccion dir;
+    id = sched_tarea_actual_id();
+
     switch(syscall){
     	case(0x1):
-    	    //dir = param1;
+    	    dir = param1;
+    	    game_syscall_pirata_mover(id, dir);
     	break;
     	case(0x2):
+    		game_syscall_cavar(id);
     	break;
     	case(0x3):	
-    		//posicion = param1;
+    		posicion = param1;
+    		game_syscall_pirata_posicion(id, posicion);
     	break;
     }
     return 0;
 }
 
+
+uint obtener_posicion_botin(uint posicion){
+	int x, y, i=0;
+	char resultado = FALSE;
+	game_lineal2xy(posicion, &x, &y);
+	while (i < BOTINES_CANTIDAD && resultado == FALSE) {
+		resultado = resultado || ( botines[i][0] == x && botines[i][1] == y && botines[i][2] > 0);
+		i++;
+	}
+	return i;
+}
+
 void game_pirata_exploto(uint id)
 {
+
 }
 
 pirata_t* game_pirata_en_posicion(uint x, uint y)
@@ -308,12 +368,12 @@ pirata_t* game_pirata_en_posicion(uint x, uint y)
 	while (i<8 && pirata == NULL) {
 		int xl, yl;
 
-		game_dir2xy(jugadorA.piratas[i]->pos, &xl, &yl);
+		game_lineal2xy(jugadorA.piratas[i]->pos, &xl, &yl);
 		if ( xl == x && yl == y ) {
 			pirata = jugadorA.piratas[i];
 		}
 
-		game_dir2xy(jugadorB.piratas[i]->pos, &xl, &yl);
+		game_lineal2xy(jugadorB.piratas[i]->pos, &xl, &yl);
 		if ( xl == x && yl == y ) {
 			pirata = jugadorB.piratas[i];
 		}		

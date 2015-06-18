@@ -40,6 +40,7 @@ uint* proximaTarea(tarea_scheduler);
 tarea_scheduler* scheduler_obtener_jugador(uint);
 ushort obtener_posicion_libre(tarea_scheduler*);
 
+uint sched_tarea_actual_id();
 char sched_hay_tareas_en_ejecucion(tarea_scheduler*);
 void inicializar_scheduler();
 void sched_agregar_tarea(uint, uint);

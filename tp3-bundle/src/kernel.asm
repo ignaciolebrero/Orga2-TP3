@@ -139,10 +139,6 @@ BITS 32
     sti
 
     ; Saltar a la primera tarea: Idle
-    ;xchg bx,bx
-    ;push 0
-    ;call agregar_tarea
-    ;jmp far [0x78]
     jmp 0x70:0
 
     ; Ciclar infinitamente (por si algo sale mal...)
