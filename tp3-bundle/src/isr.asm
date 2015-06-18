@@ -211,7 +211,6 @@ _isr70:
 
 _isr32:
 	pushad
-		xchg bx,bx
 		call fin_intr_pic1
 		call sched_tick ;lo que devuelve es un selector de segmento, no?
 
@@ -233,6 +232,7 @@ _isr32:
 
 _isr33: 
 	pushad
+		xchg bx,bx
 	call fin_intr_pic1
 	in  al, 0x60
 	cmp al, 0x2A
