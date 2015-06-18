@@ -57,7 +57,7 @@ typedef struct str_tss {
 
 ushort obtener_segmento_disponible();
 void tss_inicializar();
-uint inicializar_tarea(uint, ushort);
+uint inicializar_tarea(uint, uint);
 tss* tss_obtener_jugador(uint);
 
 

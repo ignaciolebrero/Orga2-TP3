@@ -30,8 +30,8 @@ typedef struct juego{
 
 typedef struct pirata_t
 {
+    int  pos;
     uint index;
-    uint pos;
     uint id;
     uint clock;
     unsigned char type;

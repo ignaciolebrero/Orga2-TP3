@@ -17,7 +17,6 @@ void inicializar_scheduler(){
 		scheduler.jugador_B.tareas[i].selector = NULL;
 		scheduler.jugador_A.tareas[i].id = NULL_ID;
 		scheduler.jugador_B.tareas[i].id = NULL_ID;
-
 	}
 
 	scheduler.jugador_A.pos = -1;
@@ -28,19 +27,29 @@ void inicializar_scheduler(){
 	scheduler.tareas_systema[0] = (uint*) 0x68; //inicial
 	scheduler.tareas_systema[1] = (uint*) 0x70; //idle
 
-	scheduler.tarea_actual = 5;
-	scheduler.id_actual    = 0;
+	scheduler.tarea_actual = 4;
+}
+
+uint proximaTareaId(tarea_scheduler jugador){
+	return jugador.tareas[jugador.pos].id;
 }
 
 uint* sched_tick(){
+	uint* selector;
 	if ((scheduler.tarea_actual == JUGADOR_A) && (scheduler.jugador_B.cantidad_tareas > 0)) {
 		scheduler.tarea_actual = JUGADOR_B;
-		return proximaTarea(scheduler.jugador_B);
+		selector = proximaTarea(scheduler.jugador_B);
+		//game_tick(proximaTareaId(scheduler.jugador_B));
 	} else if (scheduler.jugador_A.cantidad_tareas > 0){
 		scheduler.tarea_actual = JUGADOR_A;
-		return proximaTarea(scheduler.jugador_A);
+		selector = proximaTarea(scheduler.jugador_A);
+		//game_tick(proximaTareaId(scheduler.jugador_A));
+	} else {
+		selector = (uint*) 0x70;
+		game_tick(NULL_ID);
 	}
-	return (uint*) 0x70;
+
+	return selector;
 }
 
 uint* proximaTarea(tarea_scheduler tarea) {
@@ -53,26 +62,22 @@ uint* proximaTarea(tarea_scheduler tarea) {
 }
 
 void sched_agregar_tarea(uint jugador, uint posicion_jugador){
-	if(sched_hay_tareas_disponibles(&scheduler.jugador_A) == FALSE
-	&& sched_hay_tareas_disponibles(&scheduler.jugador_B) == FALSE){
+	if(sched_hay_tareas_en_ejecucion(&scheduler.jugador_A) == FALSE
+	&& sched_hay_tareas_en_ejecucion(&scheduler.jugador_B) == FALSE){
 		scheduler.tarea_actual = jugador;
 	}
-
+	uint   selector;
 	tarea_scheduler* jugador_actual = scheduler_obtener_jugador(jugador);
-	if ( sched_hay_tareas_disponibles(jugador_actual) == TRUE ){
-		uint   selector;
 
-		selector = inicializar_tarea(jugador, posicion_jugador);
-		sched_colocar_nueva_tarea(selector, jugador_actual, posicion_jugador);
-	}
+	selector = inicializar_tarea(jugador, posicion_jugador);
+	sched_colocar_nueva_tarea(selector, jugador_actual, posicion_jugador, jugador);
 }
 
-void sched_colocar_nueva_tarea(uint selector, tarea_scheduler* jugador, ushort posicion_jugador){
-	(*jugador).tareas[posicion_jugador].selector = (uint*) selector;
-	(*jugador).tareas[posicion_jugador].id 		 = scheduler.id_actual;
-	(*jugador).cantidad_tareas++;
+void sched_colocar_nueva_tarea(uint selector, tarea_scheduler* jugador, ushort posicion_jugador, uint numero_jugador){
+	jugador->tareas[posicion_jugador].selector = (uint*) selector;
+	jugador->tareas[posicion_jugador].id 	   = posicion_jugador * (numero_jugador + 1) ;
+	jugador->cantidad_tareas++;
 
-	scheduler.id_actual = (scheduler.id_actual + 1) % MAX_ID; //por ahi hay que matar el id
 }
 
 tarea_scheduler* scheduler_obtener_jugador(uint jugador){
@@ -83,7 +88,6 @@ tarea_scheduler* scheduler_obtener_jugador(uint jugador){
 	}
 }
 
-
-char sched_hay_tareas_disponibles(tarea_scheduler* jugador){
+char sched_hay_tareas_en_ejecucion(tarea_scheduler* jugador){
 	return jugador->cantidad_tareas > 0;
 }

@@ -132,7 +132,7 @@ void tss_inicializar() {
     //inicializar_idle_cr3();
 }
 
-uint inicializar_tarea(uint jugador, ushort jugador_posicion){
+uint inicializar_tarea(uint jugador, uint jugador_posicion){
    tss *jugador_actual = tss_obtener_jugador(jugador);
 
    jugador_actual[jugador_posicion].ptl      = 0;
@@ -148,7 +148,7 @@ uint inicializar_tarea(uint jugador, ushort jugador_posicion){
    jugador_actual[jugador_posicion].unused3  = 0;
    
    uint* cr3 = &jugador_actual[jugador_posicion].cr3;
-   inicializar_dir_pirata(cr3, (uint)0x1000 + jugador + ((uint)0x1000*jugador),  jugador);
+   inicializar_dir_pirata(cr3, (uint)0x10000,  jugador);
    
    jugador_actual[jugador_posicion].eip      = 0x400000;
    jugador_actual[jugador_posicion].eflags   = (uint) 0x202;

@@ -143,7 +143,6 @@ BITS 32
     ;push 0
     ;call agregar_tarea
     ;jmp far [0x78]
-    xchg bx,bx
     jmp 0x70:0
 
     ; Ciclar infinitamente (por si algo sale mal...)

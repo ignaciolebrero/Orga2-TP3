@@ -14,7 +14,7 @@
 #endif	/* !__SCHED_H__ */
 
 #define MAX_ID  15
-#define NULL_ID 16
+#define NULL_ID 17
 
 typedef struct pirata{
 	uint* selector;
@@ -24,13 +24,12 @@ typedef struct pirata{
 typedef struct tarea_scheduler{
 	pirata  tareas[8];
 	ushort  cantidad_tareas;
-	uint 	pos;
+	int 	pos;
 }tarea_scheduler;
 
 typedef struct sched_tareas{
 	uint* tareas_systema[2];
 	uint  tarea_actual;
-	uint  id_actual;
 	tarea_scheduler jugador_A;
 	tarea_scheduler jugador_B;
 } sched_tareas;
@@ -41,7 +40,7 @@ uint* proximaTarea(tarea_scheduler);
 tarea_scheduler* scheduler_obtener_jugador(uint);
 ushort obtener_posicion_libre(tarea_scheduler*);
 
-char sched_hay_tareas_disponibles(tarea_scheduler*);
+char sched_hay_tareas_en_ejecucion(tarea_scheduler*);
 void inicializar_scheduler();
 void sched_agregar_tarea(uint, uint);
-void sched_colocar_nueva_tarea(uint, tarea_scheduler*, ushort);
+void sched_colocar_nueva_tarea(uint, tarea_scheduler*, ushort, uint);

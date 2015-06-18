@@ -36,5 +36,5 @@ message2: db '/'
 message3: db '-'
 message4: db '\'
 
-chirimbolo_open: db '('
+chirimbolo_open:  db '('
 chirimbolo_close: db ')'

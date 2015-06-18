@@ -159,14 +159,14 @@ void game_jugador_inicializar(jugador_t *j)
 ushort game_obtener_posicion_pirata_disponible(jugador_t* jugador)
 {
     ushort i = 0;
-    while( (jugador->piratas[i]->id != NULL_ID_PIRATA) && (i < 8) ) { i++; }
+    while( (jugador->piratas[i]->id == NULL_ID_PIRATA) && (i < 8) ) { i++; }
     return i;
 }
 
 ushort game_obtener_posicion_minero_disponible(jugador_t* jugador)
 {
     ushort i = 0;
-    while( (jugador->mineros_pendientes[i]->id != NULL_ID_MINERO) && (i < 8) ) { i++; }
+    while( (jugador->mineros_pendientes[i]->id == NULL_ID_MINERO) && (i < 8) ) { i++; }
     return i;
 }
 
@@ -206,7 +206,8 @@ void game_pirata_inicializar(uint type, uint jugador)
 
 void game_tick(uint id_pirata)
 {
-	if (id_pirata < 17) {
+	if (id_pirata < NULL_ID_PIRATA) {
+		breakpoint();
 		pirata_t* pirata = id_pirata2pirata(id_pirata);
 		screen_actualizar_reloj_pirata(pirata->jugador, pirata);
 	}
@@ -221,8 +222,7 @@ void game_pirata_relanzar(pirata_t *pirata, jugador_t *j, uint tipo)
 
 void game_jugador_erigir_pirata(uint jugador, pirata_t* pirata, uint posicion_pirata)
 {
-	pirata->id = game.id_proximo_pirata;
-	game.id_proximo_pirata = (game.id_proximo_pirata + 1) % 16;
+	pirata->id = posicion_pirata * (jugador + 1);
     sched_agregar_tarea(jugador, posicion_pirata);
 }
 
@@ -275,7 +275,7 @@ uint game_syscall_pirata_posicion(uint id, int idx)
     if (idx == -1) {
     	pirata = id_pirata2pirata(id);
     } else {
-    	pirata = id_pirata2pirata(idx);
+    	pirata = id_pirata2pirata( (uint) idx);
     }
     return game_lineal2xy(pirata->pos);
 }

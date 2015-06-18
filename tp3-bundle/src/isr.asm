@@ -211,22 +211,14 @@ _isr70:
 
 _isr32:
 	pushad
+		xchg bx,bx
 		call fin_intr_pic1
-		
-		;str  ax
-		;push ax
-		;call obtener_id_pirata
-
-		;push ax
-		call game_tick
-		
 		call sched_tick ;lo que devuelve es un selector de segmento, no?
 
 		str cx	
 		cmp ax, cx
 		je .fin
 
-		xchg bx,bx
 		mov [selector], ax
 		jmp [offset]
 		;offset - 32bits de 0
@@ -247,20 +239,22 @@ _isr33:
 	je .rutinals
 	cmp byte al, 0x36
 	je .rutinars
+	jmp pop
 
 _isr33.rutinals:
 	push 0;jugadorA
 	call game_atender_teclado
+	pop eax
 	jmp pop	
 
 _isr33.rutinars:
 	push 1;jugadorB
 	call game_atender_teclado
+	pop eax
 	jmp pop
 
 pop:
 	popad
-	xchg bx, bx
 	iret
 
 ;;
