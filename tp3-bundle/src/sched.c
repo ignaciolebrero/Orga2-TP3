@@ -81,7 +81,6 @@ void sched_colocar_nueva_tarea(uint selector, tarea_scheduler* jugador, ushort p
 	jugador->tareas[posicion_jugador].selector = (uint*) selector;
 	jugador->tareas[posicion_jugador].id 	   = posicion_jugador * (numero_jugador + 1) ;
 	jugador->cantidad_tareas++;
-
 }
 
 tarea_scheduler* scheduler_obtener_jugador(uint jugador){
@@ -94,4 +93,18 @@ tarea_scheduler* scheduler_obtener_jugador(uint jugador){
 
 char sched_hay_tareas_en_ejecucion(tarea_scheduler* jugador){
 	return jugador->cantidad_tareas > 0;
+}
+
+void scheduler_matar_actual_tarea_pirata(){
+	tarea_scheduler* jugador = scheduler_obtener_jugador(scheduler.tarea_actual);
+	uint* selector = jugador->tareas[jugador->pos].selector;
+
+	//elimino la tarea del jugador
+	jugador->cantidad_tareas--;
+	jugador->tareas[jugador->pos].id = NULL_ID;
+
+	//dejo la tarea la tarea libre en la gdt
+	uint gdtpos = (uint) selector >> 3;
+	gdt[gdtpos].p = 0;
+	//TODO: como voy ahora a la idle?????
 }

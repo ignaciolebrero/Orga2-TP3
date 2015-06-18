@@ -358,7 +358,9 @@ uint obtener_posicion_botin(uint posicion){
 
 void game_pirata_exploto(uint id)
 {
-
+	pirata_t* pirata = id_pirata2pirata(id);
+	pirata->id = NULL_ID_PIRATA;
+	scheduler_matar_actual_tarea_pirata();
 }
 
 pirata_t* game_pirata_en_posicion(uint x, uint y)
