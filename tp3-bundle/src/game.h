@@ -61,7 +61,7 @@ pirata_t* id_pirata2pirata(uint id);
 void game_pirata_inicializar(uint type, uint jugador);
 void game_pirata_erigir(pirata_t *pirata, jugador_t *j, uint tipo);
 void game_pirata_habilitar_posicion(jugador_t *j, pirata_t *pirata, int x, int y);
-void game_pirata_exploto(uint id);
+void game_pirata_exploto();
 
 void game_jugador_inicializar(jugador_t *j);
 void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, int x, int y);

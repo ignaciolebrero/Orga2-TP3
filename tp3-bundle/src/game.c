@@ -283,7 +283,7 @@ uint game_syscall_pirata_mover(uint id, direccion dir)
 	if ( game_posicion_valida(x + pirx, y + piry) ) {
 		if ( !pirata->jugador->posiciones_descubiertas[ game_xy2lineal(x + pirx, y + piry) ] ) {
 			if (pirata->type == PIRATA_MINERO) { 
-				game_pirata_exploto(id);
+				game_pirata_exploto();
 			} else {
 				game_explorar_posicion(pirata->jugador, x + pirx, y + piry);	
 			}
@@ -304,7 +304,7 @@ uint game_syscall_cavar(uint id)
     	pirata->jugador->puntuacion++;
     	botines[i][2]--;
     	if ( botines[i][2] == 0 ) {
-    		game_pirata_exploto(id);
+    		game_pirata_exploto();
     	}
     }
 
@@ -356,9 +356,10 @@ uint obtener_posicion_botin(uint posicion){
 	return i;
 }
 
-void game_pirata_exploto(uint id)
+void game_pirata_exploto()
 {
-	pirata_t* pirata = id_pirata2pirata(id);
+	//TODO: averiguar en cuales excepciones hay que matar al pirata
+	pirata_t* pirata = id_pirata2pirata(sched_tarea_actual_id());
 	pirata->id = NULL_ID_PIRATA;
 	scheduler_matar_actual_tarea_pirata();
 }
