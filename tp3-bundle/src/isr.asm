@@ -9,6 +9,7 @@
 extern inicializar_dir_pirata
 extern game_syscall_manejar
 extern game_atender_teclado
+extern game_pirata_exploto
 extern mmu_mapear_pagina
 extern habilitar_pic
 extern resetear_pic
@@ -80,6 +81,10 @@ diezocho_mr_msg		dw 'Machine Check ',0
 dieznueve_mr_msg	dw 'SIMD floating-Point Exception ',0
 veinte_mr_msg		dw 'Virtualization Exception ',0
 
+;; Debug
+debug_habilitado 	  db 0x0
+pantalla_debug_activa db 0x0
+
 ;;
 ;; Definición de MACROS
 ;; -------------------------------------------------------------------------- ;;
@@ -105,96 +110,115 @@ _isr%1:
 ;TODO:revisar si compila, funciona, eclosiona(?)
 _isr0:
 	pushad
+		;jmp matar_pirata
 	popad
 	iret
 
 _isr1:
 	pushad
+		;jmp matar_pirata
 	popad
 	iret
 
 _isr2:
 	pushad
+		;jmp matar_pirata
 	popad
 	iret
 
 _isr3:
 	pushad
+		;jmp matar_pirata
 	popad
 	iret
 
 _isr4:
 	pushad
+		;jmp matar_pirata
 	popad
 	iret
 
 _isr5:
 	pushad
+		;jmp matar_pirata
 	popad
 	iret
 
 _isr6:
 	pushad
+		;jmp matar_pirata
 	popad
 	iret
 
 _isr7:
 	pushad
+		;jmp matar_pirata
 	popad
 	iret
 
 _isr8:
 	pushad
+		;jmp matar_pirata
 	popad
 	iret
 
 _isr10:
 	pushad
+		;jmp matar_pirata
 	popad
 	iret
 
 _isr11:
 	pushad
+		;jmp matar_pirata
 	popad
 	iret
 
 _isr12:
 	pushad
+		;jmp matar_pirata
 	popad
 	iret
 
 _isr13:
 	pushad
+		;jmp matar_pirata
 	popad
 	iret
 
 _isr14:
 	pushad
+		;jmp matar_pirata
 	popad
 	iret
 
 _isr16:
 	pushad
+		;jmp matar_pirata
 	popad
 	iret
 
 _isr17:
 	pushad
+		;jmp matar_pirata
 	popad
 	iret
 
 _isr18:
 	pushad
+		;jmp matar_pirata
 	popad
 	iret
 
 _isr19:
 	pushad
+		;jmp matar_pirata
 	popad
 	iret
 
 _isr20:
 	pushad
+		;jmp matar_pirata
 	popad
 	iret
 
@@ -211,6 +235,10 @@ _isr70:
 
 _isr32:
 	pushad
+		;mov ax, [pantalla_debug_activa]
+		;cmp ax, 0x1
+		;je .fin
+		
 		xchg bx,bx
 		call fin_intr_pic1
 		call sched_tick ;lo que devuelve es un selector de segmento, no?
@@ -230,15 +258,17 @@ _isr32:
 ;;
 ;; Rutina de atención del TECLADO
 ;; -------------------------------------------------------------------------- ;;
-
+;Está parcialmente la implementacion de la activacion del debugger
 _isr33: 
 	pushad
 	call fin_intr_pic1
 	in  al, 0x60
-	cmp al, 0x2A
+	cmp byte al, 0x2A
 	je .rutinals
 	cmp byte al, 0x36
 	je .rutinars
+	;cmp byte al, 0x-- ;TODO: buscar cual es el codigo de la Y
+ 	;je .rutina_debuger
 	jmp pop
 
 _isr33.rutinals:
@@ -253,6 +283,14 @@ _isr33.rutinars:
 	pop eax
 	jmp pop
 
+;_isr33.rutina_debuger: ;TODO: ver si asi se negaba
+;	mov ax, byte [debug_habilitado]
+;	neg ax
+;	mov byte [debug_habilitado], ax
+
+	
+;	jmp pop
+
 pop:
 	popad
 	iret
@@ -266,5 +304,32 @@ _isr46:
 		push eax
 		push ecx
 		call game_syscall_manejar
+
+		mov ax, 0x70
+		mov [selector], ax ;idle
+		jmp [offset]
 	popad
 	iret
+
+;;
+;; rutina de muerte de pirata
+;; -------------------------------------------------------------------------- ;;
+
+;matar_pirata:
+;	mov ax, byte [debug_habilitado]
+;	cmp ax, 0x0
+;	je  .matar
+;
+;	mov ax, byte [pantalla_debug_activa]
+;	mov ax, 0x1
+;	mov byte [pantalla_debug_activa], ax
+;	call debuggear_tarea
+;	jmp .matar
+
+;matar_pirata.matar:
+;	call game_pirata_exploto
+;	jmp .fin
+
+;matar_pirata.fin:
+;	mov  [selector], 0x70 ;idle
+;	jmp  [offset]
