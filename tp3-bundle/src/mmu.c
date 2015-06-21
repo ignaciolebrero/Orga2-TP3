@@ -42,22 +42,28 @@ uint* mmu_gimme_gimme_page_wachin(){
 	return result;
 }
 
-void inicializar_dir_pirata(uint* cr3, uint fisicmem, uint elteam){
+void inicializar_dir_pirata(uint* cr3, uint fisicmem, uint elteam, uint tipo_pirata){
 	uint* pageDirectory = mmu_gimme_gimme_page_wachin();
 
 	//inicializa pagedirectory sin entradas
-	uint i;
-	for(i=0; i<1024 ; i++){
-		*(pageDirectory + i) = (uint) 0x02;
-	}
+	init_table(pageDirectory);
 	*cr3 = (uint) pageDirectory; //esto es asi directo?????????
-	mmu_mapear_pagina((uint) 0x400000, *cr3, fisicmem, (uint) 0x3); //mapea la direccion de codigo a 0x4000 //los atributos son 0x03?
+	
+	if(tipo_pirata == 0){
+		mmu_mapear_pagina((uint) 0x400000, *cr3, (uint) 0x10000 + ( (uint) 0x2000 * elteam), (uint) 0x3);
+	} else {
+		mmu_mapear_pagina((uint) 0x400000, *cr3, (uint) 0x11000 + ( (uint) 0x2000 * elteam), (uint) 0x3);
+	}
+
+	mmu_mover_codigo_pirata(cr3, (uint*) fisicmem);
+	
 	if (elteam == JUGADOR_A) {
 		mmu_mapear_pagina( (uint) 0x800000, *cr3, (uint) 0x500000, (uint) 0x03);
 
 		mmu_mapear_pagina( (uint) 0x800000 + (uint) 0x1000 * 01, *cr3, (uint) 0x500000 + (uint) 0x1000 * 01, (uint) 0x03);
 		mmu_mapear_pagina( (uint) 0x800000 + (uint) 0x1000 * 80, *cr3, (uint) 0x500000 + (uint) 0x1000 * 80, (uint) 0x03);
 		mmu_mapear_pagina( (uint) 0x800000 + (uint) 0x1000 * 81, *cr3, (uint) 0x500000 + (uint) 0x1000 * 81, (uint) 0x03);
+	breakpoint();
 	} else {
 		mmu_mapear_pagina( ((uint) 0x1520000-1), *cr3, ((uint) 0x121FFFF-1), (uint) 0x03);
 		
@@ -65,7 +71,41 @@ void inicializar_dir_pirata(uint* cr3, uint fisicmem, uint elteam){
 		mmu_mapear_pagina( ((uint) 0x1520000-1) - (uint) 0x1000 * 80, *cr3, ((uint) 0x121FFFF-1) - (uint) 0x1000 * 80, (uint) 0x03);
 		mmu_mapear_pagina( ((uint) 0x1520000-1) - (uint) 0x1000 * 81, *cr3, ((uint) 0x121FFFF-1) - (uint) 0x1000 * 81, (uint) 0x03);
 	}	
+
 }
+
+void mmu_mover_codigo_pirata(uint* cr3, uint* destino){ //TODO: REVISAR
+	page_selector pagina;
+
+	uint pageDirectory = *cr3 & 0XFFFFF000;
+	uint pageDirOffset, pageTableOffset;
+	PDE_INDEX(0x400000, pageDirOffset);
+	PTE_INDEX(0x400000, pageTableOffset);
+
+
+	//recorre directorios
+	uint*  pageTable = (uint*)  *( (uint*) (pageDirectory + pageDirOffset));
+	uint** page		 = (uint**) *( (uint*) ((uint) (pageTable-0x3) + pageTableOffset));
+	
+		breakpoint();
+	uint i;
+	for(i=0; i<1024; i++){
+		pagina.contenido[i] = *( (uint*) ((uint)page - 0x3) + (i * 4) ); //general protaccion, muere aca
+	}
+	
+	mmu_mapear_pagina((uint) 0x400000, *cr3, (uint) destino, 0x3);
+
+	breakpoint();
+	pageTable = (uint*)  *( (uint*) (pageDirectory + pageDirOffset)); // limpio atributos
+	page	  = (uint**) *( (uint*) ((uint) (pageTable-0x3) + pageTableOffset));
+
+	breakpoint();
+	for(i=0; i<1024; i++){
+		*( (uint*) ((uint)page - 0x3 + (i * 4)) ) = pagina.contenido[i];	
+	}
+	breakpoint();
+}
+
 
 void mmu_mapear_pagina(uint virt, uint cr3, uint fisica, uint attrs){
 	uint pageDirectory = cr3 & 0XFFFFF000;
@@ -77,14 +117,14 @@ void mmu_mapear_pagina(uint virt, uint cr3, uint fisica, uint attrs){
 	uint*  pageTable = (uint*) *( (uint*) (pageDirectory + pageDirOffset)); // limpio atributos
 
 	//revisa si existe la pagina
-	uint presentBit = *pageTable & 1;	
+	uint presentBit = (uint)pageTable & 1;	
 	if (presentBit == 0) { //preguntar por el bit de presente
 		pageTable  = mmu_gimme_gimme_page_wachin();
 		init_table(pageTable);
-		* (uint*) *( (uint*) (pageDirectory + pageDirOffset)) = (uint) pageTable + 0x3; //preguntar por esto......es muy turbio
+		*( (uint*) (pageDirectory + pageDirOffset)) = (uint) pageTable + 0x3; //preguntar por esto......es muy turbio
 	}
 	
-	uint** page	= (uint**) *( (uint*) ((uint) pageTable + pageTableOffset));
+	uint** page	= (uint**) ((uint*) ((uint) (pageTable-0x3) + pageTableOffset));
 
 	//arma pagina
 	uint* pageSegment = (uint*) (fisica + attrs); 

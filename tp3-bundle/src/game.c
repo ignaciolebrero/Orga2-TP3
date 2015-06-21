@@ -234,7 +234,7 @@ void game_pirata_relanzar(pirata_t *pirata, jugador_t *j, uint tipo)
 void game_jugador_erigir_pirata(uint jugador, pirata_t* pirata, uint posicion_pirata)
 {
 	pirata->id = posicion_pirata * (jugador + 1);
-    sched_agregar_tarea(jugador, posicion_pirata);
+    sched_agregar_tarea(jugador, posicion_pirata, pirata->type);
 }
 
 

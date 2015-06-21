@@ -26,16 +26,22 @@ typedef struct pageManager{
 
 pageManager paginas_libres; 
 
+typedef struct page_selector{
+	uint contenido[1024];
+} __attribute__((__packed__)) page_selector;
+
 uint* mmu_gimme_gimme_page_wachin();
 
 void mmu_inicializar();
 
-void inicializar_dir_pirata(uint* cr3, uint fisicmem, uint elteam);
+void inicializar_dir_pirata(uint* cr3, uint fisicmem, uint elteam, uint tipo);
 	
 void mmu_mapear_pagina(uint virt, uint cr3, uint fisica, uint attrs);
 
 void mmu_unmapear_pagina(uint virt, uint cr3);
 
 void init_table(uint* table);
+
+void mmu_mover_codigo_pirata(uint* origen, uint* destino);
 
 #endif	/* !__MMU_H__ */

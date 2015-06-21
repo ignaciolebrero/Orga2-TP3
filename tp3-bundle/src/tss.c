@@ -132,8 +132,14 @@ void tss_inicializar() {
     //inicializar_idle_cr3();
 }
 
-uint inicializar_tarea(uint jugador, uint jugador_posicion){
-   tss *jugador_actual = tss_obtener_jugador(jugador);
+uint inicializar_tarea(uint jugador, uint jugador_posicion, uint tipo){
+    tss *jugador_actual = tss_obtener_jugador(jugador);
+    uint memoria_fisica;
+    if (jugador == 0) { 
+        memoria_fisica = 0x500000;
+    } else {
+        memoria_fisica = 0x121FFFF;
+    }
 
    jugador_actual[jugador_posicion].ptl      = 0;
    jugador_actual[jugador_posicion].unused0  = 0;
@@ -147,8 +153,7 @@ uint inicializar_tarea(uint jugador, uint jugador_posicion){
    jugador_actual[jugador_posicion].ss2      = (ushort) 0x1000 ;//+ (uint) x;
    jugador_actual[jugador_posicion].unused3  = 0;
    
-   uint* cr3 = &jugador_actual[jugador_posicion].cr3;
-   inicializar_dir_pirata(cr3, (uint)0x10000,  jugador);
+   inicializar_dir_pirata(&jugador_actual[jugador_posicion].cr3, memoria_fisica,  jugador, tipo);
    
    jugador_actual[jugador_posicion].eip      = 0x400000;
    jugador_actual[jugador_posicion].eflags   = (uint) 0x202;
@@ -156,8 +161,8 @@ uint inicializar_tarea(uint jugador, uint jugador_posicion){
    jugador_actual[jugador_posicion].ecx      = 0;
    jugador_actual[jugador_posicion].edx      = 0;
    jugador_actual[jugador_posicion].ebx      = 0;
-   jugador_actual[jugador_posicion].esp      = 0x401000-0x12;
-   jugador_actual[jugador_posicion].ebp      = 0x401000-0x12;
+   jugador_actual[jugador_posicion].esp      = 0x401000-0xC;
+   jugador_actual[jugador_posicion].ebp      = 0x401000-0xC;
    jugador_actual[jugador_posicion].esi      = 0;
    jugador_actual[jugador_posicion].edi      = 0;
    jugador_actual[jugador_posicion].es       = 0x50;

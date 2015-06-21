@@ -65,7 +65,7 @@ uint* proximaTarea(tarea_scheduler tarea) {
 	return tarea.tareas[tarea.pos].selector;
 }
 
-void sched_agregar_tarea(uint jugador, uint posicion_jugador){
+void sched_agregar_tarea(uint jugador, uint posicion_jugador, uint tipo){
 	if(sched_hay_tareas_en_ejecucion(&scheduler.jugador_A) == FALSE
 	&& sched_hay_tareas_en_ejecucion(&scheduler.jugador_B) == FALSE){
 		scheduler.tarea_actual = jugador;
@@ -73,7 +73,7 @@ void sched_agregar_tarea(uint jugador, uint posicion_jugador){
 	uint   selector;
 	tarea_scheduler* jugador_actual = scheduler_obtener_jugador(jugador);
 
-	selector = inicializar_tarea(jugador, posicion_jugador);
+	selector = inicializar_tarea(jugador, posicion_jugador, tipo);
 	sched_colocar_nueva_tarea(selector, jugador_actual, posicion_jugador, jugador);
 }
 
