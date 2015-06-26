@@ -8,7 +8,6 @@
 #include "mmu.h"
 #include "i386.h"
 
-
 /* Macros */
 /* -------------------------------------------------------------------------- */
 #define PDE_INDEX(virt, res) \
@@ -20,6 +19,9 @@
 /* Atributos paginas */
 /* -------------------------------------------------------------------------- */
 
+#define PG_PRESENT		1
+#define PG_READ_WRITE   1
+#define PG_USER			0
 
 /* Direcciones fisicas de codigos */
 /* -------------------------------------------------------------------------- */
@@ -32,8 +34,8 @@ void mmu_inicializar(){
 	paginas_libres.primera_libre = (uint*) 0x100000;
 }
 
-uint* mmu_gimme_gimme_page_wachin(){
-	uint* result = NULL;
+void* mmu_gimme_gimme_page_wachin(){
+	void* result = NULL;
 	if (paginas_libres.cantidad > 0) {
 		result = paginas_libres.primera_libre;
 		paginas_libres.primera_libre += (uint) 0x1000; //0x1000 es unapagina en memoria, sera asi??
@@ -43,10 +45,10 @@ uint* mmu_gimme_gimme_page_wachin(){
 }
 
 void inicializar_dir_pirata(uint* cr3, uint fisicmem, uint elteam, uint tipo_pirata){
-	uint* pageDirectory = mmu_gimme_gimme_page_wachin();
+	page_directory_entry* pageDirectory = (page_directory_entry*) mmu_gimme_gimme_page_wachin();
 
 	//inicializa pagedirectory sin entradas
-	init_table(pageDirectory);
+	init_directory_table(pageDirectory);
 	*cr3 = (uint) pageDirectory; //esto es asi directo?????????
 	
 	if(tipo_pirata == 0){
@@ -87,7 +89,6 @@ void mmu_mover_codigo_pirata(uint* cr3, uint* destino){ //TODO: REVISAR
 	uint*  pageTable = (uint*)  *( (uint*) (pageDirectory + pageDirOffset));
 	uint** page		 = (uint**) *( (uint*) ((uint) (pageTable-0x3) + pageTableOffset));
 	
-		breakpoint();
 	uint i;
 	for(i=0; i<1024; i++){
 		pagina.contenido[i] = *( (uint*) ((uint)page - 0x3) + (i * 4) ); //general protaccion, muere aca
@@ -95,7 +96,6 @@ void mmu_mover_codigo_pirata(uint* cr3, uint* destino){ //TODO: REVISAR
 	
 	mmu_mapear_pagina((uint) 0x400000, *cr3, (uint) destino, 0x3);
 
-	breakpoint();
 	pageTable = (uint*)  *( (uint*) (pageDirectory + pageDirOffset)); // limpio atributos
 	page	  = (uint**) *( (uint*) ((uint) (pageTable-0x3) + pageTableOffset));
 
@@ -114,23 +114,22 @@ void mmu_mapear_pagina(uint virt, uint cr3, uint fisica, uint attrs){
 	PTE_INDEX(virt, pageTableOffset);
 
 	//recorre directorios
-	uint*  pageTable = (uint*) *( (uint*) (pageDirectory + pageDirOffset)); // limpio atributos
+	page_directory_entry *directoryEntry = (page_directory_entry*) (pageDirectory + pageDirOffset);
+	page_table_entry 	 *tableEntry;
 
 	//revisa si existe la pagina
-	uint presentBit = (uint)pageTable & 1;	
-	if (presentBit == 0) { //preguntar por el bit de presente
-		pageTable  = mmu_gimme_gimme_page_wachin();
-		init_table(pageTable);
-		*( (uint*) (pageDirectory + pageDirOffset)) = (uint) pageTable + 0x3; //preguntar por esto......es muy turbio
+	if (directoryEntry->P == 0) { //preguntar por el bit de presente
+		tableEntry = (page_table_entry*) mmu_gimme_gimme_page_wachin();
+		set_directory_entry(directoryEntry, tableEntry);
+		init_page_table(tableEntry);
+	} else {
+		uint dir = directoryEntry->dir_pagina_tabla;
+		tableEntry = (page_table_entry*) dir; //Preguntar porque esto funciona
 	}
 	
-	uint** page	= (uint**) ((uint*) ((uint) (pageTable-0x3) + pageTableOffset));
-
-	//arma pagina
-	uint* pageSegment = (uint*) (fisica + attrs); 
-
-	//asigna segmento de pagina
-	*page = pageSegment;
+	tableEntry += pageTableOffset;
+	set_table_entry(tableEntry, fisica, attrs);
+	
 	tlbflush();
 }
 
@@ -152,6 +151,8 @@ void mmu_unmapear_pagina(uint virt, uint cr3){
 
 /* Direcciones fisicas de directorios y tablas de paginas del KERNEL */
 /* -------------------------------------------------------------------------- */
+
+//La funcion fue escrita previo al agregador de las estructuras page_----_entry, no se cambio en la reimplementacion
 void mmu_inicializar_dir_kernel(){
 	uint i,k;
 	uint* pageDirectory = (uint*) KERNEL_PAGE_DIRECTORY;
@@ -170,9 +171,53 @@ void mmu_inicializar_dir_kernel(){
 	}
 }
 
-void init_table(uint* table){
+
+
+void init_page_table(page_table_entry* table){
 	uint i;
 	for(i=0; i<1024; i++){
-		*(table + i) = (uint) 0x2;
+		(table + i)->P = 0;
+	}
+}
+
+void init_directory_table(page_directory_entry* table){
+	uint i;
+	for(i=0; i<1024; i++){
+		(table + i)->P = 0;
 	}
 } 
+
+void set_directory_entry(page_directory_entry* dir, page_table_entry* table){
+	dir->dir_pagina_tabla = (uint) table;
+	dir->disp  = 0x0;
+	dir->G 	   = 1;
+	dir->PS    = 0;
+	dir->disp0 = 0;
+	dir->A 	   = 0;
+	dir->PCD   = 0;
+	dir->PWT   = 0;
+	dir->US    = PG_USER;
+	dir->RW    = PG_READ_WRITE;
+	dir->P     = PG_PRESENT;
+}
+
+void set_table_entry(page_table_entry* table, uint fisic, uint attrs){
+	table->dir_pagina_mem = fisic >> 12; //cuanto habia que recortar???
+	table->disp  = 0; 
+	table->G 	 = attrs & 256;
+	table->PAT   = attrs & 128;
+	table->D     = attrs & 64;
+	table->A 	 = attrs & 32;
+	table->PCD   = attrs & 16;
+	table->PWT   = attrs & 8;
+	table->US    = attrs & 4;
+	table->RW    = attrs & 2;
+	table->P     = attrs & 1;
+}
+
+void init_table(uint* table){
+	int i=0;
+	for (i = 0; i < 1024; i++){
+		*(table + i) = 0x2;
+	}
+}

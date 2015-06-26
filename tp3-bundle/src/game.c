@@ -211,7 +211,7 @@ void game_pirata_inicializar(uint type, uint jugador)
 			i = game_obtener_posicion_minero_disponible(jugador_actual);
 			pirata_t* pirata_actual = jugador_actual->mineros_pendientes[i];
 			pirata_actual->id 	= NULL_ID_PIRATA;
-			pirata_actual->type = 1;
+			pirata_actual->type = type;
 		}
 	}
 }
@@ -294,10 +294,9 @@ uint game_syscall_pirata_mover(uint id, direccion dir)
     return 0;
 }
 
-uint game_syscall_cavar(uint id)
+void game_syscall_cavar(uint id)
 {
     pirata_t* pirata = id_pirata2pirata(id);
-
     uint i = obtener_posicion_botin(pirata->pos);
 
     if ( i < BOTINES_CANTIDAD ) {
@@ -307,8 +306,6 @@ uint game_syscall_cavar(uint id)
     		game_pirata_exploto();
     	}
     }
-
-	return 0;
 }
 
 uint game_syscall_pirata_posicion(uint id, int idx)

@@ -30,7 +30,35 @@ typedef struct page_selector{
 	uint contenido[1024];
 } __attribute__((__packed__)) page_selector;
 
-uint* mmu_gimme_gimme_page_wachin();
+typedef struct page_directory_entry{
+	unsigned int  dir_pagina_tabla:20;
+	unsigned char disp:3;
+	unsigned char G :1;
+	unsigned char PS:1;
+	unsigned char disp0:1;
+	unsigned char A:1;
+	unsigned char PCD:1;
+	unsigned char PWT:1;
+	unsigned char US:1;
+	unsigned char RW:1;
+	unsigned char P:1;
+} __attribute__((__packed__)) page_directory_entry;
+
+typedef struct page_table_entry{
+	unsigned int  dir_pagina_mem:20;
+	unsigned char disp:3;
+	unsigned char G :1;
+	unsigned char PAT:1;
+	unsigned char D:1;
+	unsigned char A:1;
+	unsigned char PCD:1;
+	unsigned char PWT:1;
+	unsigned char US:1;
+	unsigned char RW:1;
+	unsigned char P:1;
+} __attribute__((__packed__)) page_table_entry;
+
+void* mmu_gimme_gimme_page_wachin();
 
 void mmu_inicializar();
 
@@ -40,8 +68,23 @@ void mmu_mapear_pagina(uint virt, uint cr3, uint fisica, uint attrs);
 
 void mmu_unmapear_pagina(uint virt, uint cr3);
 
-void init_table(uint* table);
-
 void mmu_mover_codigo_pirata(uint* origen, uint* destino);
 
+
+	   /* funciones de directorios */
+/* --------------------------------------------- */
+
+void init_page_table(page_table_entry* table);
+
+void init_directory_table(page_directory_entry* table);
+
+void set_directory_entry(page_directory_entry* dir, page_table_entry* table);
+
+void set_table_entry(page_table_entry* table, uint fisic, uint attrs);
+	
+
+	   /* funciones pre-refactorizacion */
+/* --------------------------------------------- */
+
+void init_table(uint* table);
 #endif	/* !__MMU_H__ */
