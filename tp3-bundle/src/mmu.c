@@ -38,7 +38,7 @@ void* mmu_gimme_gimme_page_wachin(){
 	void* result = NULL;
 	if (paginas_libres.cantidad > 0) {
 		result = paginas_libres.primera_libre;
-		paginas_libres.primera_libre += (uint) 0x1000; //0x1000 es unapagina en memoria, sera asi??
+		paginas_libres.primera_libre += (uint) 0x1000;
 		paginas_libres.cantidad --;
 	} 
 	return result;
@@ -124,10 +124,9 @@ void mmu_mapear_pagina(uint virt, uint cr3, uint fisica, uint attrs){
 		init_page_table(tableEntry);
 	} else {
 		uint dir = directoryEntry->dir_pagina_tabla;
-		tableEntry = (page_table_entry*) dir; //Preguntar porque esto funciona
+		tableEntry = (page_table_entry*) ( dir + pageTableOffset ); //Preguntar porque esto funciona
 	}
 	
-	tableEntry += pageTableOffset;
 	set_table_entry(tableEntry, fisica, attrs);
 	
 	tlbflush();
@@ -141,11 +140,14 @@ void mmu_unmapear_pagina(uint virt, uint cr3){
 	PTE_INDEX(virt, pageTableOffset);
 
 	//recorre directorios
-	uint*  pageTable = (uint*)  *( (uint*) pageDirectory + pageDirOffset);
-	uint** page	 	 = (uint**) *( (uint*) ((uint) pageTable + pageTableOffset));
-	
-	//mata pagina
-	*page = NULL;
+	page_directory_entry* directoryEntry = (page_directory_entry*) (pageDirectory + pageDirOffset);
+
+	if (directoryEntry->P != 0) {
+		uint dir = directoryEntry->dir_pagina_tabla;
+		page_table_entry* tableEntry = (page_table_entry*) ( dir + pageTableOffset ); //Preguntar porque esto funciona
+		tableEntry->P = 0;
+	}
+
 	tlbflush();
 }
 
