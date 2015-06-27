@@ -79,7 +79,9 @@ void tss_inicializar() {
     
     gdt[13].limit_0_15  = (unsigned short) ( ((uint) &tss_inicial + (sizeof(tss_inicial) - 1)) & 0xFFFF);
     gdt[13].limit_16_19 = (unsigned char)  ( ((uint) &tss_inicial + (sizeof(tss_inicial) - 1)) >> 16); // pregutnar!!! la estructura lo corta?
+}
 
+void tss_inicializar_idle() {
     //TODO: arreglar los get
     tss_idle.ptl 	    = 0;
 	  tss_idle.unused0  = 0;

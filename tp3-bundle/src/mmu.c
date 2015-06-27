@@ -113,7 +113,7 @@ void mmu_mapear_pagina(uint virt, uint cr3, uint fisica, uint attrs){
 		set_directory_entry(directoryEntry, tableEntry);
 		init_page_table(tableEntry);
 	} else {
-		uint dir = directoryEntry->dir_pagina_tabla;
+		uint dir   = directoryEntry->dir_pagina_tabla;
 		tableEntry = (page_table_entry*) ( dir + pageTableOffset ); //Preguntar porque esto funciona
 	}
 	
@@ -162,7 +162,6 @@ void mmu_inicializar_dir_kernel(){
 		pageTable += (uint) 0x1000;
 	}
 }
-
 
 
 void init_page_table(page_table_entry* table){

@@ -13,6 +13,7 @@ extern mmu_inicializar
 extern game_inicializar
 extern screen_pintar_rect
 extern screen_inicializar
+extern tss_inicializar_idle
 extern inicializar_scheduler
 extern inicializar_dir_pirata
 extern mmu_inicializar_dir_kernel
@@ -110,7 +111,6 @@ BITS 32
     imprimir_texto_mp iniciando_gr_msg, iniciando_gr_len, 0xE, 0, 64
 
     ; Inicializar tss
-    call mmu_inicializar
     
     ; Inicializar tss de la tarea Idle
     call tss_inicializar
