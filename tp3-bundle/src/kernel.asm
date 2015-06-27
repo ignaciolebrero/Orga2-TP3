@@ -111,10 +111,11 @@ BITS 32
     imprimir_texto_mp iniciando_gr_msg, iniciando_gr_len, 0xE, 0, 64
 
     ; Inicializar tss
-    
-    ; Inicializar tss de la tarea Idle
     call tss_inicializar
     
+    ; Inicializar tss de la tarea Idle
+    call tss_inicializar_idle
+
     ; Inicializar el scheduler
     call inicializar_scheduler
 
