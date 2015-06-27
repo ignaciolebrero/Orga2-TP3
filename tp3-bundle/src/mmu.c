@@ -57,7 +57,7 @@ void inicializar_dir_pirata(uint* cr3, uint fisicmem, uint elteam, uint tipo_pir
 		mmu_mapear_pagina((uint) 0x400000, *cr3, (uint) 0x11000 + ( (uint) 0x2000 * elteam), (uint) 0x3);
 	}
 
-	mmu_mover_codigo_pirata(cr3, (uint*) fisicmem);
+	mmu_mover_codigo_pirata(*cr3, (uint*) fisicmem);
 	
 	if (elteam == JUGADOR_A) {
 		mmu_mapear_pagina( (uint) 0x800000, *cr3, (uint) 0x500000, (uint) 0x03);
@@ -76,34 +76,24 @@ void inicializar_dir_pirata(uint* cr3, uint fisicmem, uint elteam, uint tipo_pir
 
 }
 
-void mmu_mover_codigo_pirata(uint* cr3, uint* destino){ //TODO: REVISAR
-	page_selector pagina;
-
-	uint pageDirectory = *cr3 & 0XFFFFF000;
-	uint pageDirOffset, pageTableOffset;
-	PDE_INDEX(0x400000, pageDirOffset);
-	PTE_INDEX(0x400000, pageTableOffset);
-
+void mmu_mover_codigo_pirata(uint cr3, uint* destino){ //TODO: REVISAR
+	uint i;
+	uint *direccionAcopiar = (uint*) 0x400000;
+	uint *direccionDeCopia = (uint*) 0x401000;
 
 	//recorre directorios
-	uint*  pageTable = (uint*)  *( (uint*) (pageDirectory + pageDirOffset));
-	uint** page		 = (uint**) *( (uint*) ((uint) (pageTable-0x3) + pageTableOffset));
-	
-	uint i;
-	for(i=0; i<1024; i++){
-		pagina.contenido[i] = *( (uint*) ((uint)page - 0x3) + (i * 4) ); //general protaccion, muere aca
+	mmu_mapear_pagina( (uint) direccionDeCopia, cr3, (uint) destino, 0x3 );
+
+	//copia el codigo 
+	for(i = 0; i < 1024; i++){
+		*( direccionDeCopia + i ) = *( direccionAcopiar + i ); //tiraba general protaccion, hay queprobarlo de nuevo
 	}
 	
-	mmu_mapear_pagina((uint) 0x400000, *cr3, (uint) destino, 0x3);
+	//actualizo mapeo de direccion actual
+	mmu_mapear_pagina  ( (uint) direccionAcopiar, cr3, (uint) destino, 0x3 );
+	//desmapea pagina auxiliar
+	mmu_unmapear_pagina( (uint) direccionDeCopia, cr3 );
 
-	pageTable = (uint*)  *( (uint*) (pageDirectory + pageDirOffset)); // limpio atributos
-	page	  = (uint**) *( (uint*) ((uint) (pageTable-0x3) + pageTableOffset));
-
-	breakpoint();
-	for(i=0; i<1024; i++){
-		*( (uint*) ((uint)page - 0x3 + (i * 4)) ) = pagina.contenido[i];	
-	}
-	breakpoint();
 }
 
 
