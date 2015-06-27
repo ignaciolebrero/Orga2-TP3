@@ -53,6 +53,8 @@ typedef struct jugador_t
 
 extern jugador_t jugadorA, jugadorB;
 
+void game_inicializar();
+
 // ~ auxiliares dadas ~
 uint game_xy2lineal();
 pirata_t* id_pirata2pirata(uint id);
