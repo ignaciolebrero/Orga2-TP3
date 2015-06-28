@@ -24,23 +24,23 @@ typedef enum direccion_e { ARR = 0x4, ABA = 0x7, DER = 0xA, IZQ = 0xD} direccion
 #define MAPA_ANCHO             80
 #define MAPA_ALTO              44
 
+
 typedef struct juego{
     uint id_proximo_pirata;
-}juego;
+} juego;
 
-typedef struct pirata_t
-{
+typedef struct pirata_t{
     struct jugador_t *jugador;
     unsigned char type;
     uint index;
     uint id;
     uint clock;
     int  pos;
+    uint posCavar;
     // id unica, posicion, tipo, reloj
 } pirata_t;
 
-typedef struct jugador_t
-{
+typedef struct jugador_t{
     pirata_t *piratas[MAX_CANT_PIRATAS_VIVOS];
     pirata_t *mineros_pendientes[MAX_CANT_PIRATAS_VIVOS]; // porque hay hasta 8 botines
     char posiciones_descubiertas[MAPA_ALTO * MAPA_ANCHO];
@@ -49,7 +49,6 @@ typedef struct jugador_t
     uint index;
     // coordenadas puerto, posiciones exploradas, mineros pendientes, etc
 } jugador_t;
-
 
 extern jugador_t jugadorA, jugadorB;
 
@@ -60,7 +59,7 @@ uint game_xy2lineal();
 pirata_t* id_pirata2pirata(uint id);
 
 // ~ auxiliares sugeridas o requeridas (segun disponga enunciado) ~
-void game_pirata_inicializar(uint type, uint jugador);
+void game_pirata_inicializar(uint type, uint jugador, uint opcional_pos);
 void game_pirata_erigir(pirata_t *pirata, jugador_t *j, uint tipo);
 void game_pirata_habilitar_posicion(jugador_t *j, pirata_t *pirata, int x, int y);
 void game_pirata_exploto();
@@ -87,6 +86,7 @@ uint game_dir2xy(direccion dir, int *x, int *y);
 uint obtener_posicion_botin(uint);
 
 char hay_mineros_disponibles();
-void sacar_minero_pendiente(jugador_t* jugador);
+uint obtener_pos_cavar_pendiente(jugador_t* jugador);
+void game_mapear_posicion(uint id, uint pos);
 
 #endif  /* !__GAME_H__ */

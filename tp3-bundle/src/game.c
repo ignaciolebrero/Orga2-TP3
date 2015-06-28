@@ -191,7 +191,7 @@ jugador_t* game_obtener_jugador(uint jugador)
 	}
 }
 
-void game_pirata_inicializar(uint type, uint jugador)
+void game_pirata_inicializar(uint type, uint jugador, uint opcional_pos)
 {
 	jugador_t* jugador_actual = game_obtener_jugador(jugador);
 	uint i = game_obtener_posicion_pirata_disponible(jugador_actual);
@@ -210,8 +210,10 @@ void game_pirata_inicializar(uint type, uint jugador)
 		if (type == 1) {
 			i = game_obtener_posicion_minero_disponible(jugador_actual);
 			pirata_t* pirata_actual = jugador_actual->mineros_pendientes[i];
-			pirata_actual->id 	= NULL_ID_PIRATA;
-			pirata_actual->type = type;
+			pirata_actual->posCavar = opcional_pos;
+			pirata_actual->type 	= type;
+			pirata_actual->id 		= NULL_ID_PIRATA;
+			//TODO: agregar rutina para ponerle la posicion a la que debe ir (mandar por pila)
 		}
 	}
 }
@@ -248,11 +250,16 @@ void game_pirata_habilitar_posicion(jugador_t *j, pirata_t *pirata, int x, int y
 	if ( pirata->id != NULL_ID_PIRATA 
 		 && game_posicion_valida(x,y) 
 		 && !j->posiciones_descubiertas[pos] ){
-			//mapear_posicion(pirata->id, pos); TODO: falta hacer esto en scheduler o tss
+			game_mapear_posicion(pirata->id, pos);
 			if( obtener_posicion_botin(pos) < BOTINES_CANTIDAD ) {
-				//game_pirata_inicializar(); TODO: falta modificarla para que ponga en la pila del minero el x e y
+				game_pirata_inicializar(PIRATA_MINERO, j->index, pos);
 			}
 	}
+}
+
+void game_mapear_posicion(uint id, uint pos)
+{
+
 }
 
 void game_explorar_posicion(jugador_t *jugador, int c, int f)
@@ -360,8 +367,8 @@ void game_pirata_exploto()
 	pirata->id = NULL_ID_PIRATA;
 	scheduler_matar_actual_tarea_pirata();
 	if (hay_mineros_disponibles(pirata->jugador) == TRUE) {
-		game_pirata_inicializar(PIRATA_MINERO, pirata->jugador->index);
-		sacar_minero_pendiente(pirata->jugador);
+		uint posCavar = obtener_pos_cavar_pendiente(pirata->jugador);
+		game_pirata_inicializar(PIRATA_MINERO, pirata->jugador->index, posCavar);
 	}
 }
 
@@ -375,11 +382,12 @@ char hay_mineros_disponibles(jugador_t* jugador)
 	return result;
 }
 
-void sacar_minero_pendiente(jugador_t* jugador)
+uint obtener_pos_cavar_pendiente(jugador_t* jugador)
 {
 	uint i=0;
-	for(i=0; jugador->mineros_pendientes[i]->id == NULL_ID_MINERO ; i++){}
+	for( i=0; jugador->mineros_pendientes[i]->id == NULL_ID_MINERO ; i++ ){}
 	jugador->mineros_pendientes[i]->id = NULL_ID_MINERO;
+	return jugador->mineros_pendientes[i]->posCavar;
 }
 
 pirata_t* game_pirata_en_posicion(uint x, uint y)
@@ -433,8 +441,8 @@ void game_terminar_si_es_hora()
 void game_atender_teclado(unsigned char jugador) //manejado desde isr.asm
 {
 	if(jugador == 0){
-		game_pirata_inicializar(0, 0);
+		game_pirata_inicializar(0, 0, 0);
 	} else {
-		game_pirata_inicializar(0, 1);
+		game_pirata_inicializar(0, 1, 0);
 	}
 }
