@@ -197,7 +197,6 @@ void game_pirata_inicializar(uint type, uint jugador, uint opcional_pos)
 	uint i = game_obtener_posicion_pirata_disponible(jugador_actual);
 	if( i < 8 ){
 		pirata_t pirata_actual;
-
 		pirata_actual.jugador = jugador_actual;
 		pirata_actual.pos     = pirata_actual.jugador->pos_puerto;
 		pirata_actual.type    = type;
@@ -293,6 +292,7 @@ uint game_syscall_pirata_mover(uint id, direccion dir)
 				game_pirata_exploto();
 			} else {
 				game_explorar_posicion(pirata->jugador, x + pirx, y + piry);	
+				//TODO: implementar "cr3" general para todo el jugador de manera que cuando se cree un pirata nuevo, este tenga mapeadas todas las posiciones ya descubiertas
 			}
 		}
 	}
