@@ -250,7 +250,7 @@ void game_pirata_habilitar_posicion(jugador_t *j, pirata_t *pirata, int x, int y
 	if ( pirata->id != NULL_ID_PIRATA 
 		 && game_posicion_valida(x,y) 
 		 && !j->posiciones_descubiertas[pos] ){
-			game_mapear_posicion(pirata->id, pos);
+			mmu_mapear_posicion_mapa(pos);
 			if( obtener_posicion_botin(pos) < BOTINES_CANTIDAD ) {
 				game_pirata_inicializar(PIRATA_MINERO, j->index, pos);
 			}

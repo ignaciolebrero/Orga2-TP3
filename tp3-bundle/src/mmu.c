@@ -141,6 +141,15 @@ void mmu_unmapear_pagina(uint virt, uint cr3){
 	tlbflush();
 }
 
+void mmu_mapear_posicion_mapa(uint posicion) {
+	uint fisica  = 0x500000 + posicion;
+	uint virtual = 0x800000 + posicion;
+	uint cr3 	 = (uint) rcr3();
+	uint attrs   = (uint) 0x3;
+
+	mmu_mapear_pagina(virtual, cr3, fisica, attrs);
+}
+
 /* Direcciones fisicas de directorios y tablas de paginas del KERNEL */
 /* -------------------------------------------------------------------------- */
 
