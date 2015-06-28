@@ -31,12 +31,19 @@ void inicializar_scheduler(){
 }
 
 uint sched_tarea_actual_id(){
-	if (scheduler.tarea_actual == JUGADOR_A) {
-		return scheduler.jugador_A.tareas[scheduler.jugador_A.pos].id;
-	} else {
-		return scheduler.jugador_B.tareas[scheduler.jugador_B.pos].id;
+	uint result;
+
+	switch( scheduler.tarea_actual ){
+		case(JUGADOR_A):
+			result = scheduler.jugador_A.tareas[scheduler.jugador_A.pos].id;
+		break;
+		case(JUGADOR_B):
+			result = scheduler.jugador_B.tareas[scheduler.jugador_B.pos].id;
+		break;
+		default:
+			result = NULL_ID;
 	}
-	return NULL_ID;
+	return result;
 }
 
 uint* sched_tick(){
@@ -66,11 +73,13 @@ uint* proximaTarea(tarea_scheduler tarea) {
 }
 
 void sched_agregar_tarea(uint jugador, uint posicion_jugador, uint tipo){
+	uint   selector;
+	
 	if(sched_hay_tareas_en_ejecucion(&scheduler.jugador_A) == FALSE
 	&& sched_hay_tareas_en_ejecucion(&scheduler.jugador_B) == FALSE){
 		scheduler.tarea_actual = jugador;
 	}
-	uint   selector;
+	
 	tarea_scheduler* jugador_actual = scheduler_obtener_jugador(jugador);
 
 	selector = inicializar_tarea(jugador, posicion_jugador, tipo);

@@ -255,7 +255,6 @@ void game_pirata_habilitar_posicion(jugador_t *j, pirata_t *pirata, int x, int y
 	}
 }
 
-
 void game_explorar_posicion(jugador_t *jugador, int c, int f)
 {
 	uint i = 0;
@@ -270,6 +269,7 @@ void game_explorar_posicion(jugador_t *jugador, int c, int f)
 		game_pirata_habilitar_posicion(jugador, jugador->piratas[i], c-1, f+1);
 		game_pirata_habilitar_posicion(jugador, jugador->piratas[i], c-1, f-1);
 	}
+	mmu_mover_codigo_pirata(rcr3(), (uint*) (game_xy2lineal(c, f) + 0x500000) );
 }
 
 uint game_syscall_pirata_mover(uint id, direccion dir)
@@ -288,7 +288,6 @@ uint game_syscall_pirata_mover(uint id, direccion dir)
 				game_explorar_posicion(pirata->jugador, x + pirx, y + piry);	
 			}
 		}
-		//mover_codigo_pirata(id, dir); TODO: falta implementarlo en tss o scheduler
 	}
 
     return 0;
@@ -342,7 +341,8 @@ uint game_syscall_manejar(uint syscall, uint param1)
 }
 
 
-uint obtener_posicion_botin(uint posicion){
+uint obtener_posicion_botin(uint posicion)
+{
 	int x, y, i=0;
 	char resultado = FALSE;
 	game_lineal2xy(posicion, &x, &y);
@@ -359,6 +359,27 @@ void game_pirata_exploto()
 	pirata_t* pirata = id_pirata2pirata(sched_tarea_actual_id());
 	pirata->id = NULL_ID_PIRATA;
 	scheduler_matar_actual_tarea_pirata();
+	if (hay_mineros_disponibles(pirata->jugador) == TRUE) {
+		game_pirata_inicializar(PIRATA_MINERO, pirata->jugador->index);
+		sacar_minero_pendiente(pirata->jugador);
+	}
+}
+
+char hay_mineros_disponibles(jugador_t* jugador)
+{
+	char result = FALSE;
+	uint i;
+	for(i=0; i<MAX_CANT_PIRATAS_VIVOS; i++){
+		result = result || jugador->mineros_pendientes[i]->id != NULL_ID_MINERO;
+	}
+	return result;
+}
+
+void sacar_minero_pendiente(jugador_t* jugador)
+{
+	uint i=0;
+	for(i=0; jugador->mineros_pendientes[i]->id == NULL_ID_MINERO ; i++){}
+	jugador->mineros_pendientes[i]->id = NULL_ID_MINERO;
 }
 
 pirata_t* game_pirata_en_posicion(uint x, uint y)

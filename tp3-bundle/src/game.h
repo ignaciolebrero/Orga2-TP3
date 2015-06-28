@@ -73,7 +73,7 @@ void game_explorar_posicion(jugador_t *jugador, int x, int y);
 
 uint game_valor_tesoro(uint x, uint y);
 void game_calcular_posiciones_vistas(int *vistas_x, int *vistas_y, int x, int y);
-pirata_t* game_pirata_en_posicion(uint x, uint y);
+pirata_t*  game_pirata_en_posicion(uint x, uint y);
 jugador_t* game_obtener_jugador(uint);
 
 uint game_syscall_pirata_posicion(uint id, int idx);
@@ -85,5 +85,8 @@ void game_terminar_si_es_hora();
 void game_atender_teclado(unsigned char tecla);
 uint game_dir2xy(direccion dir, int *x, int *y);
 uint obtener_posicion_botin(uint);
+
+char hay_mineros_disponibles();
+void sacar_minero_pendiente(jugador_t* jugador);
 
 #endif  /* !__GAME_H__ */
