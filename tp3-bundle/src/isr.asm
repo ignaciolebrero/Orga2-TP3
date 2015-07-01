@@ -110,115 +110,115 @@ _isr%1:
 ;TODO:revisar si compila, funciona, eclosiona(?)
 _isr0:
 	pushad
-		;jmp matar_pirata
+		jmp matar_pirata
 	popad
 	iret
 
 _isr1:
 	pushad
-		;jmp matar_pirata
+		jmp matar_pirata
 	popad
 	iret
 
 _isr2:
 	pushad
-		;jmp matar_pirata
+		jmp matar_pirata
 	popad
 	iret
 
 _isr3:
 	pushad
-		;jmp matar_pirata
+		jmp matar_pirata
 	popad
 	iret
 
 _isr4:
 	pushad
-		;jmp matar_pirata
+		jmp matar_pirata
 	popad
 	iret
 
 _isr5:
 	pushad
-		;jmp matar_pirata
+		jmp matar_pirata
 	popad
 	iret
 
 _isr6:
 	pushad
-		;jmp matar_pirata
+		jmp matar_pirata
 	popad
 	iret
 
 _isr7:
 	pushad
-		;jmp matar_pirata
+		jmp matar_pirata
 	popad
 	iret
 
 _isr8:
 	pushad
-		;jmp matar_pirata
+		jmp matar_pirata
 	popad
 	iret
 
 _isr10:
 	pushad
-		;jmp matar_pirata
+		jmp matar_pirata
 	popad
 	iret
 
 _isr11:
 	pushad
-		;jmp matar_pirata
+		jmp matar_pirata
 	popad
 	iret
 
 _isr12:
 	pushad
-		;jmp matar_pirata
+		jmp matar_pirata
 	popad
 	iret
 
 _isr13:
 	pushad
-		;jmp matar_pirata
+		jmp matar_pirata
 	popad
 	iret
 
 _isr14:
 	pushad
-		;jmp matar_pirata
+		jmp matar_pirata
 	popad
 	iret
 
 _isr16:
 	pushad
-		;jmp matar_pirata
+		jmp matar_pirata
 	popad
 	iret
 
 _isr17:
 	pushad
-		;jmp matar_pirata
+		jmp matar_pirata
 	popad
 	iret
 
 _isr18:
 	pushad
-		;jmp matar_pirata
+		jmp matar_pirata
 	popad
 	iret
 
 _isr19:
 	pushad
-		;jmp matar_pirata
+		jmp matar_pirata
 	popad
 	iret
 
 _isr20:
 	pushad
-		;jmp matar_pirata
+		jmp matar_pirata
 	popad
 	iret
 
@@ -235,9 +235,9 @@ _isr70:
 
 _isr32:
 	pushad
-		;mov ax, [pantalla_debug_activa]
-		;cmp ax, 0x1
-		;je .fin
+		mov ax, [pantalla_debug_activa]
+		cmp ax, 0x1
+		je .fin
 		
 		call fin_intr_pic1
 		call sched_tick ;lo que devuelve es un selector de segmento, no?
@@ -267,8 +267,8 @@ _isr33:
 	je .rutinals
 	cmp byte al, 0x36
 	je .rutinars
-	;cmp byte al, 0x-- ;TODO: buscar cual es el codigo de la Y
- 	;je .rutina_debuger
+	cmp byte al, 0x15 ; codigo de la Y
+ 	je .rutina_debuger
 	jmp pop
 
 _isr33.rutinals:
@@ -283,13 +283,11 @@ _isr33.rutinars:
 	pop eax
 	jmp pop
 
-;_isr33.rutina_debuger: ;TODO: ver si asi se negaba
-;	mov ax, byte [debug_habilitado]
-;	neg ax
-;	mov byte [debug_habilitado], ax
-
-	
-;	jmp pop
+_isr33.rutina_debuger: ;TODO: ver si asi se negaba
+	mov ax, [debug_habilitado]
+	neg ax
+	mov [debug_habilitado], ax	
+	jmp pop
 
 pop:
 	popad
@@ -315,21 +313,22 @@ _isr46:
 ;; rutina de muerte de pirata
 ;; -------------------------------------------------------------------------- ;;
 
-;matar_pirata:
-;	mov ax, byte [debug_habilitado]
-;	cmp ax, 0x0
-;	je  .matar
-;
-;	mov ax, byte [pantalla_debug_activa]
-;	mov ax, 0x1
-;	mov byte [pantalla_debug_activa], ax
-;	call debuggear_tarea
-;	jmp .matar
+matar_pirata:
+	mov ax, [debug_habilitado]
+	cmp ax, 0x0
+	je  .matar
 
-;matar_pirata.matar:
-;	call game_pirata_exploto
-;	jmp .fin
+	mov ax, [pantalla_debug_activa]
+	mov ax, 0x1
+	mov [pantalla_debug_activa], ax
+	;call debuggear_tarea
+	jmp .matar
 
-;matar_pirata.fin:
-;	mov  [selector], 0x70 ;idle
-;	jmp  [offset]
+	.matar:
+	call game_pirata_exploto
+	jmp .fin
+
+	.fin:
+	mov ax, 0x70
+	mov [selector], ax ;idle
+	jmp [offset]

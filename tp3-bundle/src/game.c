@@ -203,13 +203,13 @@ void game_pirata_inicializar(uint type, uint jugador, uint opcional_pos)
 		pirata_actual.type    = type;
 		pirata_actual.clock   = 0; 
 		jugador_actual->piratas[i] = &pirata_actual;
+		game_jugador_erigir_pirata(jugador, &pirata_actual, i);
+		agregar_posiciones_mapeadas(&pirata_actual);
 		
 		if( type == 1 ){
 			pirata_actual.posCavar = opcional_pos;
+			//metodo que agrega las posiciones a la pila del minero
 		}
-		
-		game_jugador_erigir_pirata(jugador, &pirata_actual, i);
-		agregar_posiciones_mapeadas(&pirata_actual);
 		
 	} else {
 		if (type == 1) {
@@ -218,7 +218,6 @@ void game_pirata_inicializar(uint type, uint jugador, uint opcional_pos)
 			pirata_actual->posCavar = opcional_pos;
 			pirata_actual->type 	= type;
 			pirata_actual->id 		= NULL_ID_PIRATA;
-			//TODO: agregar rutina para ponerle la posicion a la que debe ir (mandar por pila)
 		}
 	}
 }
