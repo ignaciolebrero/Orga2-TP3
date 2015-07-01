@@ -44,60 +44,63 @@ void* mmu_gimme_gimme_page_wachin(){
 	return result;
 }
 
-void inicializar_dir_pirata(uint* cr3, uint fisicmem, uint elteam, uint tipo_pirata){
+uint inicializar_dir_pirata(uint fisicmem, uint elteam, uint tipo_pirata){
 	page_directory_entry* pageDirectory = (page_directory_entry*) mmu_gimme_gimme_page_wachin();
 
 	//inicializa pagedirectory sin entradas
 	init_directory_table(pageDirectory);
-	*cr3 = (uint) pageDirectory; //esto es asi directo?????????
-	
-	if(tipo_pirata == 0){
-		mmu_mapear_pagina((uint) 0x400000, *cr3, (uint) 0x10000 + ( (uint) 0x2000 * elteam), (uint) 0x3);
-	} else {
-		mmu_mapear_pagina((uint) 0x400000, *cr3, (uint) 0x11000 + ( (uint) 0x2000 * elteam), (uint) 0x3);
-	}
-
-	mmu_mover_codigo_pirata(*cr3, (uint*) fisicmem);
+	uint cr3 = (uint) pageDirectory;
 	
 	if (elteam == JUGADOR_A) {
-		mmu_mapear_pagina( (uint) 0x800000, *cr3, (uint) 0x500000, (uint) 0x03);
+		mmu_mapear_pagina( (uint) 0x800000, cr3, (uint) 0x500000, (uint) 0x03);
 
-		mmu_mapear_pagina( (uint) 0x800000 + (uint) 0x1000 * 01, *cr3, (uint) 0x500000 + (uint) 0x1000 * 01, (uint) 0x03);
-		mmu_mapear_pagina( (uint) 0x800000 + (uint) 0x1000 * 80, *cr3, (uint) 0x500000 + (uint) 0x1000 * 80, (uint) 0x03);
-		mmu_mapear_pagina( (uint) 0x800000 + (uint) 0x1000 * 81, *cr3, (uint) 0x500000 + (uint) 0x1000 * 81, (uint) 0x03);
-	breakpoint();
+		mmu_mapear_pagina( (uint) 0x800000 + (uint) 0x1000 * 01, cr3, (uint) 0x500000 + (uint) 0x1000 * 01, (uint) 0x03);
+		mmu_mapear_pagina( (uint) 0x800000 + (uint) 0x1000 * 80, cr3, (uint) 0x500000 + (uint) 0x1000 * 80, (uint) 0x03);
+		mmu_mapear_pagina( (uint) 0x800000 + (uint) 0x1000 * 81, cr3, (uint) 0x500000 + (uint) 0x1000 * 81, (uint) 0x03);
 	} else {
-		mmu_mapear_pagina( ((uint) 0x1520000-1), *cr3, ((uint) 0x121FFFF-1), (uint) 0x03);
+		mmu_mapear_pagina( ((uint) 0x1520000-1), cr3, ((uint) 0x121FFFF-1), (uint) 0x03);
 		
-		mmu_mapear_pagina( ((uint) 0x1520000-1) - (uint) 0x1000 * 01, *cr3, ((uint) 0x121FFFF-1) - (uint) 0x1000 * 01, (uint) 0x03);
-		mmu_mapear_pagina( ((uint) 0x1520000-1) - (uint) 0x1000 * 80, *cr3, ((uint) 0x121FFFF-1) - (uint) 0x1000 * 80, (uint) 0x03);
-		mmu_mapear_pagina( ((uint) 0x1520000-1) - (uint) 0x1000 * 81, *cr3, ((uint) 0x121FFFF-1) - (uint) 0x1000 * 81, (uint) 0x03);
-	}	
+		mmu_mapear_pagina( ((uint) 0x1520000-1) - (uint) 0x1000 * 01, cr3, ((uint) 0x121FFFF-1) - (uint) 0x1000 * 01, (uint) 0x03);
+		mmu_mapear_pagina( ((uint) 0x1520000-1) - (uint) 0x1000 * 80, cr3, ((uint) 0x121FFFF-1) - (uint) 0x1000 * 80, (uint) 0x03);
+		mmu_mapear_pagina( ((uint) 0x1520000-1) - (uint) 0x1000 * 81, cr3, ((uint) 0x121FFFF-1) - (uint) 0x1000 * 81, (uint) 0x03);
+	}
 
-}
-
-void mmu_mover_codigo_pirata(uint cr3, uint* destino){ //TODO: REVISAR
-	uint i;
-	uint *direccionAcopiar = (uint*) 0x400000;
-	uint *direccionDeCopia = (uint*) 0x401000;
-
-	//recorre directorios
-	mmu_mapear_pagina( (uint) direccionDeCopia, cr3, (uint) destino, 0x3 );
-
-	//copia el codigo 
-	for(i = 0; i < 1024; i++){
-		*( direccionDeCopia + i ) = *( direccionAcopiar + i ); //tiraba general protaccion, hay queprobarlo de nuevo
+	if(tipo_pirata == 0){
+		mmu_mapear_pagina((uint) 0x400000, cr3, (uint) 0x10000 + ( (uint) 0x2000 * elteam), (uint) 0x3);
+		breakpoint();
+		mmu_mover_codigo_pirata(cr3, (uint*) fisicmem, (uint*) ( 0x10000 + ( 0x2000 * elteam)));
+	} else {
+		mmu_mapear_pagina((uint) 0x400000, cr3, (uint) 0x11000 + ( (uint) 0x2000 * elteam), (uint) 0x3);
+		mmu_mover_codigo_pirata(cr3, (uint*) fisicmem, (uint*) (0x11000 + ( (uint) 0x2000 * elteam)));
 	}
 	
-	//actualizo mapeo de direccion actual
-	mmu_mapear_pagina  ( (uint) direccionAcopiar, cr3, (uint) destino, 0x3 );
-	//desmapea pagina auxiliar
-	mmu_unmapear_pagina( (uint) direccionDeCopia, cr3 );
+	return cr3;
+}
+
+void mmu_mover_codigo_pirata(uint cr3, uint *source, uint *destino){ //TODO: esta funcion esta mal hecha probablemnte (veeeeeeeeeeeeeeeeeeeer)
+	uint cr32 = rcr3();
+
+	mmu_mapear_pagina(0x403000, cr32, (uint) source , 0x3);
+	mmu_mapear_pagina(0x404000, cr32, (uint) destino, 0x3);
+
+
+	//copia el codigo 
+	uint i;
+	breakpoint();
+	for(i = 0; i < 1024; i++){
+		*( (uint*) (0x404000 + i) ) = *( (uint*) (0x403000 + i) ); //tiraba general protaccion, hay queprobarlo de nuevo
+	}
+	breakpoint();
+
+	mmu_mapear_pagina  ( 0x400000, cr3, (uint) destino, 0x3 );
+
+	mmu_unmapear_pagina( 0x403000, cr32 );
+	mmu_unmapear_pagina( 0x404000, cr32 );
 
 }
 
 
-void mmu_mapear_pagina(uint virt, uint cr3, uint fisica, uint attrs){
+uint mmu_mapear_pagina(uint virt, uint cr3, uint fisica, uint attrs){
 	uint pageDirectory = cr3 & 0XFFFFF000;
 	uint pageDirOffset, pageTableOffset;
 	PDE_INDEX(virt, pageDirOffset);
@@ -112,14 +115,19 @@ void mmu_mapear_pagina(uint virt, uint cr3, uint fisica, uint attrs){
 		tableEntry = (page_table_entry*) mmu_gimme_gimme_page_wachin();
 		set_directory_entry(directoryEntry, tableEntry);
 		init_page_table(tableEntry);
+
 	} else {
 		uint dir   = directoryEntry->dir_pagina_tabla;
 		tableEntry = (page_table_entry*) ( dir + pageTableOffset ); //Preguntar porque esto funciona
 	}
+
+	breakpoint();
 	
 	set_table_entry(tableEntry, fisica, attrs);
-	
 	tlbflush();
+	//salta de golpe a unmapear pagina en mover_codigo_pirata??????
+	//esta haciendo cosas muy raras el codigo
+	return 0;	
 }
 
 void mmu_unmapear_pagina(uint virt, uint cr3){

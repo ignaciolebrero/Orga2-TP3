@@ -239,7 +239,6 @@ _isr32:
 		;cmp ax, 0x1
 		;je .fin
 		
-		xchg bx,bx
 		call fin_intr_pic1
 		call sched_tick ;lo que devuelve es un selector de segmento, no?
 
@@ -261,7 +260,7 @@ _isr32:
 ;Está parcialmente la implementacion de la activacion del debugger
 _isr33: 
 	pushad
-		xchg bx,bx
+	
 	call fin_intr_pic1
 	in  al, 0x60
 	cmp byte al, 0x2A

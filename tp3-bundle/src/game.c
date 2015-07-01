@@ -275,7 +275,6 @@ void game_explorar_posicion(jugador_t *jugador, int c, int f)
 		game_pirata_habilitar_posicion(jugador, jugador->piratas[i], c-1, f+1);
 		game_pirata_habilitar_posicion(jugador, jugador->piratas[i], c-1, f-1);
 	}
-	mmu_mover_codigo_pirata(rcr3(), (uint*) (game_xy2lineal(c, f) + 0x500000) );
 }
 
 uint game_syscall_pirata_mover(uint id, direccion dir)
@@ -291,7 +290,8 @@ uint game_syscall_pirata_mover(uint id, direccion dir)
 			if (pirata->type == PIRATA_MINERO) { 
 				game_pirata_exploto();
 			} else {
-				game_explorar_posicion(pirata->jugador, x + pirx, y + piry);	
+				game_explorar_posicion(pirata->jugador, x + pirx, y + piry);
+				mmu_mover_codigo_pirata(rcr3(), (uint*) (game_xy2lineal(x, y) + 0x500000) , (uint*) (game_xy2lineal(x + pirx, y + piry) + 0x500000) );
 				//TODO: implementar "cr3" general para todo el jugador de manera que cuando se cree un pirata nuevo, este tenga mapeadas todas las posiciones ya descubiertas
 			}
 		}

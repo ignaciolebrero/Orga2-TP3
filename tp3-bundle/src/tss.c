@@ -26,7 +26,7 @@ void inicializar_idle_cr3(){ //punto B, creo que esta "bien" hecho
     uint mem_fisica = (uint) 0x00016000;
     uint mem_virt   = (uint) 0x00016000;
     uint cr3   = 0x27000;
-    uint attrs = 0;
+    uint attrs = 0x3;
 
     mmu_mapear_pagina(mem_virt, cr3, mem_fisica, attrs);
 }
@@ -154,17 +154,15 @@ uint inicializar_tarea(uint jugador, uint jugador_posicion, uint tipo){
    jugador_actual[jugador_posicion].esp2     = 0;
    jugador_actual[jugador_posicion].ss2      = (ushort) 0x1000 ;//+ (uint) x;
    jugador_actual[jugador_posicion].unused3  = 0;
-   
-   inicializar_dir_pirata(&jugador_actual[jugador_posicion].cr3, memoria_fisica,  jugador, tipo);
-   
-   jugador_actual[jugador_posicion].eip      = 0x400000;
+   jugador_actual[jugador_posicion].cr3      = inicializar_dir_pirata(memoria_fisica, jugador, tipo);
+   jugador_actual[jugador_posicion].eip      = memoria_fisica;
    jugador_actual[jugador_posicion].eflags   = (uint) 0x202;
    jugador_actual[jugador_posicion].eax      = 0;
    jugador_actual[jugador_posicion].ecx      = 0;
    jugador_actual[jugador_posicion].edx      = 0;
    jugador_actual[jugador_posicion].ebx      = 0;
-   jugador_actual[jugador_posicion].esp      = 0x401000-0xC;
-   jugador_actual[jugador_posicion].ebp      = 0x401000-0xC;
+   jugador_actual[jugador_posicion].esp      = memoria_fisica-0xC;
+   jugador_actual[jugador_posicion].ebp      = memoria_fisica-0xC;
    jugador_actual[jugador_posicion].esi      = 0;
    jugador_actual[jugador_posicion].edi      = 0;
    jugador_actual[jugador_posicion].es       = 0x50;
