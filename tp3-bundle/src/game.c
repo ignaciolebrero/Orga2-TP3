@@ -128,6 +128,7 @@ void game_jugador_inicializar_mapa(jugador_t *jug)
 	for (i=0; i<80*44; i++){
 		jug->posiciones_descubiertas[i] = FALSE;
 	}
+	jug->ultima_posicion_descubierta = 0;
 }
 
 void game_inicializar()
@@ -203,8 +204,13 @@ void game_pirata_inicializar(uint type, uint jugador, uint opcional_pos)
 		pirata_actual.clock   = 0; 
 		jugador_actual->piratas[i] = &pirata_actual;
 		
+		if( type == 1 ){
+			pirata_actual.posCavar = opcional_pos;
+		}
+		
 		game_jugador_erigir_pirata(jugador, &pirata_actual, i);
-
+		agregar_posiciones_mapeadas(&pirata_actual);
+		
 	} else {
 		if (type == 1) {
 			i = game_obtener_posicion_minero_disponible(jugador_actual);
@@ -214,6 +220,13 @@ void game_pirata_inicializar(uint type, uint jugador, uint opcional_pos)
 			pirata_actual->id 		= NULL_ID_PIRATA;
 			//TODO: agregar rutina para ponerle la posicion a la que debe ir (mandar por pila)
 		}
+	}
+}
+
+void agregar_posiciones_mapeadas(pirata_t *pirata){
+	uint i;
+	for (i = 0; i < pirata->jugador->ultima_posicion_descubierta; i++){
+		mmu_mapear_posicion_mapa(tss_obtener_cr3(pirata->id), pirata->jugador->posiciones_descubiertas[i]);	
 	}
 }
 
@@ -249,16 +262,15 @@ void game_pirata_habilitar_posicion(jugador_t *j, pirata_t *pirata, int x, int y
 	if ( pirata->id != NULL_ID_PIRATA 
 		 && game_posicion_valida(x,y) 
 		 && !j->posiciones_descubiertas[pos] ){
-			mmu_mapear_posicion_mapa(pos);
+			//mapea posicion nueva
+			mmu_mapear_posicion_mapa(rcr3(), pos);
+			//la agrega a la tabla de posiciones descubiertas del jugador
+			j->posiciones_descubiertas[j->ultima_posicion_descubierta] = pos;
+			j->ultima_posicion_descubierta++;
 			if( obtener_posicion_botin(pos) < BOTINES_CANTIDAD ) {
 				game_pirata_inicializar(PIRATA_MINERO, j->index, pos);
 			}
 	}
-}
-
-void game_mapear_posicion(uint id, uint pos)
-{
-
 }
 
 void game_explorar_posicion(jugador_t *jugador, int c, int f)

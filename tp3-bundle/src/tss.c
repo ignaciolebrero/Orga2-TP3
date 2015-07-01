@@ -211,3 +211,9 @@ tss* tss_obtener_jugador(uint jugador){
         return (tss*) &tss_jugadorB; 
     }
 }
+
+uint tss_obtener_cr3(uint id){
+    tss* jugador      = tss_obtener_jugador(id / 8);
+    uint posicion_tss = id % 8;
+    return jugador[posicion_tss].cr3;
+}

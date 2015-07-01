@@ -115,5 +115,4 @@ void scheduler_matar_actual_tarea_pirata(){
 	//dejo la tarea la tarea libre en la gdt
 	uint gdtpos = (uint) selector >> 3;
 	gdt[gdtpos].p = 0;
-	//TODO: como voy ahora a la idle?????
 }

@@ -64,7 +64,7 @@ void mmu_inicializar();
 
 uint inicializar_dir_pirata(uint fisicmem, uint elteam, uint tipo);
 	
-void mmu_mapear_posicion_mapa(uint posicion);
+void mmu_mapear_posicion_mapa(uint cr3, uint posicion);
 
 uint mmu_mapear_pagina(uint virt, uint cr3, uint fisica, uint attrs);
 
