@@ -50,8 +50,8 @@ uint inicializar_dir_pirata(uint fisicmem, uint elteam, uint tipo_pirata){
 	//inicializa pagedirectory sin entradas
 	init_directory_table(pageDirectory);
 	uint cr3 = (uint) pageDirectory;
-	
 	if (elteam == JUGADOR_A) {
+		breakpoint();
 		mmu_mapear_pagina( (uint) 0x800000, cr3, (uint) 0x500000, (uint) 0x03);
 
 		mmu_mapear_pagina( (uint) 0x800000 + (uint) 0x1000 * 01, cr3, (uint) 0x500000 + (uint) 0x1000 * 01, (uint) 0x03);
@@ -67,7 +67,6 @@ uint inicializar_dir_pirata(uint fisicmem, uint elteam, uint tipo_pirata){
 
 	if(tipo_pirata == 0){
 		mmu_mapear_pagina((uint) 0x400000, cr3, (uint) 0x10000 + ( (uint) 0x2000 * elteam), (uint) 0x3);
-		breakpoint();
 		mmu_mover_codigo_pirata(cr3, (uint*) fisicmem, (uint*) ( 0x10000 + ( 0x2000 * elteam)));
 	} else {
 		mmu_mapear_pagina((uint) 0x400000, cr3, (uint) 0x11000 + ( (uint) 0x2000 * elteam), (uint) 0x3);
@@ -80,17 +79,16 @@ uint inicializar_dir_pirata(uint fisicmem, uint elteam, uint tipo_pirata){
 void mmu_mover_codigo_pirata(uint cr3, uint *source, uint *destino){ //TODO: esta funcion esta mal hecha probablemnte (veeeeeeeeeeeeeeeeeeeer)
 	uint cr32 = rcr3();
 
-	mmu_mapear_pagina(0x403000, cr32, (uint) source , 0x3);
-	mmu_mapear_pagina(0x404000, cr32, (uint) destino, 0x3);
+	mmu_mapear_pagina( (uint) 0x403000, cr32, (uint) source , (uint) 0x3);
+	mmu_mapear_pagina( (uint) 0x404000, cr32, (uint) destino, (uint) 0x3);
 
 
 	//copia el codigo 
-	uint i;
 	breakpoint();
+	uint i;
 	for(i = 0; i < 1024; i++){
 		*( (uint*) (0x404000 + i) ) = *( (uint*) (0x403000 + i) ); //tiraba general protaccion, hay queprobarlo de nuevo
 	}
-	breakpoint();
 
 	mmu_mapear_pagina  ( 0x400000, cr3, (uint) destino, 0x3 );
 
@@ -107,26 +105,22 @@ uint mmu_mapear_pagina(uint virt, uint cr3, uint fisica, uint attrs){
 	PTE_INDEX(virt, pageTableOffset);
 
 	//recorre directorios
-	page_directory_entry *directoryEntry = (page_directory_entry*) (pageDirectory + pageDirOffset);
+	page_directory_entry *directoryEntry = ((page_directory_entry*) pageDirectory) + pageDirOffset;
 	page_table_entry 	 *tableEntry;
 
 	//revisa si existe la pagina
 	if (directoryEntry->P == 0) { //preguntar por el bit de presente
 		tableEntry = (page_table_entry*) mmu_gimme_gimme_page_wachin();
-		set_directory_entry(directoryEntry, tableEntry);
 		init_page_table(tableEntry);
-
+		set_directory_entry(directoryEntry, tableEntry);
 	} else {
 		uint dir   = directoryEntry->dir_pagina_tabla;
-		tableEntry = (page_table_entry*) ( dir + pageTableOffset ); //Preguntar porque esto funciona
+		tableEntry = (page_table_entry*) dir ; //Preguntar porque esto funciona
 	}
 
-	breakpoint();
-	
-	set_table_entry(tableEntry, fisica, attrs);
+	set_table_entry(tableEntry + pageTableOffset, fisica, attrs);
+
 	tlbflush();
-	//salta de golpe a unmapear pagina en mover_codigo_pirata??????
-	//esta haciendo cosas muy raras el codigo
 	return 0;	
 }
 
@@ -138,7 +132,7 @@ void mmu_unmapear_pagina(uint virt, uint cr3){
 	PTE_INDEX(virt, pageTableOffset);
 
 	//recorre directorios
-	page_directory_entry* directoryEntry = (page_directory_entry*) (pageDirectory + pageDirOffset);
+	page_directory_entry* directoryEntry = ( (page_directory_entry*) pageDirectory ) + pageDirOffset;
 
 	if (directoryEntry->P != 0) {
 		uint dir = directoryEntry->dir_pagina_tabla;
@@ -147,6 +141,9 @@ void mmu_unmapear_pagina(uint virt, uint cr3){
 	}
 
 	tlbflush();
+
+	int a = 0;
+	a = a+1;
 }
 
 void mmu_mapear_posicion_mapa(uint cr3, uint posicion) {
@@ -166,7 +163,8 @@ void mmu_inicializar_dir_kernel(){
 	uint* pageDirectory = (uint*) KERNEL_PAGE_DIRECTORY;
 	uint* pageTable 	= (uint*) KERNEL_PAGE_TABLE;
 
-	init_table(pageDirectory);
+	page_directory_entry *p = (page_directory_entry*) KERNEL_PAGE_DIRECTORY;
+	init_directory_table(p);
 
 	for(i=0; i<3; i++){
 		*(pageDirectory + i) = ((uint) 0x28000 + (i * (uint)0x1000) ) + 0x3;
@@ -179,11 +177,11 @@ void mmu_inicializar_dir_kernel(){
 	}
 }
 
-
 void init_page_table(page_table_entry* table){
 	uint i;
 	for(i=0; i<1024; i++){
-		(table + i)->P = 0;
+		(table + i)->P  = 0;
+		(table + i)->RW = PG_READ_WRITE;
 	}
 }
 
@@ -191,13 +189,22 @@ void init_directory_table(page_directory_entry* table){
 	uint i;
 	for(i=0; i<1024; i++){
 		(table + i)->P = 0;
+		(table + i)->RW = PG_READ_WRITE;
 	}
 } 
 
+void init_table(uint* table){
+	int i;
+	for (i = 0; i < 1024; i++){
+		*(table + i) = 0x2;
+	}
+}
+
+
 void set_directory_entry(page_directory_entry* dir, page_table_entry* table){
-	dir->dir_pagina_tabla = (uint) table;
-	dir->disp  = 0x0;
-	dir->G 	   = 1;
+	dir->dir_pagina_tabla = (uint)table >> 12;
+	dir->disp  = 0;
+	dir->G 	   = 0;
 	dir->PS    = 0;
 	dir->disp0 = 0;
 	dir->A 	   = 0;
@@ -209,22 +216,15 @@ void set_directory_entry(page_directory_entry* dir, page_table_entry* table){
 }
 
 void set_table_entry(page_table_entry* table, uint fisic, uint attrs){
-	table->dir_pagina_mem = fisic >> 12; //cuanto habia que recortar???
+	table->dir_pagina_mem = fisic >> 12;
 	table->disp  = 0; 
-	table->G 	 = attrs & 256;
-	table->PAT   = attrs & 128;
-	table->D     = attrs & 64;
-	table->A 	 = attrs & 32;
-	table->PCD   = attrs & 16;
-	table->PWT   = attrs & 8;
-	table->US    = attrs & 4;
-	table->RW    = attrs & 2;
-	table->P     = attrs & 1;
-}
-
-void init_table(uint* table){
-	int i=0;
-	for (i = 0; i < 1024; i++){
-		*(table + i) = 0x2;
-	}
+	table->G 	 = 0;
+	table->PAT   = 0;
+	table->D     = 0;
+	table->A 	 = 0;
+	table->PCD   = 0;
+	table->PWT   = 0;
+	table->US    = 0;
+	table->RW    = attrs & 0x2;
+	table->P     = attrs & 0x1;
 }
