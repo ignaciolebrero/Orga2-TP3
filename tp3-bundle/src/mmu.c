@@ -51,7 +51,6 @@ uint inicializar_dir_pirata(uint fisicmem, uint elteam, uint tipo_pirata){
 	init_directory_table(pageDirectory);
 	uint cr3 = (uint) pageDirectory;
 	if (elteam == JUGADOR_A) {
-		breakpoint();
 		mmu_mapear_pagina( (uint) 0x800000, cr3, (uint) 0x500000, (uint) 0x03);
 
 		mmu_mapear_pagina( (uint) 0x800000 + (uint) 0x1000 * 01, cr3, (uint) 0x500000 + (uint) 0x1000 * 01, (uint) 0x03);
@@ -72,7 +71,6 @@ uint inicializar_dir_pirata(uint fisicmem, uint elteam, uint tipo_pirata){
 		mmu_mapear_pagina((uint) 0x400000, cr3, (uint) 0x11000 + ( (uint) 0x2000 * elteam), (uint) 0x3);
 		mmu_mover_codigo_pirata(cr3, (uint*) fisicmem, (uint*) (0x11000 + ( (uint) 0x2000 * elteam)));
 	}
-	
 	return cr3;
 }
 
@@ -82,19 +80,16 @@ void mmu_mover_codigo_pirata(uint cr3, uint *source, uint *destino){ //TODO: est
 	mmu_mapear_pagina( (uint) 0x403000, cr32, (uint) source , (uint) 0x3);
 	mmu_mapear_pagina( (uint) 0x404000, cr32, (uint) destino, (uint) 0x3);
 
-
 	//copia el codigo 
-	breakpoint();
 	uint i;
-	for(i = 0; i < 1024; i++){
-		*( (uint*) (0x404000 + i) ) = *( (uint*) (0x403000 + i) ); //tiraba general protaccion, hay queprobarlo de nuevo
+	for(i = 0x0; i < 0x400; i++){
+		* (uint*) (0x404000 + i*4) = * (uint*) (0x403000 + i*4); //tiraba general proteccion, hay queprobarlo de nuevo
 	}
 
 	mmu_mapear_pagina  ( 0x400000, cr3, (uint) destino, 0x3 );
 
 	mmu_unmapear_pagina( 0x403000, cr32 );
 	mmu_unmapear_pagina( 0x404000, cr32 );
-
 }
 
 
@@ -106,7 +101,7 @@ uint mmu_mapear_pagina(uint virt, uint cr3, uint fisica, uint attrs){
 
 	//recorre directorios
 	page_directory_entry *directoryEntry = ((page_directory_entry*) pageDirectory) + pageDirOffset;
-	page_table_entry 	 *tableEntry;
+	page_table_entry *tableEntry;
 
 	//revisa si existe la pagina
 	if (directoryEntry->P == 0) { //preguntar por el bit de presente
@@ -114,8 +109,8 @@ uint mmu_mapear_pagina(uint virt, uint cr3, uint fisica, uint attrs){
 		init_page_table(tableEntry);
 		set_directory_entry(directoryEntry, tableEntry);
 	} else {
-		uint dir   = directoryEntry->dir_pagina_tabla;
-		tableEntry = (page_table_entry*) dir ; //Preguntar porque esto funciona
+		uint dir = (uint) directoryEntry->dir_pagina_tabla << 12;
+		tableEntry =  (page_table_entry*) dir; //Preguntar porque esto funciona
 	}
 
 	set_table_entry(tableEntry + pageTableOffset, fisica, attrs);
@@ -132,11 +127,11 @@ void mmu_unmapear_pagina(uint virt, uint cr3){
 	PTE_INDEX(virt, pageTableOffset);
 
 	//recorre directorios
-	page_directory_entry* directoryEntry = ( (page_directory_entry*) pageDirectory ) + pageDirOffset;
+	page_directory_entry* directoryEntry = (page_directory_entry*) pageDirectory  + pageDirOffset;
 
 	if (directoryEntry->P != 0) {
-		uint dir = directoryEntry->dir_pagina_tabla;
-		page_table_entry* tableEntry = (page_table_entry*) ( dir + pageTableOffset ); //Preguntar porque esto funciona
+		uint dir = directoryEntry->dir_pagina_tabla << 12;
+		page_table_entry* tableEntry = (page_table_entry*) dir + pageTableOffset ; //Preguntar porque esto funciona
 		tableEntry->P = 0;
 	}
 
@@ -159,21 +154,17 @@ void mmu_mapear_posicion_mapa(uint cr3, uint posicion) {
 
 //La funcion fue escrita previo al agregador de las estructuras page_----_entry, no se cambio en la reimplementacion
 void mmu_inicializar_dir_kernel(){
-	uint i,k;
-	uint* pageDirectory = (uint*) KERNEL_PAGE_DIRECTORY;
-	uint* pageTable 	= (uint*) KERNEL_PAGE_TABLE;
-
-	page_directory_entry *p = (page_directory_entry*) KERNEL_PAGE_DIRECTORY;
+	page_table_entry     *pageTable = (page_table_entry*)     KERNEL_PAGE_TABLE;
+	page_directory_entry *p 	    = (page_directory_entry*) KERNEL_PAGE_DIRECTORY;
+	uint i;
 	init_directory_table(p);
 
-	for(i=0; i<3; i++){
-		*(pageDirectory + i) = ((uint) 0x28000 + (i * (uint)0x1000) ) + 0x3;
-		uint j = (uint) 0x0;
-		for(k=0; k < 1024 ; k++){
-			*(pageTable + k) =  j + (uint) 0x3;
-			j = j + (uint) 0x1000;
-		}
-		pageTable += (uint) 0x1000;
+	for(i=0; i <4; i++){
+		set_directory_entry(p + i, pageTable + 0x400*i);
+	}
+
+	for (i = 0; i < 1024 * 1024 * 4; i+= 0x1000){
+		mmu_mapear_pagina(i, 0x27000, i, 0x3);
 	}
 }
 
@@ -192,14 +183,6 @@ void init_directory_table(page_directory_entry* table){
 		(table + i)->RW = PG_READ_WRITE;
 	}
 } 
-
-void init_table(uint* table){
-	int i;
-	for (i = 0; i < 1024; i++){
-		*(table + i) = 0x2;
-	}
-}
-
 
 void set_directory_entry(page_directory_entry* dir, page_table_entry* table){
 	dir->dir_pagina_tabla = (uint)table >> 12;
@@ -225,6 +208,6 @@ void set_table_entry(page_table_entry* table, uint fisic, uint attrs){
 	table->PCD   = 0;
 	table->PWT   = 0;
 	table->US    = 0;
-	table->RW    = attrs & 0x2;
-	table->P     = attrs & 0x1;
+	table->RW    = (attrs & 0x2) >> 1;
+	table->P     =  attrs & 0x1;
 }

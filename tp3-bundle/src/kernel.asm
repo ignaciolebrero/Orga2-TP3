@@ -18,7 +18,7 @@ extern inicializar_scheduler
 extern inicializar_dir_pirata
 extern mmu_inicializar_dir_kernel
 extern screen_actualizar_reloj_global
-
+extern mmu_mapear_pagina
 ;; Saltear seccion de datos
 jmp start
 
@@ -97,7 +97,6 @@ BITS 32
 
     ; Inicializar el directorio de paginas
     call mmu_inicializar_dir_kernel
-    
     ; Cargar directorio de paginas
 
     ; Habilitar paginacion
@@ -107,6 +106,15 @@ BITS 32
     mov eax, cr0
     or  eax, 0x80000000 ;pagination on!
     mov cr0, eax
+
+    push 0x400000
+    push 0x27000
+    push 0x80000
+    push 0x3
+    call mmu_mapear_pagina
+    
+    jmp $
+    jmp $
 
     imprimir_texto_mp iniciando_gr_msg, iniciando_gr_len, 0xE, 0, 64
 
@@ -133,13 +141,14 @@ BITS 32
     ; Cargar tarea inicial
     mov ax, 0x68
     ltr ax
-
+    
     ; Habilitar interrupciones
     call resetear_pic
     call habilitar_pic
     sti
 
     ; Saltar a la primera tarea: Idle
+    xchg bx,bx
     jmp 0x70:0
 
     ; Ciclar infinitamente (por si algo sale mal...)

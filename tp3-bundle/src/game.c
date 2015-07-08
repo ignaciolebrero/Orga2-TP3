@@ -303,7 +303,6 @@ uint game_syscall_pirata_mover(uint id, direccion dir)
 			} else {
 				game_explorar_posicion(pirata->jugador, x + pirx, y + piry);
 				mmu_mover_codigo_pirata(rcr3(), (uint*) (game_xy2lineal(x, y) + 0x500000) , (uint*) (game_xy2lineal(x + pirx, y + piry) + 0x500000) );
-				//TODO: implementar "cr3" general para todo el jugador de manera que cuando se cree un pirata nuevo, este tenga mapeadas todas las posiciones ya descubiertas
 			}
 		}
 	}

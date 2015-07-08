@@ -31,31 +31,31 @@ typedef struct page_selector{
 } __attribute__((__packed__)) page_selector;
 
 typedef struct page_directory_entry{
-	unsigned int  dir_pagina_tabla:20;
-	unsigned char disp:3;
-	unsigned char G :1;
-	unsigned char PS:1;
-	unsigned char disp0:1;
-	unsigned char A:1;
-	unsigned char PCD:1;
-	unsigned char PWT:1;
-	unsigned char US:1;
-	unsigned char RW:1;
 	unsigned char P:1;
+	unsigned char RW:1;
+	unsigned char US:1;
+	unsigned char PWT:1;
+	unsigned char PCD:1;
+	unsigned char A:1;
+	unsigned char disp0:1;
+	unsigned char PS:1;
+	unsigned char G:1;
+	unsigned char disp:3;
+	unsigned int  dir_pagina_tabla:20;
 } __attribute__((__packed__)) page_directory_entry;
 
 typedef struct page_table_entry{
-	unsigned int  dir_pagina_mem:20;
-	unsigned char disp:3;
-	unsigned char G :1;
-	unsigned char PAT:1;
-	unsigned char D:1;
-	unsigned char A:1;
-	unsigned char PCD:1;
-	unsigned char PWT:1;
-	unsigned char US:1;
-	unsigned char RW:1;
 	unsigned char P:1;
+	unsigned char RW:1;
+	unsigned char US:1;
+	unsigned char PWT:1;
+	unsigned char PCD:1;
+	unsigned char A:1;
+	unsigned char D:1;
+	unsigned char PAT:1;
+	unsigned char G:1;
+	unsigned char disp:3;
+	unsigned int  dir_pagina_mem:20;
 } __attribute__((__packed__)) page_table_entry;
 
 void* mmu_gimme_gimme_page_wachin();

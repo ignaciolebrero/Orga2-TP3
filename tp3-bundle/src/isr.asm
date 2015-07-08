@@ -18,9 +18,6 @@ extern print
 
 BITS 32
 
-selector: dd 0
-offset:   dw 0
-
 ;; Excepciones
 global _isr0
 global _isr1
@@ -246,9 +243,9 @@ _isr32:
 		cmp ax, cx
 		je .fin
 
-		mov [selector], ax
-		jmp [offset]
-		;offset - 32bits de 0
+		xchg bx,bx
+		mov [sched_tarea_selector], ax
+		jmp [sched_tarea_offset]
 		
 		.fin:	
 	popad
@@ -258,7 +255,7 @@ _isr32:
 ;; Rutina de atención del TECLADO
 ;; -------------------------------------------------------------------------- ;;
 ;Está parcialmente la implementacion de la activacion del debugger
-_isr33: 
+_isr33:
 	pushad
 	
 	call fin_intr_pic1
@@ -304,8 +301,8 @@ _isr46:
 		call game_syscall_manejar
 
 		mov ax, 0x70
-		mov [selector], ax ;idle
-		jmp [offset]
+		mov [sched_tarea_selector], ax ;idle
+		jmp [sched_tarea_offset]
 	popad
 	iret
 
@@ -330,5 +327,5 @@ matar_pirata:
 
 	.fin:
 	mov ax, 0x70
-	mov [selector], ax ;idle
-	jmp [offset]
+	mov [sched_tarea_selector], ax ;idle
+	jmp [sched_tarea_offset]

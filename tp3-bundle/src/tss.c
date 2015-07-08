@@ -131,7 +131,7 @@ void tss_inicializar_idle() {
     gdt[14].limit_16_19 = (unsigned char)  ( ((uint) &tss_idle + (sizeof(tss_idle) - 1)) >> 16); // pregutnar!!! la estructura lo corta?
 
     //setea dir virtual de la tarea idle en la tabla de directorios de paginas (cr3) del kernel
-    //inicializar_idle_cr3();
+    inicializar_idle_cr3();
 }
 
 uint inicializar_tarea(uint jugador, uint jugador_posicion, uint tipo){
@@ -143,44 +143,24 @@ uint inicializar_tarea(uint jugador, uint jugador_posicion, uint tipo){
         memoria_fisica = 0x121FFFF;
     }
 
-   jugador_actual[jugador_posicion].ptl      = 0;
-   jugador_actual[jugador_posicion].unused0  = 0;
-   jugador_actual[jugador_posicion].esp0     = (uint) mmu_gimme_gimme_page_wachin();
-   jugador_actual[jugador_posicion].ss0      = (ushort) 0x27000;
-   jugador_actual[jugador_posicion].unused1  = 0;
-   jugador_actual[jugador_posicion].esp1     = 0;
-   jugador_actual[jugador_posicion].ss1      = 0;
-   jugador_actual[jugador_posicion].unused2  = 0;
-   jugador_actual[jugador_posicion].esp2     = 0;
-   jugador_actual[jugador_posicion].ss2      = (ushort) 0x1000 ;//+ (uint) x;
-   jugador_actual[jugador_posicion].unused3  = 0;
-   jugador_actual[jugador_posicion].cr3      = inicializar_dir_pirata(memoria_fisica, jugador, tipo);
-   jugador_actual[jugador_posicion].eip      = memoria_fisica;
-   jugador_actual[jugador_posicion].eflags   = (uint) 0x202;
-   jugador_actual[jugador_posicion].eax      = 0;
-   jugador_actual[jugador_posicion].ecx      = 0;
-   jugador_actual[jugador_posicion].edx      = 0;
-   jugador_actual[jugador_posicion].ebx      = 0;
-   jugador_actual[jugador_posicion].esp      = memoria_fisica-0xC;
-   jugador_actual[jugador_posicion].ebp      = memoria_fisica-0xC;
-   jugador_actual[jugador_posicion].esi      = 0;
-   jugador_actual[jugador_posicion].edi      = 0;
-   jugador_actual[jugador_posicion].es       = 0x50;
-   jugador_actual[jugador_posicion].unused4  = 0;
-   jugador_actual[jugador_posicion].cs       = 0x48;
-   jugador_actual[jugador_posicion].unused5  = 0;
-   jugador_actual[jugador_posicion].ss       = 0x50;
-   jugador_actual[jugador_posicion].unused6  = 0;
-   jugador_actual[jugador_posicion].ds       = 0x50;
-   jugador_actual[jugador_posicion].unused7  = 0;
-   jugador_actual[jugador_posicion].fs       = 0x50;
-   jugador_actual[jugador_posicion].unused8  = 0;
-   jugador_actual[jugador_posicion].gs       = 0x50;
-   jugador_actual[jugador_posicion].unused9  = 0;
-   jugador_actual[jugador_posicion].ldt      = 0;
-   jugador_actual[jugador_posicion].unused10 = 0;
-   jugador_actual[jugador_posicion].dtrap    = 0;
-   jugador_actual[jugador_posicion].iomap    = 0xFFFF;
+    jugador_actual[jugador_posicion].esp0   = (uint) mmu_gimme_gimme_page_wachin();
+    jugador_actual[jugador_posicion].ss0    = (ushort) 0x27000;
+    jugador_actual[jugador_posicion].cr3    = inicializar_dir_pirata(memoria_fisica, jugador, tipo);
+    jugador_actual[jugador_posicion].eip    = 0x400000;
+    jugador_actual[jugador_posicion].eflags = (uint) 0x202;
+    jugador_actual[jugador_posicion].esp    = 0x400000-0xC;
+    jugador_actual[jugador_posicion].ebp    = 0x400000-0xC;
+    jugador_actual[jugador_posicion].es     = 0x58;
+    jugador_actual[jugador_posicion].cs     = 0x48;
+    jugador_actual[jugador_posicion].ss     = 0x58;
+    jugador_actual[jugador_posicion].ds     = 0x58;
+    jugador_actual[jugador_posicion].fs     = 0x58;
+    jugador_actual[jugador_posicion].gs     = 0x58;
+    jugador_actual[jugador_posicion].eax    = 0;   
+    jugador_actual[jugador_posicion].ecx    = 0;
+    jugador_actual[jugador_posicion].edx    = 0;
+    jugador_actual[jugador_posicion].ebx    = 0;
+    jugador_actual[jugador_posicion].iomap  = 0xFFFF;
 
     ushort gdt_posicion = obtener_segmento_disponible();
 
@@ -192,7 +172,9 @@ uint inicializar_tarea(uint jugador, uint jugador_posicion, uint tipo){
     gdt[gdt_posicion].limit_0_15  = (unsigned short) ( ((uint) jugador_actual + (sizeof(jugador_actual) - 1)) & 0xFFFF);
     gdt[gdt_posicion].limit_16_19 = (unsigned char)  ( ((uint) jugador_actual + (sizeof(jugador_actual) - 1)) >> 16); // pregutnar!!! la estructura lo corta?
 
-    gdt[gdt_posicion].p = 1;
+    gdt[gdt_posicion].p   = 1;
+    gdt[gdt_posicion].g   = 1;
+    gdt[gdt_posicion].dpl = 0x03;
 
     //devuelve selector
     return (gdt_posicion << 3);
