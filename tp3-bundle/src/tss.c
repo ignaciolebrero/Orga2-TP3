@@ -33,8 +33,8 @@ void inicializar_idle_cr3(){ //punto B, creo que esta "bien" hecho
 
 void tss_inicializar() {
 	//tss inicial es basura(no nos importa)
-	  tss_inicial.ptl 	   = 0;
-	  tss_inicial.unused0  = 0;
+	tss_inicial.ptl 	   = 0;
+	tss_inicial.unused0  = 0;
     tss_inicial.esp0 	   = 0;
     tss_inicial.ss0 	   = 0;
     tss_inicial.unused1  = 0;
@@ -77,26 +77,26 @@ void tss_inicializar() {
     gdt[13].base_23_16  = (unsigned char)  ( (uint) &tss_inicial >> 16); 
     gdt[13].base_31_24  = (unsigned char)  ( (uint) &tss_inicial >> 24); 
     
-    gdt[13].limit_0_15  = (unsigned short) ( ((uint) &tss_inicial + (sizeof(tss_inicial) - 1)) & 0xFFFF);
-    gdt[13].limit_16_19 = (unsigned char)  ( ((uint) &tss_inicial + (sizeof(tss_inicial) - 1)) >> 16); // pregutnar!!! la estructura lo corta?
+    gdt[13].limit_0_15  = (unsigned short) ( (sizeof(tss_inicial) - 1) & 0xFFFF);
+    gdt[13].limit_16_19 = (unsigned char)  ( (sizeof(tss_inicial) - 1) >> 16); // pregutnar!!! la estructura lo corta?
 }
 
 void tss_inicializar_idle() {
     //TODO: arreglar los get
-    tss_idle.ptl 	    = 0;
-	  tss_idle.unused0  = 0;
+    tss_idle.ptl 	  = 0;
+	tss_idle.unused0  = 0;
     tss_idle.esp0 	  = 0x27000;
-    tss_idle.ss0 	    = 0x50;
+    tss_idle.ss0 	  = 0x50;
     tss_idle.unused1  = 0;
     tss_idle.esp1 	  = 0;
-    tss_idle.ss1 	    = 0;
+    tss_idle.ss1 	  = 0;
     tss_idle.unused2  = 0;
     tss_idle.esp2 	  = 0;
-    tss_idle.ss2 	    = 0;
+    tss_idle.ss2 	  = 0;
     tss_idle.unused3  = 0;
     tss_idle.cr3 	  = 0x27000;
     tss_idle.eip 	  = 0x16000;
-    tss_idle.eflags = 0x202;
+    tss_idle.eflags   = 0x202;
     tss_idle.eax 	  = 0;
     tss_idle.ecx 	  = 0;
     tss_idle.edx 	  = 0;
@@ -127,8 +127,8 @@ void tss_inicializar_idle() {
     gdt[14].base_23_16  = (unsigned char)  ( (uint) &tss_idle >> 16 ); 
     gdt[14].base_31_24  = (unsigned char)  ( (uint) &tss_idle >> 24 ); 
    
-    gdt[14].limit_0_15  = (unsigned short) ( ((uint) &tss_idle + (sizeof(tss_idle) - 1)) & 0xFFFF);
-    gdt[14].limit_16_19 = (unsigned char)  ( ((uint) &tss_idle + (sizeof(tss_idle) - 1)) >> 16); // pregutnar!!! la estructura lo corta?
+    gdt[14].limit_0_15  = (unsigned short) ( (sizeof(tss_idle) - 1) & 0xFFFF);
+    gdt[14].limit_16_19 = (unsigned char)  ( (sizeof(tss_idle) - 1) >> 16);
 
     //setea dir virtual de la tarea idle en la tabla de directorios de paginas (cr3) del kernel
     inicializar_idle_cr3();
@@ -137,50 +137,67 @@ void tss_inicializar_idle() {
 uint inicializar_tarea(uint jugador, uint jugador_posicion, uint tipo){
     tss *jugador_actual = tss_obtener_jugador(jugador);
     uint memoria_fisica;
-    if (jugador == 0) { 
+    if (jugador == 0) {
         memoria_fisica = 0x500000;
     } else {
         memoria_fisica = 0x121FFFF;
     }
 
-    jugador_actual[jugador_posicion].esp0   = (uint) mmu_gimme_gimme_page_wachin();
-    jugador_actual[jugador_posicion].ss0    = (ushort) 0x27000;
-    jugador_actual[jugador_posicion].cr3    = inicializar_dir_pirata(memoria_fisica, jugador, tipo);
-    jugador_actual[jugador_posicion].eip    = 0x400000;
-    jugador_actual[jugador_posicion].eflags = (uint) 0x202;
-    jugador_actual[jugador_posicion].esp    = 0x400000-0xC;
-    jugador_actual[jugador_posicion].ebp    = 0x400000-0xC;
-    jugador_actual[jugador_posicion].es     = 0x58;
-    jugador_actual[jugador_posicion].cs     = 0x48;
-    jugador_actual[jugador_posicion].ss     = 0x58;
-    jugador_actual[jugador_posicion].ds     = 0x58;
-    jugador_actual[jugador_posicion].fs     = 0x58;
-    jugador_actual[jugador_posicion].gs     = 0x58;
-    jugador_actual[jugador_posicion].eax    = 0;   
-    jugador_actual[jugador_posicion].ecx    = 0;
-    jugador_actual[jugador_posicion].edx    = 0;
-    jugador_actual[jugador_posicion].ebx    = 0;
-    jugador_actual[jugador_posicion].iomap  = 0xFFFF;
+    jugador_actual[jugador_posicion].ptl     = 0;
+    jugador_actual[jugador_posicion].unused0 = 0;
+    jugador_actual[jugador_posicion].esp0    = (uint) mmu_gimme_gimme_page_wachin();
+    jugador_actual[jugador_posicion].ss0     = 0x50;
+    jugador_actual[jugador_posicion].unused1 = 0;
+    jugador_actual[jugador_posicion].esp1    = 0;
+    jugador_actual[jugador_posicion].ss1     = 0;
+    jugador_actual[jugador_posicion].unused2 = 0;
+    jugador_actual[jugador_posicion].esp2    = 0;
+    jugador_actual[jugador_posicion].ss2     = 0;
+    jugador_actual[jugador_posicion].unused3 = 0;
+    jugador_actual[jugador_posicion].cr3     = inicializar_dir_pirata(memoria_fisica, jugador, tipo);
+    jugador_actual[jugador_posicion].eip     = 0x400000;
+    jugador_actual[jugador_posicion].eflags  = 0x202;
+    jugador_actual[jugador_posicion].eax     = 0;
+    jugador_actual[jugador_posicion].ecx     = 0;
+    jugador_actual[jugador_posicion].edx     = 0;
+    jugador_actual[jugador_posicion].ebp     = 0;
+    jugador_actual[jugador_posicion].esp     = 0x401000-0xC;
+    jugador_actual[jugador_posicion].ebp     = 0x401000-0xC;
+    jugador_actual[jugador_posicion].edi     = 0;
+    jugador_actual[jugador_posicion].es      = 0x58;
+    jugador_actual[jugador_posicion].unused4 = 0;
+    jugador_actual[jugador_posicion].cs      = 0x48;
+    jugador_actual[jugador_posicion].unused5 = 0;
+    jugador_actual[jugador_posicion].ss      = 0x58;
+    jugador_actual[jugador_posicion].unused6 = 0;
+    jugador_actual[jugador_posicion].ds      = 0x58;
+    jugador_actual[jugador_posicion].unused7 = 0;
+    jugador_actual[jugador_posicion].fs      = 0x58;
+    jugador_actual[jugador_posicion].unused8 = 0;
+    jugador_actual[jugador_posicion].gs      = 0x58;
+    jugador_actual[jugador_posicion].unused9 = 0;
+    jugador_actual[jugador_posicion].iomap   = 0xFFFF;
 
-    ushort gdt_posicion = obtener_segmento_disponible();
+    uint gdt_posicion = obtener_segmento_disponible();
 
     //setea segmento libre
-    gdt[gdt_posicion].base_0_15   = (unsigned short) ( (uint) jugador_actual & 0xFFFF );
-    gdt[gdt_posicion].base_23_16  = (unsigned char)  ( (uint) jugador_actual >> 16 ); 
-    gdt[gdt_posicion].base_31_24  = (unsigned char)  ( (uint) jugador_actual >> 24 ); 
+    gdt[gdt_posicion].base_0_15   = (unsigned short) (uint) &(jugador_actual[jugador_posicion]);
+    gdt[gdt_posicion].base_23_16  = (unsigned char)  (uint) &(jugador_actual[jugador_posicion]) >> 16; 
+    gdt[gdt_posicion].base_31_24  = (unsigned char)  (uint) &(jugador_actual[jugador_posicion]) >> 24; 
    
-    gdt[gdt_posicion].limit_0_15  = (unsigned short) ( ((uint) jugador_actual + (sizeof(jugador_actual) - 1)) & 0xFFFF);
-    gdt[gdt_posicion].limit_16_19 = (unsigned char)  ( ((uint) jugador_actual + (sizeof(jugador_actual) - 1)) >> 16); // pregutnar!!! la estructura lo corta?
+    gdt[gdt_posicion].limit_0_15  = (unsigned short)  ( ( (uint) (sizeof(jugador_actual[jugador_posicion]) - 1)) & 0xFFFF);
+    gdt[gdt_posicion].limit_16_19 = (unsigned char)   ( ( (uint) (sizeof(jugador_actual[jugador_posicion]) - 1)) >> 16);
 
-    gdt[gdt_posicion].p   = 1;
-    gdt[gdt_posicion].g   = 1;
-    gdt[gdt_posicion].dpl = 0x03;
+    gdt[gdt_posicion].p    = 1;
+    gdt[gdt_posicion].g    = 1;
+    gdt[gdt_posicion].dpl  = 0x03;
+    gdt[gdt_posicion].type = 0x09;
 
     //devuelve selector
     return (gdt_posicion << 3);
 }
 
-ushort obtener_segmento_disponible(){
+uint obtener_segmento_disponible(){
     int i = 15;
     while( gdt[i].p == 1 ) { i++; }
     return i;

@@ -97,8 +97,9 @@ BITS 32
 
     ; Inicializar el directorio de paginas
     call mmu_inicializar_dir_kernel
+    
     ; Cargar directorio de paginas
-
+    
     ; Habilitar paginacion
     mov eax, 0x27000
     mov cr3, eax
@@ -106,15 +107,6 @@ BITS 32
     mov eax, cr0
     or  eax, 0x80000000 ;pagination on!
     mov cr0, eax
-
-    push 0x400000
-    push 0x27000
-    push 0x80000
-    push 0x3
-    call mmu_mapear_pagina
-    
-    jmp $
-    jmp $
 
     imprimir_texto_mp iniciando_gr_msg, iniciando_gr_len, 0xE, 0, 64
 
@@ -148,7 +140,6 @@ BITS 32
     sti
 
     ; Saltar a la primera tarea: Idle
-    xchg bx,bx
     jmp 0x70:0
 
     ; Ciclar infinitamente (por si algo sale mal...)

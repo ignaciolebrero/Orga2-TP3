@@ -237,15 +237,16 @@ _isr32:
 		je .fin
 		
 		call fin_intr_pic1
-		call sched_tick ;lo que devuelve es un selector de segmento, no?
+		call sched_tick
 
+		xor ecx, ecx
 		str cx	
 		cmp ax, cx
 		je .fin
 
 		xchg bx,bx
 		mov [sched_tarea_selector], ax
-		jmp [sched_tarea_offset]
+		jmp far [sched_tarea_offset]
 		
 		.fin:	
 	popad

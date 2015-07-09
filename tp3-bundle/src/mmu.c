@@ -46,54 +46,58 @@ void* mmu_gimme_gimme_page_wachin(){
 
 uint inicializar_dir_pirata(uint fisicmem, uint elteam, uint tipo_pirata){
 	page_directory_entry* pageDirectory = (page_directory_entry*) mmu_gimme_gimme_page_wachin();
-
 	//inicializa pagedirectory sin entradas
 	init_directory_table(pageDirectory);
+
 	uint cr3 = (uint) pageDirectory;
 	if (elteam == JUGADOR_A) {
-		mmu_mapear_pagina( (uint) 0x800000, cr3, (uint) 0x500000, (uint) 0x03);
+		mmu_mapear_pagina( (uint) 0x800000, cr3, (uint) 0x500000, (uint) 0x07);
 
-		mmu_mapear_pagina( (uint) 0x800000 + (uint) 0x1000 * 01, cr3, (uint) 0x500000 + (uint) 0x1000 * 01, (uint) 0x03);
-		mmu_mapear_pagina( (uint) 0x800000 + (uint) 0x1000 * 80, cr3, (uint) 0x500000 + (uint) 0x1000 * 80, (uint) 0x03);
-		mmu_mapear_pagina( (uint) 0x800000 + (uint) 0x1000 * 81, cr3, (uint) 0x500000 + (uint) 0x1000 * 81, (uint) 0x03);
+		mmu_mapear_pagina( (uint) 0x800000 + (uint) 0x1000 * 01, cr3, (uint) 0x500000 + (uint) 0x1000 * 01, (uint) 0x07);
+		mmu_mapear_pagina( (uint) 0x800000 + (uint) 0x1000 * 80, cr3, (uint) 0x500000 + (uint) 0x1000 * 80, (uint) 0x07);
+		mmu_mapear_pagina( (uint) 0x800000 + (uint) 0x1000 * 81, cr3, (uint) 0x500000 + (uint) 0x1000 * 81, (uint) 0x07);
 	} else {
-		mmu_mapear_pagina( ((uint) 0x1520000-1), cr3, ((uint) 0x121FFFF-1), (uint) 0x03);
+		mmu_mapear_pagina( ((uint) 0x1520000-1), cr3, ((uint) 0x121FFFF-1), (uint) 0x07);
 		
-		mmu_mapear_pagina( ((uint) 0x1520000-1) - (uint) 0x1000 * 01, cr3, ((uint) 0x121FFFF-1) - (uint) 0x1000 * 01, (uint) 0x03);
-		mmu_mapear_pagina( ((uint) 0x1520000-1) - (uint) 0x1000 * 80, cr3, ((uint) 0x121FFFF-1) - (uint) 0x1000 * 80, (uint) 0x03);
-		mmu_mapear_pagina( ((uint) 0x1520000-1) - (uint) 0x1000 * 81, cr3, ((uint) 0x121FFFF-1) - (uint) 0x1000 * 81, (uint) 0x03);
+		mmu_mapear_pagina( ((uint) 0x1520000-1) - (uint) 0x1000 * 01, cr3, ((uint) 0x121FFFF-1) - (uint) 0x1000 * 01, (uint) 0x07);
+		mmu_mapear_pagina( ((uint) 0x1520000-1) - (uint) 0x1000 * 80, cr3, ((uint) 0x121FFFF-1) - (uint) 0x1000 * 80, (uint) 0x07);
+		mmu_mapear_pagina( ((uint) 0x1520000-1) - (uint) 0x1000 * 81, cr3, ((uint) 0x121FFFF-1) - (uint) 0x1000 * 81, (uint) 0x07);
 	}
 
 	if(tipo_pirata == 0){
-		mmu_mapear_pagina((uint) 0x400000, cr3, (uint) 0x10000 + ( (uint) 0x2000 * elteam), (uint) 0x3);
 		mmu_mover_codigo_pirata(cr3, (uint*) fisicmem, (uint*) ( 0x10000 + ( 0x2000 * elteam)));
 	} else {
-		mmu_mapear_pagina((uint) 0x400000, cr3, (uint) 0x11000 + ( (uint) 0x2000 * elteam), (uint) 0x3);
-		mmu_mover_codigo_pirata(cr3, (uint*) fisicmem, (uint*) (0x11000 + ( (uint) 0x2000 * elteam)));
+		mmu_mover_codigo_pirata(cr3, (uint*) fisicmem, (uint*) ( 0x11000 + ( 0x2000 * elteam)));
 	}
+	
+	uint i;
+	for (i = 0; i < 1024 * 1024 * 4; i+= 0x1000){
+		mmu_mapear_pagina(i, cr3, i, 0x3);
+	}
+
 	return cr3;
 }
 
-void mmu_mover_codigo_pirata(uint cr3, uint *source, uint *destino){ //TODO: esta funcion esta mal hecha probablemnte (veeeeeeeeeeeeeeeeeeeer)
+void mmu_mover_codigo_pirata(uint cr3, uint *destino, uint *source){ //TODO: esta funcion esta mal hecha probablemnte (veeeeeeeeeeeeeeeeeeeer)
 	uint cr32 = rcr3();
 
-	mmu_mapear_pagina( (uint) 0x403000, cr32, (uint) source , (uint) 0x3);
-	mmu_mapear_pagina( (uint) 0x404000, cr32, (uint) destino, (uint) 0x3);
+	mmu_mapear_pagina( (uint) 0x403000, cr32, (uint) source , (uint) 0x7);
+	mmu_mapear_pagina( (uint) 0x404000, cr32, (uint) destino, (uint) 0x7);
 
 	//copia el codigo 
 	uint i;
 	for(i = 0x0; i < 0x400; i++){
-		* (uint*) (0x404000 + i*4) = * (uint*) (0x403000 + i*4); //tiraba general proteccion, hay queprobarlo de nuevo
+		* (uint*) (0x404000 + i*4) = * (uint*) (0x403000 + i*4);
 	}
 
-	mmu_mapear_pagina  ( 0x400000, cr3, (uint) destino, 0x3 );
+	mmu_mapear_pagina (0x400000, cr3 , (uint) destino, 0x3);
 
 	mmu_unmapear_pagina( 0x403000, cr32 );
 	mmu_unmapear_pagina( 0x404000, cr32 );
 }
 
 
-uint mmu_mapear_pagina(uint virt, uint cr3, uint fisica, uint attrs){
+void mmu_mapear_pagina(uint virt, uint cr3, uint fisica, uint attrs){
 	uint pageDirectory = cr3 & 0XFFFFF000;
 	uint pageDirOffset, pageTableOffset;
 	PDE_INDEX(virt, pageDirOffset);
@@ -107,7 +111,7 @@ uint mmu_mapear_pagina(uint virt, uint cr3, uint fisica, uint attrs){
 	if (directoryEntry->P == 0) { //preguntar por el bit de presente
 		tableEntry = (page_table_entry*) mmu_gimme_gimme_page_wachin();
 		init_page_table(tableEntry);
-		set_directory_entry(directoryEntry, tableEntry);
+		set_directory_entry(directoryEntry, tableEntry, attrs);
 	} else {
 		uint dir = (uint) directoryEntry->dir_pagina_tabla << 12;
 		tableEntry =  (page_table_entry*) dir; //Preguntar porque esto funciona
@@ -116,7 +120,6 @@ uint mmu_mapear_pagina(uint virt, uint cr3, uint fisica, uint attrs){
 	set_table_entry(tableEntry + pageTableOffset, fisica, attrs);
 
 	tlbflush();
-	return 0;	
 }
 
 void mmu_unmapear_pagina(uint virt, uint cr3){
@@ -136,9 +139,6 @@ void mmu_unmapear_pagina(uint virt, uint cr3){
 	}
 
 	tlbflush();
-
-	int a = 0;
-	a = a+1;
 }
 
 void mmu_mapear_posicion_mapa(uint cr3, uint posicion) {
@@ -160,7 +160,7 @@ void mmu_inicializar_dir_kernel(){
 	init_directory_table(p);
 
 	for(i=0; i <4; i++){
-		set_directory_entry(p + i, pageTable + 0x400*i);
+		set_directory_entry(p + i, pageTable + 0x400*i, 0x3);
 	}
 
 	for (i = 0; i < 1024 * 1024 * 4; i+= 0x1000){
@@ -173,18 +173,20 @@ void init_page_table(page_table_entry* table){
 	for(i=0; i<1024; i++){
 		(table + i)->P  = 0;
 		(table + i)->RW = PG_READ_WRITE;
+		(table + i)->US = PG_USER;
 	}
 }
 
 void init_directory_table(page_directory_entry* table){
 	uint i;
 	for(i=0; i<1024; i++){
-		(table + i)->P = 0;
+		(table + i)->P  = 0;
 		(table + i)->RW = PG_READ_WRITE;
+		(table + i)->US = PG_USER;
 	}
 } 
 
-void set_directory_entry(page_directory_entry* dir, page_table_entry* table){
+void set_directory_entry(page_directory_entry* dir, page_table_entry* table, uint attrs){
 	dir->dir_pagina_tabla = (uint)table >> 12;
 	dir->disp  = 0;
 	dir->G 	   = 0;
@@ -193,9 +195,9 @@ void set_directory_entry(page_directory_entry* dir, page_table_entry* table){
 	dir->A 	   = 0;
 	dir->PCD   = 0;
 	dir->PWT   = 0;
-	dir->US    = PG_USER;
-	dir->RW    = PG_READ_WRITE;
-	dir->P     = PG_PRESENT;
+	dir->US  = (attrs & 0x4) >> 2;
+	dir->RW  = (attrs & 0x2) >> 1;
+	dir->P   =  attrs & 0x1;
 }
 
 void set_table_entry(page_table_entry* table, uint fisic, uint attrs){
@@ -207,7 +209,7 @@ void set_table_entry(page_table_entry* table, uint fisic, uint attrs){
 	table->A 	 = 0;
 	table->PCD   = 0;
 	table->PWT   = 0;
-	table->US    = 0;
+	table->US    = (attrs & 0x4) >> 2;
 	table->RW    = (attrs & 0x2) >> 1;
-	table->P     =  attrs & 0x1;
+	table->P     =  attrs & 0x1; 
 }

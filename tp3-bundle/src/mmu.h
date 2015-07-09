@@ -66,7 +66,7 @@ uint inicializar_dir_pirata(uint fisicmem, uint elteam, uint tipo);
 	
 void mmu_mapear_posicion_mapa(uint cr3, uint posicion);
 
-uint mmu_mapear_pagina(uint virt, uint cr3, uint fisica, uint attrs);
+void mmu_mapear_pagina(uint virt, uint cr3, uint fisica, uint attrs);
 
 void mmu_unmapear_pagina(uint virt, uint cr3);
 
@@ -80,7 +80,7 @@ void init_page_table(page_table_entry* table);
 
 void init_directory_table(page_directory_entry* table);
 
-void set_directory_entry(page_directory_entry* dir, page_table_entry* table);
+void set_directory_entry(page_directory_entry* dir, page_table_entry* table, uint attrs);
 
 void set_table_entry(page_table_entry* table, uint fisic, uint attrs);
 	

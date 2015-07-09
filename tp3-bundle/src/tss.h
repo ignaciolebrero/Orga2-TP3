@@ -55,11 +55,11 @@ typedef struct str_tss {
     unsigned short  iomap;
 } __attribute__((__packed__, aligned (8))) tss;
 
-void   tss_inicializar();
-void   tss_inicializar_idle();
-uint   inicializar_tarea(uint, uint, uint);
-tss*   tss_obtener_jugador(uint);
-ushort obtener_segmento_disponible();
-uint   tss_obtener_cr3(uint id);
+void tss_inicializar();
+void tss_inicializar_idle();
+uint inicializar_tarea(uint, uint, uint);
+uint obtener_segmento_disponible();
+uint tss_obtener_cr3(uint id);
+tss* tss_obtener_jugador(uint);
 
 #endif  /* !__TSS_H__ */
