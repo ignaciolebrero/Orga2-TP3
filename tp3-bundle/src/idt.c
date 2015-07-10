@@ -37,8 +37,15 @@ idt_descriptor IDT_DESC = {
 #define IDT_ENTRY(numero)                                                                                        \
     idt[numero].offset_0_15  = (unsigned short) ((unsigned int)(&_isr ## numero) & (unsigned int) 0xFFFF);        \
     idt[numero].segsel       = (unsigned short) 0x40;   /* codigo de nivel 0 en toda la memoria TODO: preguntar, hay un segmento predeterminado de memoria para esto??*/ \
-    idt[numero].attr         = (unsigned short) 0x8E00; /* P-DPL-0D110-000-|||| / 1-00-01110-000-|||| / 1000 - 1110 - 0000*/ \
+    idt[numero].attr         = (unsigned short) 0x8E00; /* P-DPL-0D110-000-|||| / 1-000-01110-000-|||| */ \
     idt[numero].offset_16_31 = (unsigned short) ((unsigned int)(&_isr ## numero) >> 16 & (unsigned int) 0xFFFF);
+
+#define IDT_ENTRY_SYSCALL(numero)                                                                                        \
+    idt[numero].offset_0_15  = (unsigned short) ((unsigned int)(&_isr ## numero) & (unsigned int) 0xFFFF);        \
+    idt[numero].segsel       = (unsigned short) 0x40;   /* codigo de nivel 0 en toda la memoria TODO: preguntar, hay un segmento predeterminado de memoria para esto??*/ \
+    idt[numero].attr         = (unsigned short) 0xBE00; /* P-DPL-0D110-000-|||| / 1-011-01110-000-|||| */ \
+    idt[numero].offset_16_31 = (unsigned short) ((unsigned int)(&_isr ## numero) >> 16 & (unsigned int) 0xFFFF);
+
 
 void idt_inicializar() { //TODO: falta separar IDT_ENTRY por cada una en particular
     // Excepciones | 9, 15 y 21 en adelante quedan reservadas
@@ -61,8 +68,9 @@ void idt_inicializar() { //TODO: falta separar IDT_ENTRY por cada una en particu
     IDT_ENTRY(18); // Machine Check
     IDT_ENTRY(19); // SIMD floating-Point Exception
     IDT_ENTRY(20); // Virtualization Exception
-    IDT_ENTRY(32); // TICK
-    IDT_ENTRY(33); // TECLADO
+    IDT_ENTRY(32); // Tick
+    IDT_ENTRY(33); // Teclado
+    IDT_ENTRY_SYSCALL(46); // Syscall
     IDT_ENTRY(70); // REVISAR ESTO ES LA INTERRUPCION DE SOFT
 }
     

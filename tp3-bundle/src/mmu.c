@@ -90,7 +90,7 @@ void mmu_mover_codigo_pirata(uint cr3, uint *destino, uint *source){ //TODO: est
 		* (uint*) (0x404000 + i*4) = * (uint*) (0x403000 + i*4);
 	}
 
-	mmu_mapear_pagina (0x400000, cr3 , (uint) destino, 0x3);
+	mmu_mapear_pagina (0x400000, cr3 , (uint) destino, 0x7);
 
 	mmu_unmapear_pagina( 0x403000, cr32 );
 	mmu_unmapear_pagina( 0x404000, cr32 );
@@ -195,9 +195,9 @@ void set_directory_entry(page_directory_entry* dir, page_table_entry* table, uin
 	dir->A 	   = 0;
 	dir->PCD   = 0;
 	dir->PWT   = 0;
-	dir->US  = (attrs & 0x4) >> 2;
-	dir->RW  = (attrs & 0x2) >> 1;
-	dir->P   =  attrs & 0x1;
+	dir->US    = (attrs & 0x4) >> 2;
+	dir->RW    = (attrs & 0x2) >> 1;
+	dir->P     =  attrs & 0x1;
 }
 
 void set_table_entry(page_table_entry* table, uint fisic, uint attrs){

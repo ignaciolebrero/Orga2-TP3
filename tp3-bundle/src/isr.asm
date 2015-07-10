@@ -40,6 +40,7 @@ global _isr19
 global _isr20
 global _isr32
 global _isr33
+global _isr46
 global _isr70
 
 ;; scheduler
