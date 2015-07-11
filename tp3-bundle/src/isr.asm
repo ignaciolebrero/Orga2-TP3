@@ -40,7 +40,6 @@ global _isr19
 global _isr20
 global _isr32
 global _isr33
-global _isr46
 global _isr70
 
 ;; scheduler
@@ -219,14 +218,7 @@ _isr20:
 		jmp matar_pirata
 	popad
 	iret
-
-_isr70:
-	pushad
-	mov eax, 0x42
-	popad
-	iret
-
-
+	
 ;;
 ;; Rutina de atención del RELOJ
 ;; -------------------------------------------------------------------------- ;;
@@ -296,7 +288,7 @@ pop:
 ;; Rutinas de atención de las SYSCALLS
 ;; -------------------------------------------------------------------------- ;;
 
-_isr46:
+_isr70:
 	pushad
 		push eax
 		push ecx
