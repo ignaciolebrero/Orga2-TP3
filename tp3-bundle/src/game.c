@@ -31,8 +31,6 @@ uint botines[BOTINES_CANTIDAD][3] = { // TRIPLAS DE LA FORMA (X, Y, MONEDAS)
 jugador_t jugadorA;
 jugador_t jugadorB;
 
-juego game;
-
 pirata_t* piratas[MAX_CANT_PIRATAS_VIVOS*2];
 
 void* error()
@@ -152,7 +150,6 @@ void game_inicializar()
 	jugadorA.puntuacion = 0;
 	jugadorB.puntuacion = 0;
 
-	game.id_proximo_pirata = 0;
 }
 
 void game_jugador_inicializar(jugador_t *j)

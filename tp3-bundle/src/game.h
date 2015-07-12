@@ -24,11 +24,6 @@ typedef enum direccion_e { ARR = 0x4, ABA = 0x7, DER = 0xA, IZQ = 0xD} direccion
 #define MAPA_ANCHO             80
 #define MAPA_ALTO              44
 
-
-typedef struct juego{
-    uint id_proximo_pirata;
-} juego;
-
 typedef struct pirata_t{
     struct jugador_t *jugador;
     unsigned char type;

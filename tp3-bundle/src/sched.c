@@ -31,7 +31,7 @@ void inicializar_scheduler(){
 }
 
 uint sched_tarea_actual_id(){
-	switch( scheduler.tarea_actual ){
+	/*switch( scheduler.tarea_actual ){
 		case(JUGADOR_A):
 			return scheduler.jugador_A.tareas[scheduler.jugador_A.pos].id;
 		break;
@@ -40,6 +40,12 @@ uint sched_tarea_actual_id(){
 		break;
 		default:
 			return NULL_ID;
+	}*/
+
+	if (scheduler.tarea_actual == JUGADOR_A) {
+		return scheduler.jugador_A.tareas[scheduler.jugador_A.pos].id;
+	} else {
+		return scheduler.jugador_A.tareas[scheduler.jugador_B.pos].id;
 	}
 }
 
