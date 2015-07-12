@@ -339,9 +339,9 @@ uint game_syscall_pirata_posicion(uint id, int idx)
 
 void game_syscall_manejar(uint syscall, uint param1)
 {
-    uint posicion, id;
+    uint id = sched_tarea_actual_id();
+    uint posicion;
     direccion dir;
-    id = sched_tarea_actual_id();
 
     switch(syscall){
     	case(0x1):

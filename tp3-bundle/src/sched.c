@@ -31,19 +31,16 @@ void inicializar_scheduler(){
 }
 
 uint sched_tarea_actual_id(){
-	uint result;
-
 	switch( scheduler.tarea_actual ){
 		case(JUGADOR_A):
-			result = scheduler.jugador_A.tareas[scheduler.jugador_A.pos].id;
+			return scheduler.jugador_A.tareas[scheduler.jugador_A.pos].id;
 		break;
 		case(JUGADOR_B):
-			result = scheduler.jugador_B.tareas[scheduler.jugador_B.pos].id;
+			return scheduler.jugador_B.tareas[scheduler.jugador_B.pos].id;
 		break;
 		default:
-			result = NULL_ID;
+			return NULL_ID;
 	}
-	return result;
 }
 
 uint* sched_tick(){
@@ -65,8 +62,7 @@ uint* sched_tick(){
 
 uint* proximaTarea(tarea_scheduler tarea) {
 	do {
-		tarea.pos++;
-		if (tarea.pos == 8) { tarea.pos = 0; }
+		tarea.pos = (tarea.pos + 1) % 8;
 	} while (tarea.tareas[tarea.pos].id == NULL_ID);
 	
 	return tarea.tareas[tarea.pos].selector;
