@@ -118,7 +118,6 @@ void game_calcular_posiciones_vistas(int *vistas_x, int *vistas_y, int x, int y)
 	}
 }
 
-
 void game_jugador_inicializar_mapa(jugador_t *jug)
 {
 	jug->pos_puerto = 0;
@@ -258,11 +257,11 @@ void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, int x, int y)
 void game_pirata_habilitar_posicion(jugador_t *j, pirata_t *pirata, int x, int y)
 {
 	uint pos = game_xy2lineal(x, y);
-	if ( pirata->id != NULL_ID_PIRATA 
-		 && game_posicion_valida(x,y) 
-		 && !j->posiciones_descubiertas[pos] ){
-			//mapea posicion nueva
-			mmu_mapear_posicion_mapa(rcr3(), pos);
+	if ( pirata->id != NULL_ID_PIRATA &&
+		game_posicion_valida(x,y)     && 
+		!j->posiciones_descubiertas[pos] ){
+			mmu_mapear_posicion_mapa(rcr3(), pos); //mapea posicion nueva
+			
 			//la agrega a la tabla de posiciones descubiertas del jugador
 			j->posiciones_descubiertas[j->ultima_posicion_descubierta] = pos;
 			j->ultima_posicion_descubierta++;
@@ -274,11 +273,11 @@ void game_pirata_habilitar_posicion(jugador_t *j, pirata_t *pirata, int x, int y
 
 void game_explorar_posicion(jugador_t *jugador, int c, int f)
 {
-	uint i = 0;
-	for (i=0; i<8; i++){
-		game_pirata_habilitar_posicion(jugador, jugador->piratas[i], c  , f);
-		game_pirata_habilitar_posicion(jugador, jugador->piratas[i], c+1, f);
-		game_pirata_habilitar_posicion(jugador, jugador->piratas[i], c-1, f);
+	uint i;
+	for (i = 0; i < 8; i++){
+		game_pirata_habilitar_posicion(jugador, jugador->piratas[i], c  , f  );
+		game_pirata_habilitar_posicion(jugador, jugador->piratas[i], c+1, f  );
+		game_pirata_habilitar_posicion(jugador, jugador->piratas[i], c-1, f  );
 		game_pirata_habilitar_posicion(jugador, jugador->piratas[i], c  , f-1);
 		game_pirata_habilitar_posicion(jugador, jugador->piratas[i], c  , f+1);
 		game_pirata_habilitar_posicion(jugador, jugador->piratas[i], c+1, f+1);
@@ -288,26 +287,23 @@ void game_explorar_posicion(jugador_t *jugador, int c, int f)
 	}
 }
 
-uint game_syscall_pirata_mover(uint id, direccion dir)
+void game_syscall_pirata_mover(uint id, direccion dir)
 {
-    pirata_t* pirata = id_pirata2pirata(id);
-
 	int x, y, pirx, piry;
+    pirata_t* pirata = id_pirata2pirata(id);
+	char posicion_actual = pirata->jugador->posiciones_descubiertas[ game_xy2lineal(x + pirx, y + piry) ];
+
 	game_dir2xy(dir, &x, &y);
 	game_lineal2xy(pirata->pos, &pirx, &piry);
-
-	if ( game_posicion_valida(x + pirx, y + piry) ) {
-		if ( !pirata->jugador->posiciones_descubiertas[ game_xy2lineal(x + pirx, y + piry) ] ) {
-			if (pirata->type == PIRATA_MINERO) { 
-				game_pirata_exploto();
-			} else {
-				game_explorar_posicion(pirata->jugador, x + pirx, y + piry);
-				mmu_mover_codigo_pirata(rcr3(), (uint*) (game_xy2lineal(x, y) + 0x500000) , (uint*) (game_xy2lineal(x + pirx, y + piry) + 0x500000) );
-			}
+	
+	if ( game_posicion_valida(x + pirx, y + piry) && !posicion_actual ) {
+		if (pirata->type == PIRATA_MINERO) { 
+			game_pirata_exploto();
+		} else {
+			game_explorar_posicion(pirata->jugador, x + pirx, y + piry);
+			mmu_mover_codigo_pirata(rcr3(), (uint*) (game_xy2lineal(x, y) + 0x500000) , (uint*) (game_xy2lineal(x + pirx, y + piry) + 0x500000) );
 		}
 	}
-
-    return 0;
 }
 
 void game_syscall_cavar(uint id)
@@ -335,7 +331,7 @@ uint game_syscall_pirata_posicion(uint id, int idx)
     return game_lineal2xy_formato(pirata->pos);
 }
 
-uint game_syscall_manejar(uint syscall, uint param1)
+void game_syscall_manejar(uint syscall, uint param1)
 {
     uint posicion, id;
     direccion dir;
@@ -354,16 +350,15 @@ uint game_syscall_manejar(uint syscall, uint param1)
     		game_syscall_pirata_posicion(id, posicion);
     	break;
     }
-    return 0;
 }
-
 
 uint obtener_posicion_botin(uint posicion)
 {
 	int x, y, i=0;
 	char resultado = FALSE;
 	game_lineal2xy(posicion, &x, &y);
-	while (i < BOTINES_CANTIDAD && resultado == FALSE) {
+
+	while (i < BOTINES_CANTIDAD && !resultado) {
 		resultado = resultado || ( botines[i][0] == x && botines[i][1] == y && botines[i][2] > 0);
 		i++;
 	}
@@ -374,8 +369,9 @@ void game_pirata_exploto()
 {
 	//TODO: averiguar en cuales excepciones hay que matar al pirata
 	pirata_t* pirata = id_pirata2pirata(sched_tarea_actual_id());
-	pirata->id = NULL_ID_PIRATA;
+	pirata->id 	 	 = NULL_ID_PIRATA;
 	scheduler_matar_actual_tarea_pirata();
+	
 	if (hay_mineros_disponibles(pirata->jugador) == TRUE) {
 		uint posCavar = obtener_pos_cavar_pendiente(pirata->jugador);
 		game_pirata_inicializar(PIRATA_MINERO, pirata->jugador->index, posCavar);
@@ -384,18 +380,21 @@ void game_pirata_exploto()
 
 char hay_mineros_disponibles(jugador_t* jugador)
 {
-	char result = FALSE;
 	uint i;
+	char result = FALSE;
+	
 	for(i=0; i<MAX_CANT_PIRATAS_VIVOS; i++){
 		result = result || jugador->mineros_pendientes[i]->id != NULL_ID_MINERO;
 	}
+	
 	return result;
 }
 
 uint obtener_pos_cavar_pendiente(jugador_t* jugador)
 {
-	uint i=0;
-	for( i=0; jugador->mineros_pendientes[i]->id == NULL_ID_MINERO ; i++ ){}
+	uint i = 0;
+	while (jugador->mineros_pendientes[i]->id == NULL_ID_MINERO) { i++; }		
+	
 	jugador->mineros_pendientes[i]->id = NULL_ID_MINERO;
 	return jugador->mineros_pendientes[i]->posCavar;
 }
@@ -404,6 +403,7 @@ pirata_t* game_pirata_en_posicion(uint x, uint y)
 {
 	pirata_t* pirata = NULL;
 	uint i = 0;
+
 	while (i<8 && pirata == NULL) {
 		int xl, yl;
 
