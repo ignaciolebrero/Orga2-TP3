@@ -38,6 +38,10 @@ void screen_actualizar_reloj_pirata(jugador_t *j, pirata_t *pirata){
     }
 }
 
+void screen_matar_pirata(uint id){
+    screen_pintar(96, C_BG_RED , 47, 10 + ( id * 4 ) ); //ver cual es el caracter que va
+}
+
 void screen_pintar(uchar c, uchar color, uint fila, uint columna)
 {
     p[fila][columna].c = c;

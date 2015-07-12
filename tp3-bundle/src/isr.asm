@@ -296,7 +296,7 @@ _isr70:
 
 		mov ax, 0x70
 		mov [sched_tarea_selector], ax ;idle
-		jmp [sched_tarea_offset]
+		jmp far [sched_tarea_offset]
 	popad
 	iret
 
