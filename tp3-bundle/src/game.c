@@ -368,10 +368,10 @@ void game_pirata_exploto()
 	pirata->id 	 	 = NULL_ID_PIRATA;
 	scheduler_matar_actual_tarea_pirata();
 	
-	if (hay_mineros_disponibles(pirata->jugador) == TRUE) {
+	/*if (hay_mineros_disponibles(pirata->jugador) == TRUE) {
 		uint posDestino = obtener_pos_cavar_pendiente(pirata->jugador);
 		game_pirata_inicializar(PIRATA_MINERO, pirata->jugador->index, posDestino);
-	}
+	}*/
 }
 
 char hay_mineros_disponibles(jugador_t* jugador)

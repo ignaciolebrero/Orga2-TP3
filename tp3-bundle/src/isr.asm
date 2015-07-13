@@ -290,10 +290,10 @@ pop:
 
 _isr70:
 	pushad
-		push eax
 		push ecx
+		push eax
 		call game_syscall_manejar
-		add  esp, 8 ;devuelvo la pila al setado original
+		add  esp, 8 ;devuelvo la pila al estado original
 
 		mov ax, 0x70
 		mov [sched_tarea_selector], ax ;idle
@@ -311,6 +311,7 @@ matar_pirata:
 	je  .matar
 
 	mov byte [pantalla_debug_activa], 0x0
+
 	;call debuggear_tarea
 	jmp .matar
 

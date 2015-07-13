@@ -124,8 +124,8 @@ void tss_inicializar_idle() {
 
     //setea el segmento de tss idle
     gdt[14].base_0_15   = (unsigned short) ( (uint) &tss_idle & 0xFFFF );
-    gdt[14].base_23_16  = (unsigned char)  ( (uint) &tss_idle >> 16 ); 
-    gdt[14].base_31_24  = (unsigned char)  ( (uint) &tss_idle >> 24 ); 
+    gdt[14].base_23_16  = (unsigned char)  ( (uint) &tss_idle >> 16 );
+    gdt[14].base_31_24  = (unsigned char)  ( (uint) &tss_idle >> 24 );
    
     gdt[14].limit_0_15  = (unsigned short) ( (sizeof(tss_idle) - 1) & 0xFFFF);
     gdt[14].limit_16_19 = (unsigned char)  ( (sizeof(tss_idle) - 1) >> 16);
@@ -162,7 +162,7 @@ uint inicializar_tarea(uint jugador, uint jugador_posicion, uint tipo, uint para
     jugador_actual[jugador_posicion].edx     = 0;
     jugador_actual[jugador_posicion].ebp     = 0;
     jugador_actual[jugador_posicion].esp     = 0x401000-0xC;
-    jugador_actual[jugador_posicion].ebp     = 0x401000;
+    jugador_actual[jugador_posicion].ebp     = 0x401000-0xC;
     jugador_actual[jugador_posicion].edi     = 0;
     jugador_actual[jugador_posicion].es      = 0x5B;
     jugador_actual[jugador_posicion].unused4 = 0;
@@ -197,9 +197,9 @@ uint inicializar_tarea(uint jugador, uint jugador_posicion, uint tipo, uint para
 
 void apilar_parametros(uint x, uint y, uint memoria_fisica){
     mmu_mapear_pagina(0x402000, rcr3(), memoria_fisica, 0x7);
-    * (uint*) (0x402000 + 0x1000 - 0x4) = x;    //apila parametro x //puede tirar page_fault
-    * (uint*) (0x402000 + 0x1000 - 0x8) = y;    //apila parametro y
-    * (uint*) (0x402000 + 0x1000 - 0xC) = 0xBA; //apila direccion de retorno
+    * (uint*) (0x402000 + 0x1000 - 0xC - 0x0) = x;    //apila parametro x //puede tirar page_fault
+    * (uint*) (0x402000 + 0x1000 - 0xC - 0x4) = y;    //apila parametro y
+    * (uint*) (0x402000 + 0x1000 - 0xC - 0x8) = 0xBA; //apila direccion de retorno
     mmu_unmapear_pagina(0x402000, rcr3());
 }
 
