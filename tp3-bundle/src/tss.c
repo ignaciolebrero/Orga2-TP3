@@ -197,9 +197,9 @@ uint inicializar_tarea(uint jugador, uint jugador_posicion, uint tipo, uint para
 
 void apilar_parametros(uint x, uint y, uint memoria_fisica){
     mmu_mapear_pagina(0x402000, rcr3(), memoria_fisica, 0x7);
-    * (uint*) (0x402000 + 0x1000 - 0) = x;    //apila parametro x //puede tirar page_fault
-    * (uint*) (0x402000 + 0x1000 - 4) = y;    //apila parametro y
-    * (uint*) (0x402000 + 0x1000 - 8) = 0xBA; //apila direccion de retorno
+    * (uint*) (0x402000 + 0x1000 - 0x4) = x;    //apila parametro x //puede tirar page_fault
+    * (uint*) (0x402000 + 0x1000 - 0x8) = y;    //apila parametro y
+    * (uint*) (0x402000 + 0x1000 - 0xC) = 0xBA; //apila direccion de retorno
     mmu_unmapear_pagina(0x402000, rcr3());
 }
 
