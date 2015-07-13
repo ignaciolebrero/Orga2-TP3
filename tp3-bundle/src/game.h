@@ -31,7 +31,7 @@ typedef struct pirata_t{
     uint id;
     uint clock;
     int  pos;
-    uint posCavar;
+    uint posDestino;
     // id unica, posicion, tipo, reloj
 } pirata_t;
 
@@ -62,7 +62,7 @@ void game_pirata_exploto();
 
 void game_jugador_inicializar(jugador_t *j);
 void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, int x, int y);
-void game_jugador_erigir_pirata(uint jugador, pirata_t* pirata, uint tipo);
+void game_jugador_erigir_pirata(uint jugador, pirata_t* pirata, uint tipo, uint parametros);
 void game_jugador_anotar_punto(jugador_t *j);
 void game_explorar_posicion(jugador_t *jugador, int x, int y);
 

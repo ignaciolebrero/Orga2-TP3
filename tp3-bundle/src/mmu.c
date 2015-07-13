@@ -79,10 +79,10 @@ uint inicializar_dir_pirata(uint fisicmem, uint elteam, uint tipo_pirata){
 }
 
 void mmu_mover_codigo_pirata(uint cr3, uint *destino, uint *source){ //TODO: esta funcion esta mal hecha probablemnte (veeeeeeeeeeeeeeeeeeeer)
-	uint cr32 = rcr3();
+	uint cr3_tarea_actual = rcr3();
 
-	mmu_mapear_pagina( (uint) 0x403000, cr32, (uint) source , (uint) 0x7);
-	mmu_mapear_pagina( (uint) 0x404000, cr32, (uint) destino, (uint) 0x7);
+	mmu_mapear_pagina( (uint) 0x403000, cr3_tarea_actual, (uint) source , (uint) 0x7);
+	mmu_mapear_pagina( (uint) 0x404000, cr3_tarea_actual, (uint) destino, (uint) 0x7);
 
 	//copia el codigo 
 	uint i;
@@ -92,8 +92,8 @@ void mmu_mover_codigo_pirata(uint cr3, uint *destino, uint *source){ //TODO: est
 
 	mmu_mapear_pagina (0x400000, cr3 , (uint) destino, 0x7);
 
-	mmu_unmapear_pagina( 0x403000, cr32 );
-	mmu_unmapear_pagina( 0x404000, cr32 );
+	mmu_unmapear_pagina( 0x403000, cr3_tarea_actual );
+	mmu_unmapear_pagina( 0x404000, cr3_tarea_actual );
 }
 
 
@@ -114,7 +114,7 @@ void mmu_mapear_pagina(uint virt, uint cr3, uint fisica, uint attrs){
 		set_directory_entry(directoryEntry, tableEntry, attrs);
 	} else {
 		uint dir = (uint) directoryEntry->dir_pagina_tabla << 12;
-		tableEntry =  (page_table_entry*) dir; //Preguntar porque esto funciona
+		tableEntry =  (page_table_entry*) dir;
 	}
 
 	set_table_entry(tableEntry + pageTableOffset, fisica, attrs);

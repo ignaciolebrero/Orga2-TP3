@@ -31,21 +31,12 @@ void inicializar_scheduler(){
 }
 
 uint sched_tarea_actual_id(){
-	/*switch( scheduler.tarea_actual ){
-		case(JUGADOR_A):
-			return scheduler.jugador_A.tareas[scheduler.jugador_A.pos].id;
-		break;
-		case(JUGADOR_B):
-			return scheduler.jugador_B.tareas[scheduler.jugador_B.pos].id;
-		break;
-		default:
-			return NULL_ID;
-	}*/
-
 	if (scheduler.tarea_actual == JUGADOR_A) {
-		return scheduler.jugador_A.tareas[scheduler.jugador_A.pos].id;
-	} else {
+		return scheduler.jugador_A.tareas[scheduler.jugador_A.pos].id; 
+	} else if (scheduler.tarea_actual == JUGADOR_B) {
 		return scheduler.jugador_A.tareas[scheduler.jugador_B.pos].id;
+	} else {
+		return NULL_ID;
 	}
 }
 
@@ -74,7 +65,7 @@ uint* proximaTarea(tarea_scheduler tarea) {
 	return tarea.tareas[tarea.pos].selector;
 }
 
-void sched_agregar_tarea(uint jugador, uint posicion_jugador, uint tipo){
+void sched_agregar_tarea(uint jugador, uint posicion_jugador, uint tipo, uint parametros){
 	uint selector;
 	if(sched_hay_tareas_en_ejecucion(&scheduler.jugador_A) == FALSE
 	&& sched_hay_tareas_en_ejecucion(&scheduler.jugador_B) == FALSE){
@@ -83,7 +74,7 @@ void sched_agregar_tarea(uint jugador, uint posicion_jugador, uint tipo){
 	
 	tarea_scheduler* jugador_actual = scheduler_obtener_jugador(jugador);
 
-	selector = inicializar_tarea(jugador, posicion_jugador, tipo);
+	selector = inicializar_tarea(jugador, posicion_jugador, tipo, parametros);
 	sched_colocar_nueva_tarea(selector, jugador_actual, posicion_jugador, jugador);
 }
 

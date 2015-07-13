@@ -198,23 +198,16 @@ void game_pirata_inicializar(uint type, uint jugador, uint opcional_pos)
 		pirata_actual.pos     = pirata_actual.jugador->pos_puerto;
 		pirata_actual.type    = type;
 		pirata_actual.clock   = 0; 
+		pirata_actual.posDestino = opcional_pos; 
 		jugador_actual->piratas[i] = &pirata_actual;
-		game_jugador_erigir_pirata(jugador, &pirata_actual, i);
+		game_jugador_erigir_pirata(jugador, &pirata_actual, i, opcional_pos);
 		agregar_posiciones_mapeadas(&pirata_actual);
-		
-		if( type == 1 ){
-			pirata_actual.posCavar = opcional_pos;
-			//metodo que agrega las posiciones a la pila del minero
-		}
-		
-	} else {
-		if (type == 1) {
-			i = game_obtener_posicion_minero_disponible(jugador_actual);
-			pirata_t* pirata_actual = jugador_actual->mineros_pendientes[i];
-			pirata_actual->posCavar = opcional_pos;
-			pirata_actual->type 	= type;
-			pirata_actual->id 		= NULL_ID_PIRATA;
-		}
+	} else if (type == 1) {
+		i = game_obtener_posicion_minero_disponible(jugador_actual);
+		pirata_t* pirata_actual   = jugador_actual->mineros_pendientes[i];
+		pirata_actual->posDestino = opcional_pos;
+		pirata_actual->type 	  = type;
+		pirata_actual->id 		  = NULL_ID_PIRATA;
 	}
 }
 
@@ -240,10 +233,10 @@ void game_pirata_relanzar(pirata_t *pirata, jugador_t *j, uint tipo)
 {
 }
 
-void game_jugador_erigir_pirata(uint jugador, pirata_t* pirata, uint posicion_pirata)
+void game_jugador_erigir_pirata(uint jugador, pirata_t* pirata, uint posicion_pirata, uint parametros)
 {
 	pirata->id = posicion_pirata * (jugador + 1);
-    sched_agregar_tarea(jugador, posicion_pirata, pirata->type);
+    sched_agregar_tarea(jugador, posicion_pirata, pirata->type, game_lineal2xy_formato(parametros));
 }
 
 
@@ -257,7 +250,7 @@ void game_pirata_habilitar_posicion(jugador_t *j, pirata_t *pirata, int x, int y
 	if ( pirata->id != NULL_ID_PIRATA &&
 		game_posicion_valida(x,y)     && 
 		!j->posiciones_descubiertas[pos] ){
-			mmu_mapear_posicion_mapa(rcr3(), pos); //mapea posicion nueva
+			mmu_mapear_posicion_mapa(tss_obtener_cr3(pirata->id), pos); //mapea posicion nueva
 			
 			//la agrega a la tabla de posiciones descubiertas del jugador
 			j->posiciones_descubiertas[j->ultima_posicion_descubierta] = pos;
@@ -376,8 +369,8 @@ void game_pirata_exploto()
 	scheduler_matar_actual_tarea_pirata();
 	
 	if (hay_mineros_disponibles(pirata->jugador) == TRUE) {
-		uint posCavar = obtener_pos_cavar_pendiente(pirata->jugador);
-		game_pirata_inicializar(PIRATA_MINERO, pirata->jugador->index, posCavar);
+		uint posDestino = obtener_pos_cavar_pendiente(pirata->jugador);
+		game_pirata_inicializar(PIRATA_MINERO, pirata->jugador->index, posDestino);
 	}
 }
 
@@ -399,7 +392,7 @@ uint obtener_pos_cavar_pendiente(jugador_t* jugador)
 	while (jugador->mineros_pendientes[i]->id == NULL_ID_MINERO) { i++; }		
 	
 	jugador->mineros_pendientes[i]->id = NULL_ID_MINERO;
-	return jugador->mineros_pendientes[i]->posCavar;
+	return jugador->mineros_pendientes[i]->posDestino;
 }
 
 pirata_t* game_pirata_en_posicion(uint x, uint y)

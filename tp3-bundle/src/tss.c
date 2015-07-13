@@ -134,7 +134,7 @@ void tss_inicializar_idle() {
     inicializar_idle_cr3();
 }
 
-uint inicializar_tarea(uint jugador, uint jugador_posicion, uint tipo){
+uint inicializar_tarea(uint jugador, uint jugador_posicion, uint tipo, uint parametros){
     tss *jugador_actual = tss_obtener_jugador(jugador);
     uint memoria_fisica;
     if (jugador == 0) {
@@ -162,7 +162,7 @@ uint inicializar_tarea(uint jugador, uint jugador_posicion, uint tipo){
     jugador_actual[jugador_posicion].edx     = 0;
     jugador_actual[jugador_posicion].ebp     = 0;
     jugador_actual[jugador_posicion].esp     = 0x401000-0xC;
-    jugador_actual[jugador_posicion].ebp     = 0x401000-0xC;
+    jugador_actual[jugador_posicion].ebp     = 0x401000;
     jugador_actual[jugador_posicion].edi     = 0;
     jugador_actual[jugador_posicion].es      = 0x5B;
     jugador_actual[jugador_posicion].unused4 = 0;
@@ -188,13 +188,19 @@ uint inicializar_tarea(uint jugador, uint jugador_posicion, uint tipo){
     gdt[gdt_posicion].limit_0_15  = (unsigned short)  ( ( (uint) (sizeof(jugador_actual[jugador_posicion]) - 1)) & 0xFFFF);
     gdt[gdt_posicion].limit_16_19 = (unsigned char)   ( ( (uint) (sizeof(jugador_actual[jugador_posicion]) - 1)) >> 16);
 
-    gdt[gdt_posicion].p    = 1;
-    gdt[gdt_posicion].g    = 1;
-    gdt[gdt_posicion].dpl  = 0x03;
-    gdt[gdt_posicion].type = 0x09;
+    //apilo parametros de la tarea
+    apilar_parametros(parametros & 0xFF, (parametros >> 8) & 0xFF, memoria_fisica);
 
     //devuelve selector
     return (gdt_posicion << 3);
+}
+
+void apilar_parametros(uint x, uint y, uint memoria_fisica){
+    mmu_mapear_pagina(0x402000, rcr3(), memoria_fisica, 0x7);
+    * (uint*) (0x402000 + 0x1000 - 0) = x;    //apila parametro x //puede tirar page_fault
+    * (uint*) (0x402000 + 0x1000 - 4) = y;    //apila parametro y
+    * (uint*) (0x402000 + 0x1000 - 8) = 0xBA; //apila direccion de retorno
+    mmu_unmapear_pagina(0x402000, rcr3());
 }
 
 uint obtener_segmento_disponible(){

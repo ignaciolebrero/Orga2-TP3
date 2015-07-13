@@ -43,6 +43,6 @@ ushort obtener_posicion_libre(tarea_scheduler*);
 uint sched_tarea_actual_id();
 char sched_hay_tareas_en_ejecucion(tarea_scheduler*);
 void inicializar_scheduler();
-void sched_agregar_tarea(uint, uint, uint);
+void sched_agregar_tarea(uint, uint, uint, uint);
 void sched_colocar_nueva_tarea(uint, tarea_scheduler*, ushort, uint);
 void scheduler_matar_actual_tarea_pirata();

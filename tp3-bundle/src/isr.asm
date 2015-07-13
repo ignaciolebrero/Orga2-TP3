@@ -293,6 +293,7 @@ _isr70:
 		push eax
 		push ecx
 		call game_syscall_manejar
+		add  esp, 8 ;devuelvo la pila al setado original
 
 		mov ax, 0x70
 		mov [sched_tarea_selector], ax ;idle
@@ -309,9 +310,7 @@ matar_pirata:
 	cmp ax, 0x0
 	je  .matar
 
-	mov ax, [pantalla_debug_activa]
-	mov ax, 0x1
-	mov [pantalla_debug_activa], ax
+	mov byte [pantalla_debug_activa], 0x0
 	;call debuggear_tarea
 	jmp .matar
 
