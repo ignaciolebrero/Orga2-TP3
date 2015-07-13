@@ -38,6 +38,10 @@ void screen_actualizar_reloj_pirata(jugador_t *j, pirata_t *pirata){
     }
 }
 
+void screen_matar_pirata(uint id){
+    screen_pintar(96, C_BG_RED , 47, 10 + ( id * 4 ) ); //ver cual es el caracter que va
+}
+
 void screen_pintar(uchar c, uchar color, uint fila, uint columna)
 {
     p[fila][columna].c = c;
@@ -112,6 +116,7 @@ void screen_pintar_linea_h(uchar c, uchar color, int fila, int columna, int anch
 void screen_inicializar(){
     draw_map();
     draw_footer();
+    draw_header();
     draw_red_team();
     draw_blue_team();
      
@@ -121,8 +126,15 @@ void draw_map(){
     int i, j;
     for(i = 0; i < 44; i++){ //filas 0-43 
         for(j = 0; j < 80; j++){ //columnas 0-79
-            screen_pintar(32, C_BG_LIGHT_GREY,i ,j);
+            screen_pintar(32, C_BG_LIGHT_GREY, i, j);
         }
+    }
+}
+
+void draw_header(){
+    uint i;
+    for(i = 0; i < 80; i++){
+        screen_pintar(32, C_BG_BLACK, 0, i);
     }
 }
 
@@ -131,7 +143,7 @@ void draw_footer(){
     int i, j;
     for(i = 44; i < 50; i++){ //filas 44-49 
         for(j = 0; j < 80; j++){ //columnas 80
-            screen_pintar(32, C_BG_BLACK, i,j);
+            screen_pintar(32, C_BG_BLACK, i, j);
         }
     }    
 }

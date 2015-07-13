@@ -145,7 +145,7 @@ uint inicializar_tarea(uint jugador, uint jugador_posicion, uint tipo){
 
     jugador_actual[jugador_posicion].ptl     = 0;
     jugador_actual[jugador_posicion].unused0 = 0;
-    jugador_actual[jugador_posicion].esp0    = (uint) mmu_gimme_gimme_page_wachin();
+    jugador_actual[jugador_posicion].esp0    = (uint) mmu_gimme_gimme_page_wachin() +0x1000;
     jugador_actual[jugador_posicion].ss0     = 0x50;
     jugador_actual[jugador_posicion].unused1 = 0;
     jugador_actual[jugador_posicion].esp1    = 0;
@@ -164,17 +164,17 @@ uint inicializar_tarea(uint jugador, uint jugador_posicion, uint tipo){
     jugador_actual[jugador_posicion].esp     = 0x401000-0xC;
     jugador_actual[jugador_posicion].ebp     = 0x401000-0xC;
     jugador_actual[jugador_posicion].edi     = 0;
-    jugador_actual[jugador_posicion].es      = 0x58;
+    jugador_actual[jugador_posicion].es      = 0x5B;
     jugador_actual[jugador_posicion].unused4 = 0;
-    jugador_actual[jugador_posicion].cs      = 0x48;
+    jugador_actual[jugador_posicion].cs      = 0x4B;
     jugador_actual[jugador_posicion].unused5 = 0;
-    jugador_actual[jugador_posicion].ss      = 0x58;
+    jugador_actual[jugador_posicion].ss      = 0x5B;
     jugador_actual[jugador_posicion].unused6 = 0;
-    jugador_actual[jugador_posicion].ds      = 0x58;
+    jugador_actual[jugador_posicion].ds      = 0x5B;
     jugador_actual[jugador_posicion].unused7 = 0;
-    jugador_actual[jugador_posicion].fs      = 0x58;
+    jugador_actual[jugador_posicion].fs      = 0x5B;
     jugador_actual[jugador_posicion].unused8 = 0;
-    jugador_actual[jugador_posicion].gs      = 0x58;
+    jugador_actual[jugador_posicion].gs      = 0x5B;
     jugador_actual[jugador_posicion].unused9 = 0;
     jugador_actual[jugador_posicion].iomap   = 0xFFFF;
 

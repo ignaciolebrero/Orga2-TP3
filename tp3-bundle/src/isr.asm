@@ -107,125 +107,118 @@ _isr%1:
 ;TODO:revisar si compila, funciona, eclosiona(?)
 _isr0:
 	pushad
-		jmp matar_pirata
+		;jmp matar_pirata
 	popad
 	iret
 
 _isr1:
 	pushad
-		jmp matar_pirata
+		;jmp matar_pirata
 	popad
 	iret
 
 _isr2:
 	pushad
-		jmp matar_pirata
+		;jmp matar_pirata
 	popad
 	iret
 
 _isr3:
 	pushad
-		jmp matar_pirata
+		;jmp matar_pirata
 	popad
 	iret
 
 _isr4:
 	pushad
-		jmp matar_pirata
+		;jmp matar_pirata
 	popad
 	iret
 
 _isr5:
 	pushad
-		jmp matar_pirata
+		;jmp matar_pirata
 	popad
 	iret
 
 _isr6:
 	pushad
-		jmp matar_pirata
+		;jmp matar_pirata
 	popad
 	iret
 
 _isr7:
 	pushad
-		jmp matar_pirata
+		;jmp matar_pirata
 	popad
 	iret
 
 _isr8:
 	pushad
-		jmp matar_pirata
+		;jmp matar_pirata
 	popad
 	iret
 
 _isr10:
 	pushad
-		jmp matar_pirata
+		;jmp matar_pirata
 	popad
 	iret
 
 _isr11:
 	pushad
-		jmp matar_pirata
+		;jmp matar_pirata
 	popad
 	iret
 
 _isr12:
 	pushad
-		jmp matar_pirata
+		;jmp matar_pirata
 	popad
 	iret
 
 _isr13:
 	pushad
-		jmp matar_pirata
+		;jmp matar_pirata
 	popad
 	iret
 
 _isr14:
 	pushad
-		jmp matar_pirata
+		;jmp matar_pirata
 	popad
 	iret
 
 _isr16:
 	pushad
-		jmp matar_pirata
+		;jmp matar_pirata
 	popad
 	iret
 
 _isr17:
 	pushad
-		jmp matar_pirata
+		;jmp matar_pirata
 	popad
 	iret
 
 _isr18:
 	pushad
-		jmp matar_pirata
+		;jmp matar_pirata
 	popad
 	iret
 
 _isr19:
 	pushad
-		jmp matar_pirata
+		;jmp matar_pirata
 	popad
 	iret
 
 _isr20:
 	pushad
-		jmp matar_pirata
+		;jmp matar_pirata
 	popad
 	iret
-
-_isr70:
-	pushad
-	mov eax, 0x42
-	popad
-	iret
-
-
+	
 ;;
 ;; Rutina de atención del RELOJ
 ;; -------------------------------------------------------------------------- ;;
@@ -270,16 +263,19 @@ _isr33:
 	jmp pop
 
 _isr33.rutinals:
-	push 0;jugadorA
+	xor  eax, eax
+	push eax;jugadorA
 	call game_atender_teclado
-	pop eax
-	jmp pop	
+	add  esp, 4
+	jmp  pop	
 
 _isr33.rutinars:
-	push 1;jugadorB
+	xor  eax, eax
+	mov  byte eax, 1
+	push eax;jugadorB
 	call game_atender_teclado
-	pop eax
-	jmp pop
+	add  esp, 4
+	jmp  pop
 
 _isr33.rutina_debuger: ;TODO: ver si asi se negaba
 	mov ax, [debug_habilitado]
@@ -295,16 +291,20 @@ pop:
 ;; Rutinas de atención de las SYSCALLS
 ;; -------------------------------------------------------------------------- ;;
 
-_isr46:
+_isr70:
 	pushad
-		push eax
 		push ecx
+		push eax
 		call game_syscall_manejar
 
+		xchg bx,bx
 		mov ax, 0x70
 		mov [sched_tarea_selector], ax ;idle
-		jmp [sched_tarea_offset]
+		jmp far [sched_tarea_offset]
 	popad
+
+	;hacer mov magic global luca
+
 	iret
 
 ;;

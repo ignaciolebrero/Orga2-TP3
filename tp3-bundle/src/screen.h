@@ -57,6 +57,7 @@ void screen_stop_game_show_winner(jugador_t *j);
 
 void draw_map();
 void draw_footer();
+void draw_header();
 void draw_red_team();
 void draw_blue_team();
 

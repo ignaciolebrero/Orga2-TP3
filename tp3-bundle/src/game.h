@@ -69,7 +69,7 @@ void game_jugador_inicializar(jugador_t *j);
 void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, int x, int y);
 void game_jugador_erigir_pirata(uint jugador, pirata_t* pirata, uint tipo);
 void game_jugador_anotar_punto(jugador_t *j);
-void game_explorar_posicion(jugador_t *jugador, int x, int y);
+void game_explorar_posicion(pirata_t *pirata, int x, int y);
 
 uint game_valor_tesoro(uint x, uint y);
 void game_calcular_posiciones_vistas(int *vistas_x, int *vistas_y, int x, int y);
@@ -77,8 +77,8 @@ pirata_t*  game_pirata_en_posicion(uint x, uint y);
 jugador_t* game_obtener_jugador(uint);
 
 uint game_syscall_pirata_posicion(uint id, int idx);
-uint game_syscall_pirata_mover(uint id, direccion key);
-uint game_syscall_manejar(uint syscall, uint param1);
+void game_syscall_pirata_mover(uint id, direccion key);
+void game_syscall_manejar(uint syscall, uint param1);
 void game_syscall_cavar(uint id);
 void game_tick(uint id_pirata);
 void game_terminar_si_es_hora();
@@ -90,5 +90,7 @@ void agregar_posiciones_mapeadas(pirata_t *pirata);
 char hay_mineros_disponibles();
 uint obtener_pos_cavar_pendiente(jugador_t* jugador);
 void game_mapear_posicion(uint id, uint pos);
+char posicion_mapeada(uint pos, jugador_t* jugador);
+
 
 #endif  /* !__GAME_H__ */
