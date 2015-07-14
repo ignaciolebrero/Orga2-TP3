@@ -7,6 +7,7 @@ definicion de funciones del scheduler
 
 #include "sched.h"
 #include "i386.h"
+#include "screen.h"
 
 sched_tareas scheduler;
 
@@ -41,32 +42,37 @@ uint sched_tarea_actual_id(){
 }
 
 uint* sched_tick(){
-	uint* selector;
-	
-	if ((scheduler.tarea_actual == JUGADOR_A) && (scheduler.jugador_B.cantidad_tareas > 0)) {
-		scheduler.tarea_actual = JUGADOR_B;
-		selector = proximaTarea(scheduler.jugador_B);
-	} else if (scheduler.jugador_A.cantidad_tareas > 0){
-		scheduler.tarea_actual = JUGADOR_A;
-		selector = proximaTarea(scheduler.jugador_A);
+	breakpoint();
+	uint* selector = (uint*) 0x70;
+	if (scheduler.tarea_actual == JUGADOR_A) {
+		if (scheduler.jugador_B.cantidad_tareas > 0) {
+			scheduler.tarea_actual = JUGADOR_B;
+			selector = proximaTarea(scheduler.jugador_B);
+		} else if (scheduler.jugador_A.cantidad_tareas > 0) {
+			selector = proximaTarea(scheduler.jugador_A);	
+		}
 	} else {
-		selector = (uint*) 0x70;
+		if (scheduler.jugador_A.cantidad_tareas > 0) {
+			scheduler.tarea_actual = JUGADOR_A;
+			selector = proximaTarea(scheduler.jugador_A);
+		} else if (scheduler.jugador_B.cantidad_tareas > 0) {
+			selector = proximaTarea(scheduler.jugador_B);
+		}
 	}
-
 	game_tick(sched_tarea_actual_id());
 	return selector;
 }
 
 uint* proximaTarea(tarea_scheduler tarea) {
 	do {
-		tarea.pos++;
+		tarea.pos = tarea.pos + 1;
 		if (tarea.pos == 8) { tarea.pos = 0; }
 	} while (tarea.tareas[tarea.pos].id == NULL_ID);
 	
 	return tarea.tareas[tarea.pos].selector;
 }
 
-void sched_agregar_tarea(uint jugador, uint posicion_jugador, uint tipo){
+void sched_agregar_tarea(uint jugador, uint posicion_jugador, uint tipo, uint parametros){
 	uint selector;
 	if(sched_hay_tareas_en_ejecucion(&scheduler.jugador_A) == FALSE
 	&& sched_hay_tareas_en_ejecucion(&scheduler.jugador_B) == FALSE){
@@ -75,13 +81,13 @@ void sched_agregar_tarea(uint jugador, uint posicion_jugador, uint tipo){
 	
 	tarea_scheduler* jugador_actual = scheduler_obtener_jugador(jugador);
 
-	selector = inicializar_tarea(jugador, posicion_jugador, tipo);
+	selector = inicializar_tarea(jugador, posicion_jugador, tipo, parametros);
 	sched_colocar_nueva_tarea(selector, jugador_actual, posicion_jugador, jugador);
 }
 
 void sched_colocar_nueva_tarea(uint selector, tarea_scheduler* jugador, ushort posicion_jugador, uint numero_jugador){
 	jugador->tareas[posicion_jugador].selector = (uint*) selector;
-	jugador->tareas[posicion_jugador].id 	   = posicion_jugador + (numero_jugador * 8) ;
+	jugador->tareas[posicion_jugador].id 	   = posicion_jugador + (numero_jugador * 8);
 	jugador->cantidad_tareas++;
 }
 

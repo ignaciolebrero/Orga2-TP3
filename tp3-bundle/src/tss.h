@@ -57,9 +57,10 @@ typedef struct str_tss {
 
 void tss_inicializar();
 void tss_inicializar_idle();
-uint inicializar_tarea(uint, uint, uint);
+uint inicializar_tarea(uint, uint, uint, uint);
 uint obtener_segmento_disponible();
 uint tss_obtener_cr3(uint id);
 tss* tss_obtener_jugador(uint);
+void apilar_parametros(uint,uint,uint)
 
 #endif  /* !__TSS_H__ */

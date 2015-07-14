@@ -134,13 +134,13 @@ void tss_inicializar_idle() {
     inicializar_idle_cr3();
 }
 
-uint inicializar_tarea(uint jugador, uint jugador_posicion, uint tipo){
+uint inicializar_tarea(uint jugador, uint jugador_posicion, uint tipo, uint parametros){
     tss *jugador_actual = tss_obtener_jugador(jugador);
     uint memoria_fisica;
     if (jugador == 0) {
         memoria_fisica = 0x500000;
     } else {
-        memoria_fisica = 0x121FFFF;
+        memoria_fisica = 0x121FFFF-1;
     }
 
     jugador_actual[jugador_posicion].ptl     = 0;
@@ -193,8 +193,20 @@ uint inicializar_tarea(uint jugador, uint jugador_posicion, uint tipo){
     gdt[gdt_posicion].dpl  = 0x03;
     gdt[gdt_posicion].type = 0x09;
 
+    apilar_parametros(paramentros & 0xFF, (parametros >> 8) & 0xFF, memoria_fisica);
+
     //devuelve selector
     return (gdt_posicion << 3);
+}
+
+void apilar_parametros(uint x, uint y, uint dir){
+    mmu_mapear_pagina(0x402000, rcr3(), dir, 0x7);
+
+    * (uint*) (0x402000 + 0x1000 - 0xC - 0x0) = 0;
+    * (uint*) (0x402000 + 0x1000 - 0xC - 0x4) = y;
+    * (uint*) (0x402000 + 0x1000 - 0xC - 0x8) = x;
+
+    mmu_unmapear_pagina(0x402000, rcr3());
 }
 
 uint obtener_segmento_disponible(){

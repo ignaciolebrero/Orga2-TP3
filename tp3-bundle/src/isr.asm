@@ -270,6 +270,7 @@ _isr33.rutinals:
 	jmp  pop	
 
 _isr33.rutinars:
+	xchg bx,bx
 	xor  eax, eax
 	mov  byte eax, 1
 	push eax;jugadorB
@@ -296,8 +297,8 @@ _isr70:
 		push ecx
 		push eax
 		call game_syscall_manejar
+		add esp, 8
 
-		xchg bx,bx
 		mov ax, 0x70
 		mov [sched_tarea_selector], ax ;idle
 		jmp far [sched_tarea_offset]

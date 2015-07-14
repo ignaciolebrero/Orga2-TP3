@@ -61,7 +61,7 @@ pirata_t* id_pirata2pirata(uint id);
 
 // ~ auxiliares sugeridas o requeridas (segun disponga enunciado) ~
 void game_pirata_inicializar(uint type, uint jugador, uint opcional_pos);
-void game_pirata_erigir(pirata_t *pirata, jugador_t *j, uint tipo);
+void game_pirata_erigir(pirata_t *pirata, jugador_t *j, uint tipo, uint parametros);
 void game_pirata_habilitar_posicion(jugador_t *j, pirata_t *pirata, int x, int y);
 void game_pirata_exploto();
 
