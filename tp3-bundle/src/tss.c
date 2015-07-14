@@ -124,8 +124,8 @@ void tss_inicializar_idle() {
 
     //setea el segmento de tss idle
     gdt[14].base_0_15   = (unsigned short) ( (uint) &tss_idle & 0xFFFF );
-    gdt[14].base_23_16  = (unsigned char)  ( (uint) &tss_idle >> 16 ); 
-    gdt[14].base_31_24  = (unsigned char)  ( (uint) &tss_idle >> 24 ); 
+    gdt[14].base_23_16  = (unsigned char)  ( (uint) &tss_idle >> 16 );
+    gdt[14].base_31_24  = (unsigned char)  ( (uint) &tss_idle >> 24 );
    
     gdt[14].limit_0_15  = (unsigned short) ( (sizeof(tss_idle) - 1) & 0xFFFF);
     gdt[14].limit_16_19 = (unsigned char)  ( (sizeof(tss_idle) - 1) >> 16);
@@ -138,9 +138,9 @@ uint inicializar_tarea(uint jugador, uint jugador_posicion, uint tipo, uint para
     tss *jugador_actual = tss_obtener_jugador(jugador);
     uint memoria_fisica;
     if (jugador == 0) {
-        memoria_fisica = 0x500000;
+        memoria_fisica = 0x500000 + 0x53000;
     } else {
-        memoria_fisica = 0x121FFFF-1;
+        memoria_fisica = 0x121FFFF - 0x1000;
     }
 
     jugador_actual[jugador_posicion].ptl     = 0;
@@ -188,12 +188,9 @@ uint inicializar_tarea(uint jugador, uint jugador_posicion, uint tipo, uint para
     gdt[gdt_posicion].limit_0_15  = (unsigned short)  ( ( (uint) (sizeof(jugador_actual[jugador_posicion]) - 1)) & 0xFFFF);
     gdt[gdt_posicion].limit_16_19 = (unsigned char)   ( ( (uint) (sizeof(jugador_actual[jugador_posicion]) - 1)) >> 16);
 
-    gdt[gdt_posicion].p    = 1;
-    gdt[gdt_posicion].g    = 1;
-    gdt[gdt_posicion].dpl  = 0x03;
-    gdt[gdt_posicion].type = 0x09;
-
-    apilar_parametros(paramentros & 0xFF, (parametros >> 8) & 0xFF, memoria_fisica);
+    gdt[gdt_posicion].p = 1;
+    //apilo parametros de la tarea
+//    apilar_parametros(parametros & 0xFF, (parametros >> 8) & 0xFF, memoria_fisica);
 
     //devuelve selector
     return (gdt_posicion << 3);

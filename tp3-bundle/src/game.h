@@ -24,11 +24,6 @@ typedef enum direccion_e { ARR = 0x4, ABA = 0x7, DER = 0xA, IZQ = 0xD} direccion
 #define MAPA_ANCHO             80
 #define MAPA_ALTO              44
 
-
-typedef struct juego{
-    uint id_proximo_pirata;
-} juego;
-
 typedef struct pirata_t{
     struct jugador_t *jugador;
     unsigned char type;
@@ -36,7 +31,7 @@ typedef struct pirata_t{
     uint id;
     uint clock;
     int  pos;
-    uint posCavar;
+    uint posDestino;
     // id unica, posicion, tipo, reloj
 } pirata_t;
 
@@ -67,7 +62,7 @@ void game_pirata_exploto();
 
 void game_jugador_inicializar(jugador_t *j);
 void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, int x, int y);
-void game_jugador_erigir_pirata(uint jugador, pirata_t* pirata, uint tipo);
+void game_jugador_erigir_pirata(uint jugador, pirata_t* pirata, uint tipo, uint parametros);
 void game_jugador_anotar_punto(jugador_t *j);
 void game_explorar_posicion(pirata_t *pirata, int x, int y);
 
@@ -84,6 +79,7 @@ void game_tick(uint id_pirata);
 void game_terminar_si_es_hora();
 void game_atender_teclado(unsigned char tecla);
 uint game_dir2xy(direccion dir, int *x, int *y);
+uint game_lineas2xy_formato(uint pos);
 uint obtener_posicion_botin(uint);
 
 void agregar_posiciones_mapeadas(pirata_t *pirata);

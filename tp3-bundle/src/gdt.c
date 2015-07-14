@@ -20,7 +20,7 @@ gdt_entry gdt[GDT_COUNT] = {
         (unsigned char)     0x00,           /* type         */ //tipo de segmento al que pertence, usamos 2 y 10 que corresponden a datos-lectura/escritura y codigo-lectura/ejecucion(ver clase modo protegido pag.11) 
         (unsigned char)     0x00,           /* s            */ //no pertenece al sistema asi que 1(codigo o datos)        (unsigned char)     0x00,           /* dpl          */
         (unsigned char)     0x00,           /* dpl          */
-        (unsigned char)     0x00,           /* p            */ //bit de presente, 1 para sectores validos
+        (unsigned char)     0x01,           /* p            */ //bit de presente, 1 para sectores validos
         (unsigned char)     0x00,           /* limit[16:19] */ //los bits mas significativos de limit(tiene que tener 5 hexas y en el otro valor entraban 4)
         (unsigned char)     0x00,           /* avl          */ //no muy seguro, hay que probar si estan bien puestos
         (unsigned char)     0x00,           /* l            */ //si el segmento de codigo es de 64 bits, no hay que darle bola, laburamos en 32
@@ -120,7 +120,7 @@ gdt_entry gdt[GDT_COUNT] = {
         (unsigned char)     0x00,           /* limit[16:19] */
         (unsigned char)     0x00,           /* avl          */
         (unsigned char)     0x00,           /* l            */
-        (unsigned char)     0x00,           /* db           */
+        (unsigned char)     0x01,           /* db           */
         (unsigned char)     0x01,           /* g            */
         (unsigned char)     0x00,           /* base[31:24]  */
     },
@@ -136,7 +136,7 @@ gdt_entry gdt[GDT_COUNT] = {
         (unsigned char)     0x00,           /* limit[16:19] */
         (unsigned char)     0x00,           /* avl          */
         (unsigned char)     0x00,           /* l            */
-        (unsigned char)     0x00,           /* db           */
+        (unsigned char)     0x01,           /* db           */
         (unsigned char)     0x01,           /* g            */
         (unsigned char)     0x00,           /* base[31:24]  */
     },
@@ -152,7 +152,7 @@ gdt_entry gdt[GDT_COUNT] = {
         (unsigned char)     0x00,           /* limit[16:19] */
         (unsigned char)     0x00,           /* avl          */
         (unsigned char)     0x00,           /* l            */
-        (unsigned char)     0x00,           /* db           */
+        (unsigned char)     0x01,           /* db           */
         (unsigned char)     0x01,           /* g            */
         (unsigned char)     0x00,           /* base[31:24]  */
     },
@@ -168,7 +168,7 @@ gdt_entry gdt[GDT_COUNT] = {
         (unsigned char)     0x00,           /* limit[16:19] */
         (unsigned char)     0x00,           /* avl          */
         (unsigned char)     0x00,           /* l            */
-        (unsigned char)     0x00,           /* db           */
+        (unsigned char)     0x01,           /* db           */
         (unsigned char)     0x01,           /* g            */
         (unsigned char)     0x00,           /* base[31:24]  */
     },
@@ -216,7 +216,7 @@ gdt_entry gdt[GDT_COUNT] = {
         (unsigned char)     0x00,           /* limit[16:19] */
         (unsigned char)     0x00,           /* avl          */
         (unsigned char)     0x00,           /* l            */
-        (unsigned char)     0x00,           /* db           */
+        (unsigned char)     0x01,           /* db           */
         (unsigned char)     0x01,           /* g            */
         (unsigned char)     0x00,           /* base[31:24]  */
     },

@@ -42,7 +42,6 @@ uint sched_tarea_actual_id(){
 }
 
 uint* sched_tick(){
-	breakpoint();
 	uint* selector = (uint*) 0x70;
 	if (scheduler.tarea_actual == JUGADOR_A) {
 		if (scheduler.jugador_B.cantidad_tareas > 0) {
@@ -64,11 +63,11 @@ uint* sched_tick(){
 }
 
 uint* proximaTarea(tarea_scheduler tarea) {
-	do {
-		tarea.pos = tarea.pos + 1;
+	tarea.pos = tarea.pos + 1;		
+	while (tarea.tareas[tarea.pos].id == NULL_ID){
 		if (tarea.pos == 8) { tarea.pos = 0; }
-	} while (tarea.tareas[tarea.pos].id == NULL_ID);
-	
+		tarea.pos++;
+	}
 	return tarea.tareas[tarea.pos].selector;
 }
 
