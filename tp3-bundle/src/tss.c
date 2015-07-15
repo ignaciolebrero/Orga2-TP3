@@ -138,14 +138,14 @@ uint inicializar_tarea(uint jugador, uint jugador_posicion, uint tipo, uint para
     tss *jugador_actual = tss_obtener_jugador(jugador);
     uint memoria_fisica;
     if (jugador == 0) {
-        memoria_fisica = 0x500000 + 0x53000;
+        memoria_fisica = 0x500000 + 0x52000;
     } else {
-        memoria_fisica = 0x121FFFF - 0x1000;
+        memoria_fisica = 0x122000 - 0x52000*2; // TODO: cambiar posiciones
     }
 
     jugador_actual[jugador_posicion].ptl     = 0;
     jugador_actual[jugador_posicion].unused0 = 0;
-    jugador_actual[jugador_posicion].esp0    = (uint) mmu_gimme_gimme_page_wachin() +0x1000;
+    jugador_actual[jugador_posicion].esp0    = (uint) mmu_gimme_gimme_page_wachin() + 0x1000;
     jugador_actual[jugador_posicion].ss0     = 0x50;
     jugador_actual[jugador_posicion].unused1 = 0;
     jugador_actual[jugador_posicion].esp1    = 0;
@@ -190,7 +190,7 @@ uint inicializar_tarea(uint jugador, uint jugador_posicion, uint tipo, uint para
 
     gdt[gdt_posicion].p = 1;
     //apilo parametros de la tarea
-//    apilar_parametros(parametros & 0xFF, (parametros >> 8) & 0xFF, memoria_fisica);
+    apilar_parametros(parametros & 0xFF, (parametros >> 8) & 0xFF, memoria_fisica);
 
     //devuelve selector
     return (gdt_posicion << 3);

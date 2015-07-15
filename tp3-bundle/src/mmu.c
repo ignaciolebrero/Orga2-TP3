@@ -44,24 +44,44 @@ void* mmu_gimme_gimme_page_wachin(){
 	return result;
 }
 
-uint inicializar_dir_pirata(uint fisicmem, uint elteam, uint tipo_pirata){
+uint inicializar_dir_pirata(uint fisicmem, uint elteam, uint tipo_pirata){ //TODO: rearmar las posiciones iiciales del pirata
 	page_directory_entry* pageDirectory = (page_directory_entry*) mmu_gimme_gimme_page_wachin();
 	//inicializa pagedirectory sin entradas
 	init_directory_table(pageDirectory);
 
 	uint cr3 = (uint) pageDirectory;
 	if (elteam == JUGADOR_A) {
-		mmu_mapear_pagina( (uint) 0x800000, cr3, (uint) 0x500000, (uint) 0x07);
+		mmu_mapear_pagina( (uint) 0x800000  + 0x52000, cr3, (uint) 0x500000 + 0x52000, (uint) 0x07);
 
-		mmu_mapear_pagina( (uint) 0x800000 + (uint) 0x1000 * 01, cr3, (uint) 0x500000 + (uint) 0x1000 * 01, (uint) 0x07);
-		mmu_mapear_pagina( (uint) 0x800000 + (uint) 0x1000 * 80, cr3, (uint) 0x500000 + (uint) 0x1000 * 80, (uint) 0x07);
-		mmu_mapear_pagina( (uint) 0x800000 + (uint) 0x1000 * 81, cr3, (uint) 0x500000 + (uint) 0x1000 * 81, (uint) 0x07);
+		mmu_mapear_pagina( (uint) 0x800000  + 0x52000 - 0x1000 * 82, cr3, (uint) 0x500000 + 0x52000 - 0x1000 * 82, (uint) 0x07);
+		mmu_mapear_pagina( (uint) 0x800000  + 0x52000 - 0x1000 * 81, cr3, (uint) 0x500000 + 0x52000 - 0x1000 * 81, (uint) 0x07);
+		mmu_mapear_pagina( (uint) 0x800000  + 0x52000 - 0x1000 * 80, cr3, (uint) 0x500000 + 0x52000 - 0x1000 * 80, (uint) 0x07);
+
+		mmu_mapear_pagina( (uint) 0x800000  + 0x52000 - 0x1000 * 01, cr3, (uint) 0x500000 + 0x52000 - 0x1000 * 01, (uint) 0x07);
+		mmu_mapear_pagina( (uint) 0x800000  + 0x52000 + 0x1000 * 01, cr3, (uint) 0x500000 + 0x52000 + 0x1000 * 01, (uint) 0x07);
+
+		mmu_mapear_pagina( (uint) 0x800000  + 0x52000 + 0x1000 * 80, cr3, (uint) 0x500000 + 0x52000 + 0x1000 * 80, (uint) 0x07);
+		mmu_mapear_pagina( (uint) 0x800000  + 0x52000 + 0x1000 * 81, cr3, (uint) 0x500000 + 0x52000 + 0x1000 * 81, (uint) 0x07);
+		mmu_mapear_pagina( (uint) 0x800000  + 0x52000 + 0x1000 * 82, cr3, (uint) 0x500000 + 0x52000 + 0x1000 * 82, (uint) 0x07);
+
+
 	} else {
-		mmu_mapear_pagina( ((uint) 0x1520000-1), cr3, ((uint) 0x121FFFF-1), (uint) 0x07);
-		
-		mmu_mapear_pagina( ((uint) 0x1520000-1) - (uint) 0x1000 * 01, cr3, ((uint) 0x121FFFF-1) - (uint) 0x1000 * 01, (uint) 0x07);
-		mmu_mapear_pagina( ((uint) 0x1520000-1) - (uint) 0x1000 * 80, cr3, ((uint) 0x121FFFF-1) - (uint) 0x1000 * 80, (uint) 0x07);
-		mmu_mapear_pagina( ((uint) 0x1520000-1) - (uint) 0x1000 * 81, cr3, ((uint) 0x121FFFF-1) - (uint) 0x1000 * 81, (uint) 0x07);
+		mmu_mapear_pagina( ((uint) 0x1520000 - 0x52000*2), cr3, ((uint) 0x1220000 - 0x52000*2), (uint) 0x07);
+
+		mmu_mapear_pagina( (uint) 0x1520000 - 0x52000*2, cr3, (uint) 0x1220000 - 0x52000*2, (uint) 0x07);
+
+		mmu_mapear_pagina( (uint) 0x1520000 - 0x52000*2 - 0x1000 * 82, cr3, (uint) 0x1220000 - 0x52000*2 - 0x1000 * 82, (uint) 0x07);
+		mmu_mapear_pagina( (uint) 0x1520000 - 0x52000*2 - 0x1000 * 81, cr3, (uint) 0x1220000 - 0x52000*2 - 0x1000 * 81, (uint) 0x07);
+		mmu_mapear_pagina( (uint) 0x1520000 - 0x52000*2 - 0x1000 * 80, cr3, (uint) 0x1220000 - 0x52000*2 - 0x1000 * 80, (uint) 0x07);
+
+		mmu_mapear_pagina( (uint) 0x1520000 - 0x52000*2 - 0x1000 * 01, cr3, (uint) 0x1220000 - 0x52000*2 - 0x1000 * 01, (uint) 0x07);
+		mmu_mapear_pagina( (uint) 0x1520000 - 0x52000*2 + 0x1000 * 01, cr3, (uint) 0x1220000 - 0x52000*2 + 0x1000 * 01, (uint) 0x07);
+
+		mmu_mapear_pagina( (uint) 0x1520000 - 0x52000*2 + 0x1000 * 80, cr3, (uint) 0x1220000 - 0x52000*2 + 0x1000 * 80, (uint) 0x07);
+		mmu_mapear_pagina( (uint) 0x1520000 - 0x52000*2 + 0x1000 * 81, cr3, (uint) 0x1220000 - 0x52000*2 + 0x1000 * 81, (uint) 0x07);
+		mmu_mapear_pagina( (uint) 0x1520000 - 0x52000*2 + 0x1000 * 82, cr3, (uint) 0x1220000 - 0x52000*2 + 0x1000 * 82, (uint) 0x07);
+
+
 	}
 
 	if(tipo_pirata == 0){
@@ -78,7 +98,7 @@ uint inicializar_dir_pirata(uint fisicmem, uint elteam, uint tipo_pirata){
 	return cr3;
 }
 
-void mmu_mover_codigo_pirata(uint cr3, uint *destino, uint *source){ //TODO: esta funcion esta mal hecha probablemnte (veeeeeeeeeeeeeeeeeeeer)
+void mmu_mover_codigo_pirata(uint cr3, uint *destino, uint *source){
 	uint cr3_tarea_actual = rcr3();
 
 	mmu_mapear_pagina( (uint) 0x403000, cr3_tarea_actual, (uint) source , (uint) 0x7);

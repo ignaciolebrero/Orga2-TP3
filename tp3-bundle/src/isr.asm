@@ -297,7 +297,7 @@ _isr70:
 		push ecx
 		push eax
 		call game_syscall_manejar
-		add esp, 8
+		add  esp, 8
 
 		mov ax, 0x70
 		mov [sched_tarea_selector], ax ;idle
