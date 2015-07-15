@@ -110,9 +110,6 @@ void game_calcular_posiciones_vistas(int *vistas_x, int *vistas_y, int x, int y)
 
 void game_inicializar()
 {
-	game_jugador_inicializar_mapa(&jugadorA);
-	game_jugador_inicializar_mapa(&jugadorB);
-
 	jugadorA.index = 0;
 	jugadorA.pos_puerto = 81;
 	jugadorA.puntuacion = 0;
@@ -129,7 +126,6 @@ void game_inicializar()
 		jugadorB.posiciones_descubiertas[i] = 0;
 	}
 
-	uint i;
 	for (i=0; i<8; i++) {
 		jugadorA.piratas[i].id = NULL_ID_PIRATA;
 		jugadorB.piratas[i].id = NULL_ID_PIRATA;
@@ -195,18 +191,14 @@ void game_pirata_inicializar(uint type, uint jugador, uint opcional_pos)
 {
 	jugador_t* jugador_actual = game_obtener_jugador(jugador);
 	uint i = game_obtener_posicion_pirata_disponible(jugador_actual);
-	if( i < 8 ){
+	
+	if ( i < 8 ) {
 		jugador_actual->piratas[i].pos   = jugador_actual->piratas[i].jugador->pos_puerto;
 		jugador_actual->piratas[i].type  = type;
 		jugador_actual->piratas[i].clock = 0; 
 		jugador_actual->piratas[i].id	 = i + (jugador * 8);
 		game_jugador_erigir_pirata(jugador, &jugador_actual->piratas[i], i, opcional_pos);
 		agregar_posiciones_mapeadas(&jugador_actual->piratas[i]);
-	} else if (type == 1) {
-		i = game_obtener_posicion_minero_disponible(jugador_actual);
-		jugador_actual->mineros_pendientes[i].posDestino = opcional_pos;
-		jugador_actual->mineros_pendientes[i].type 	  	 = type;
-		jugador_actual->mineros_pendientes[i].id 		 = NULL_ID_PIRATA;
 	}
 }
 
@@ -255,7 +247,7 @@ void game_pirata_habilitar_posicion(jugador_t *j, pirata_t *pirata, int x, int y
 					mmu_mapear_posicion_mapa(tss_obtener_cr3(id), pos); //mapea posicion nueva
 				}
 			}
-			//la agrega a la tabla de posiciones descubiertas del jugador
+	 		//la agrega a la tabla de posiciones descubiertas del jugador
 			j->posiciones_descubiertas[j->ultima_posicion_descubierta] = pos;
 			j->ultima_posicion_descubierta++;
 			if( obtener_posicion_botin(pos) < BOTINES_CANTIDAD ) {

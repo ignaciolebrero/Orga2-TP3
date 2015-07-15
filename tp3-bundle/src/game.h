@@ -88,5 +88,4 @@ uint obtener_pos_cavar_pendiente(jugador_t* jugador);
 void game_mapear_posicion(uint id, uint pos);
 char posicion_mapeada(uint pos, jugador_t* jugador);
 
-endif
-#  /* !__GAME_H__ */
+#endif  /* !__GAME_H__ */
