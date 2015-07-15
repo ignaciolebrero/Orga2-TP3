@@ -44,51 +44,44 @@ void* mmu_gimme_gimme_page_wachin(){
 	return result;
 }
 
+uint obtener_posicion_inicial_virtual(uint elteam){
+	if (elteam == JUGADOR_A) {
+		return (uint) (0x800000 + 0x50000);
+	} else {
+		return (uint) (0x800000 + 0x1000 * ((MAPA_ALTO-2) * MAPA_ANCHO + (MAPA_ANCHO-1)));
+	}
+}
+
+uint obtener_posicion_fisica_codigo_pirata(uint elteam, uint tipo_pirata){
+	if(tipo_pirata == 0){
+		return 0x10000 + ( 0x2000 * elteam);
+	} else {
+		return 0x11000 + ( 0x2000 * elteam);
+	}
+}
+
 uint inicializar_dir_pirata(uint fisicmem, uint elteam, uint tipo_pirata){ //TODO: rearmar las posiciones iiciales del pirata
 	page_directory_entry* pageDirectory = (page_directory_entry*) mmu_gimme_gimme_page_wachin();
 	//inicializa pagedirectory sin entradas
 	init_directory_table(pageDirectory);
 
 	uint cr3 = (uint) pageDirectory;
-	if (elteam == JUGADOR_A) {
-		mmu_mapear_pagina( (uint) 0x800000  + 0x52000, cr3, (uint) 0x500000 + 0x52000, (uint) 0x07);
+	uint posicion_virtual = obtener_posicion_inicial_virtual(elteam);
 
-		mmu_mapear_pagina( (uint) 0x800000  + 0x52000 - 0x1000 * 82, cr3, (uint) 0x500000 + 0x52000 - 0x1000 * 82, (uint) 0x07);
-		mmu_mapear_pagina( (uint) 0x800000  + 0x52000 - 0x1000 * 81, cr3, (uint) 0x500000 + 0x52000 - 0x1000 * 81, (uint) 0x07);
-		mmu_mapear_pagina( (uint) 0x800000  + 0x52000 - 0x1000 * 80, cr3, (uint) 0x500000 + 0x52000 - 0x1000 * 80, (uint) 0x07);
+	mmu_mapear_pagina( posicion_virtual - 0x1000 * 82, cr3, (uint) fisicmem - 0x1000 * 82, (uint) 0x07);
+	mmu_mapear_pagina( posicion_virtual - 0x1000 * 81, cr3, (uint) fisicmem - 0x1000 * 81, (uint) 0x07);
+	mmu_mapear_pagina( posicion_virtual - 0x1000 * 80, cr3, (uint) fisicmem - 0x1000 * 80, (uint) 0x07);
 
-		mmu_mapear_pagina( (uint) 0x800000  + 0x52000 - 0x1000 * 01, cr3, (uint) 0x500000 + 0x52000 - 0x1000 * 01, (uint) 0x07);
-		mmu_mapear_pagina( (uint) 0x800000  + 0x52000 + 0x1000 * 01, cr3, (uint) 0x500000 + 0x52000 + 0x1000 * 01, (uint) 0x07);
+	mmu_mapear_pagina( posicion_virtual - 0x1000 * 01, cr3, (uint) fisicmem - 0x1000 * 01, (uint) 0x07);
+	mmu_mapear_pagina( posicion_virtual + 0x1000 * 00, cr3, (uint) fisicmem - 0x1000 * 00, (uint) 0x07);
+	mmu_mapear_pagina( posicion_virtual + 0x1000 * 01, cr3, (uint) fisicmem + 0x1000 * 01, (uint) 0x07);
 
-		mmu_mapear_pagina( (uint) 0x800000  + 0x52000 + 0x1000 * 80, cr3, (uint) 0x500000 + 0x52000 + 0x1000 * 80, (uint) 0x07);
-		mmu_mapear_pagina( (uint) 0x800000  + 0x52000 + 0x1000 * 81, cr3, (uint) 0x500000 + 0x52000 + 0x1000 * 81, (uint) 0x07);
-		mmu_mapear_pagina( (uint) 0x800000  + 0x52000 + 0x1000 * 82, cr3, (uint) 0x500000 + 0x52000 + 0x1000 * 82, (uint) 0x07);
+	mmu_mapear_pagina( posicion_virtual + 0x1000 * 80, cr3, (uint) fisicmem + 0x1000 * 80, (uint) 0x07);
+	mmu_mapear_pagina( posicion_virtual + 0x1000 * 81, cr3, (uint) fisicmem + 0x1000 * 81, (uint) 0x07);
+	mmu_mapear_pagina( posicion_virtual + 0x1000 * 82, cr3, (uint) fisicmem + 0x1000 * 82, (uint) 0x07);
 
-
-	} else {
-		mmu_mapear_pagina( ((uint) 0x1520000 - 0x52000*2), cr3, ((uint) 0x1220000 - 0x52000*2), (uint) 0x07);
-
-		mmu_mapear_pagina( (uint) 0x1520000 - 0x52000*2, cr3, (uint) 0x1220000 - 0x52000*2, (uint) 0x07);
-
-		mmu_mapear_pagina( (uint) 0x1520000 - 0x52000*2 - 0x1000 * 82, cr3, (uint) 0x1220000 - 0x52000*2 - 0x1000 * 82, (uint) 0x07);
-		mmu_mapear_pagina( (uint) 0x1520000 - 0x52000*2 - 0x1000 * 81, cr3, (uint) 0x1220000 - 0x52000*2 - 0x1000 * 81, (uint) 0x07);
-		mmu_mapear_pagina( (uint) 0x1520000 - 0x52000*2 - 0x1000 * 80, cr3, (uint) 0x1220000 - 0x52000*2 - 0x1000 * 80, (uint) 0x07);
-
-		mmu_mapear_pagina( (uint) 0x1520000 - 0x52000*2 - 0x1000 * 01, cr3, (uint) 0x1220000 - 0x52000*2 - 0x1000 * 01, (uint) 0x07);
-		mmu_mapear_pagina( (uint) 0x1520000 - 0x52000*2 + 0x1000 * 01, cr3, (uint) 0x1220000 - 0x52000*2 + 0x1000 * 01, (uint) 0x07);
-
-		mmu_mapear_pagina( (uint) 0x1520000 - 0x52000*2 + 0x1000 * 80, cr3, (uint) 0x1220000 - 0x52000*2 + 0x1000 * 80, (uint) 0x07);
-		mmu_mapear_pagina( (uint) 0x1520000 - 0x52000*2 + 0x1000 * 81, cr3, (uint) 0x1220000 - 0x52000*2 + 0x1000 * 81, (uint) 0x07);
-		mmu_mapear_pagina( (uint) 0x1520000 - 0x52000*2 + 0x1000 * 82, cr3, (uint) 0x1220000 - 0x52000*2 + 0x1000 * 82, (uint) 0x07);
-
-
-	}
-
-	if(tipo_pirata == 0){
-		mmu_mover_codigo_pirata(cr3, (uint*) fisicmem, (uint*) ( 0x10000 + ( 0x2000 * elteam)));
-	} else {
-		mmu_mover_codigo_pirata(cr3, (uint*) fisicmem, (uint*) ( 0x11000 + ( 0x2000 * elteam)));
-	}
+	uint pos_codigo_pirata = obtener_posicion_fisica_codigo_pirata(elteam, tipo_pirata);
+	mmu_mover_codigo_pirata(cr3, (uint*) fisicmem, (uint*) pos_codigo_pirata);	
 	
 	uint i;
 	for (i = 0; i < 1024 * 1024 * 4; i+= 0x1000){

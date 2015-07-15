@@ -156,28 +156,28 @@ void draw_red_team(){
         }
     }
     
-screen_pintar( 48,  C_FG_WHITE,  47,  31);
-screen_pintar( 48,  C_FG_WHITE,  47,  32);
-screen_pintar( 48,  C_FG_WHITE,  47,  33);
+    screen_pintar( 48,  C_FG_WHITE,  47,  31);
+    screen_pintar( 48,  C_FG_WHITE,  47,  32);
+    screen_pintar( 48,  C_FG_WHITE,  47,  33);
 
 
 
-screen_pintar(49, C_FG_WHITE, 45, 9 );
-screen_pintar(88, C_FG_MAGENTA, 47, 9 );
-screen_pintar(50, C_FG_WHITE, 45, 11);
-screen_pintar(88, C_FG_MAGENTA, 47, 11);
-screen_pintar(51, C_FG_WHITE, 45, 13);
-screen_pintar(88, C_FG_MAGENTA, 47, 13);
-screen_pintar(52, C_FG_WHITE, 45, 15);
-screen_pintar(88, C_FG_MAGENTA, 47, 15);
-screen_pintar(53, C_FG_WHITE, 45, 17);
-screen_pintar(88, C_FG_MAGENTA, 47, 17);
-screen_pintar(54, C_FG_WHITE, 45, 19);
-screen_pintar(88, C_FG_MAGENTA, 47, 19);
-screen_pintar(55, C_FG_WHITE, 45, 21);
-screen_pintar(88, C_FG_MAGENTA, 47, 21);
-screen_pintar(56, C_FG_WHITE, 45, 23);
-screen_pintar(88, C_FG_MAGENTA, 47, 23);
+    screen_pintar(49, C_FG_WHITE, 45, 9 );
+    screen_pintar(88, C_FG_MAGENTA, 47, 9 );
+    screen_pintar(50, C_FG_WHITE, 45, 11);
+    screen_pintar(88, C_FG_MAGENTA, 47, 11);
+    screen_pintar(51, C_FG_WHITE, 45, 13);
+    screen_pintar(88, C_FG_MAGENTA, 47, 13);
+    screen_pintar(52, C_FG_WHITE, 45, 15);
+    screen_pintar(88, C_FG_MAGENTA, 47, 15);
+    screen_pintar(53, C_FG_WHITE, 45, 17);
+    screen_pintar(88, C_FG_MAGENTA, 47, 17);
+    screen_pintar(54, C_FG_WHITE, 45, 19);
+    screen_pintar(88, C_FG_MAGENTA, 47, 19);
+    screen_pintar(55, C_FG_WHITE, 45, 21);
+    screen_pintar(88, C_FG_MAGENTA, 47, 21);
+    screen_pintar(56, C_FG_WHITE, 45, 23);
+    screen_pintar(88, C_FG_MAGENTA, 47, 23);
 }
 
 void draw_blue_team(){
@@ -188,24 +188,24 @@ void draw_blue_team(){
         }
     }
 
-screen_pintar( 48,  C_FG_WHITE,  47,  40);
-screen_pintar( 48,  C_FG_WHITE,  47,  41);
-screen_pintar( 48,  C_FG_WHITE,  47,  42);
+    screen_pintar( 48,  C_FG_WHITE,  47,  40);
+    screen_pintar( 48,  C_FG_WHITE,  47,  41);
+    screen_pintar( 48,  C_FG_WHITE,  47,  42);
 
-screen_pintar(49, C_FG_WHITE, 45, 55 );
-screen_pintar(88, C_FG_MAGENTA, 47, 55);
-screen_pintar(50, C_FG_WHITE, 45, 57 );
-screen_pintar(88, C_FG_MAGENTA, 47, 57);
-screen_pintar(51, C_FG_WHITE, 45, 59 );
-screen_pintar(88, C_FG_MAGENTA, 47, 59);
-screen_pintar(52, C_FG_WHITE, 45, 61 );
-screen_pintar(88, C_FG_MAGENTA, 47, 61);
-screen_pintar(53, C_FG_WHITE, 45, 63 );
-screen_pintar(88, C_FG_MAGENTA, 47, 63);
-screen_pintar(54, C_FG_WHITE, 45, 65 );
-screen_pintar(88, C_FG_MAGENTA, 47, 65);
-screen_pintar(55, C_FG_WHITE, 45, 67 );
-screen_pintar(88, C_FG_MAGENTA, 47, 67);
-screen_pintar(56, C_FG_WHITE, 45, 69 );
-screen_pintar(88, C_FG_MAGENTA, 47, 69);
+    screen_pintar(49, C_FG_WHITE, 45, 55 );
+    screen_pintar(88, C_FG_MAGENTA, 47, 55);
+    screen_pintar(50, C_FG_WHITE, 45, 57 );
+    screen_pintar(88, C_FG_MAGENTA, 47, 57);
+    screen_pintar(51, C_FG_WHITE, 45, 59 );
+    screen_pintar(88, C_FG_MAGENTA, 47, 59);
+    screen_pintar(52, C_FG_WHITE, 45, 61 );
+    screen_pintar(88, C_FG_MAGENTA, 47, 61);
+    screen_pintar(53, C_FG_WHITE, 45, 63 );
+    screen_pintar(88, C_FG_MAGENTA, 47, 63);
+    screen_pintar(54, C_FG_WHITE, 45, 65 );
+    screen_pintar(88, C_FG_MAGENTA, 47, 65);
+    screen_pintar(55, C_FG_WHITE, 45, 67 );
+    screen_pintar(88, C_FG_MAGENTA, 47, 67);
+    screen_pintar(56, C_FG_WHITE, 45, 69 );
+    screen_pintar(88, C_FG_MAGENTA, 47, 69);
 }

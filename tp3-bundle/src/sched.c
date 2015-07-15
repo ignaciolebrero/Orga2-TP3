@@ -43,6 +43,7 @@ uint sched_tarea_actual_id(){
 
 uint* sched_tick(){
 	uint* selector = (uint*) 0x70;
+	game_tick(sched_tarea_actual_id());
 	if (scheduler.tarea_actual == JUGADOR_A) {
 		if (scheduler.jugador_B.cantidad_tareas > 0) {
 			scheduler.tarea_actual = JUGADOR_B;
@@ -58,7 +59,6 @@ uint* sched_tick(){
 			selector = proximaTarea(scheduler.jugador_B);
 		}
 	}
-	game_tick(sched_tarea_actual_id());
 	return selector;
 }
 

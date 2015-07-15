@@ -138,9 +138,9 @@ uint inicializar_tarea(uint jugador, uint jugador_posicion, uint tipo, uint para
     tss *jugador_actual = tss_obtener_jugador(jugador);
     uint memoria_fisica;
     if (jugador == 0) {
-        memoria_fisica = 0x500000 + 0x52000;
+        memoria_fisica = 0x500000 + 0x51000*2 - 0x2000;
     } else {
-        memoria_fisica = 0x122000 - 0x52000*2; // TODO: cambiar posiciones
+        memoria_fisica = 0x500000 + ((MAPA_ALTO-2) * MAPA_ANCHO + (MAPA_ANCHO-1)); // TODO: cambiar posiciones
     }
 
     jugador_actual[jugador_posicion].ptl     = 0;
