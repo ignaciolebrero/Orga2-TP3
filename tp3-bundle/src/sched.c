@@ -47,28 +47,27 @@ uint* sched_tick(){
 	if (scheduler.tarea_actual == JUGADOR_A) {
 		if (scheduler.jugador_B.cantidad_tareas > 0) {
 			scheduler.tarea_actual = JUGADOR_B;
-			selector = proximaTarea(scheduler.jugador_B);
+			selector = proximaTarea(&scheduler.jugador_B);
 		} else if (scheduler.jugador_A.cantidad_tareas > 0) {
-			selector = proximaTarea(scheduler.jugador_A);	
+			selector = proximaTarea(&scheduler.jugador_A);	
 		}
 	} else {
 		if (scheduler.jugador_A.cantidad_tareas > 0) {
 			scheduler.tarea_actual = JUGADOR_A;
-			selector = proximaTarea(scheduler.jugador_A);
+			selector = proximaTarea(&scheduler.jugador_A);
 		} else if (scheduler.jugador_B.cantidad_tareas > 0) {
-			selector = proximaTarea(scheduler.jugador_B);
+			selector = proximaTarea(&scheduler.jugador_B);
 		}
 	}
 	return selector;
 }
 
-uint* proximaTarea(tarea_scheduler tarea) {
-	tarea.pos = tarea.pos + 1;		
-	while (tarea.tareas[tarea.pos].id == NULL_ID){
-		if (tarea.pos == 8) { tarea.pos = 0; }
-		tarea.pos++;
-	}
-	return tarea.tareas[tarea.pos].selector;
+uint* proximaTarea(tarea_scheduler *tarea) {
+	do{
+		tarea->pos++;
+		if (tarea->pos == 8) { tarea->pos = 0; }
+	} while (tarea->tareas[tarea->pos].id == NULL_ID);
+	return tarea->tareas[tarea->pos].selector;
 }
 
 void sched_agregar_tarea(uint jugador, uint posicion_jugador, uint tipo, uint parametros){

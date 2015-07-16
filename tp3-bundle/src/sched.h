@@ -35,7 +35,7 @@ typedef struct sched_tareas{
 } sched_tareas;
 
 uint* sched_tick();
-uint* proximaTarea(tarea_scheduler);
+uint* proximaTarea(tarea_scheduler*);
 
 tarea_scheduler* scheduler_obtener_jugador(uint);
 ushort obtener_posicion_libre(tarea_scheduler*);
@@ -47,3 +47,4 @@ void sched_agregar_tarea(uint, uint, uint, uint);
 void sched_colocar_nueva_tarea(uint, tarea_scheduler*, ushort, uint, uint);
 void scheduler_matar_actual_tarea_pirata();
 void ejecutar_tarea(tarea_scheduler*);
+void screen_matar_pirata(pirata_t*);

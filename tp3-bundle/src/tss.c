@@ -7,6 +7,7 @@
 
 #include "tss.h"
 #include "mmu.h"
+#include "screen.h"
 
 extern uint get_eflags();
 extern uint get_ptl();
@@ -32,42 +33,42 @@ void inicializar_idle_cr3(){ //punto B, creo que esta "bien" hecho
 }
 
 void tss_inicializar() {
-	//tss inicial es basura(no nos importa)
-	tss_inicial.ptl 	   = 0;
+	//tss inicial es basua(no nos importa)
+	tss_inicial.ptl 	 = 0;
 	tss_inicial.unused0  = 0;
-    tss_inicial.esp0 	   = 0;
-    tss_inicial.ss0 	   = 0;
+    tss_inicial.esp0 	 = 0;
+    tss_inicial.ss0 	 = 0;
     tss_inicial.unused1  = 0;
-    tss_inicial.esp1 	   = 0;
-    tss_inicial.ss1 	   = 0;
+    tss_inicial.esp1 	 = 0;
+    tss_inicial.ss1 	 = 0;
     tss_inicial.unused2  = 0;
-    tss_inicial.esp2 	   = 0;
-    tss_inicial.ss2 	   = 0;
+    tss_inicial.esp2 	 = 0;
+    tss_inicial.ss2 	 = 0;
     tss_inicial.unused3  = 0;
-    tss_inicial.cr3 	   = 0;
-    tss_inicial.eip 	   = 0;
+    tss_inicial.cr3 	 = 0;
+    tss_inicial.eip 	 = 0;
     tss_inicial.eflags   = 0;
-    tss_inicial.eax 	   = 0;
-    tss_inicial.ecx 	   = 0;
-    tss_inicial.edx 	   = 0;
-    tss_inicial.ebx 	   = 0;
-    tss_inicial.esp 	   = 0;
-    tss_inicial.ebp 	   = 0;
-    tss_inicial.esi 	   = 0;
-    tss_inicial.edi 	   = 0;
-    tss_inicial.es 		   = 0;
+    tss_inicial.eax 	 = 0;
+    tss_inicial.ecx 	 = 0;
+    tss_inicial.edx 	 = 0;
+    tss_inicial.ebx 	 = 0;
+    tss_inicial.esp 	 = 0;
+    tss_inicial.ebp 	 = 0;
+    tss_inicial.esi 	 = 0;
+    tss_inicial.edi 	 = 0;
+    tss_inicial.es 		 = 0;
     tss_inicial.unused4  = 0;
-    tss_inicial.cs 		   = 0;
+    tss_inicial.cs 		 = 0;
     tss_inicial.unused5  = 0;
-    tss_inicial.ss 		   = 0;
+    tss_inicial.ss 		 = 0;
     tss_inicial.unused6  = 0;
-    tss_inicial.ds 		   = 0;
+    tss_inicial.ds 		 = 0;
     tss_inicial.unused7  = 0;
-    tss_inicial.fs 		   = 0;
+    tss_inicial.fs 		 = 0;
     tss_inicial.unused8  = 0;
-    tss_inicial.gs 		   = 0;
+    tss_inicial.gs 		 = 0;
     tss_inicial.unused9  = 0;
-    tss_inicial.ldt 	   = 0;
+    tss_inicial.ldt      = 0;
     tss_inicial.unused10 = 0;
     tss_inicial.dtrap 	 = 0;
     tss_inicial.iomap 	 = 0; 
@@ -138,7 +139,7 @@ uint inicializar_tarea(uint jugador, uint jugador_posicion, uint tipo, uint para
     tss *jugador_actual = tss_obtener_jugador(jugador);
     uint memoria_fisica;
     if (jugador == 0) {
-        memoria_fisica = 0x500000 + 0x51000*2 - 0x2000;
+        memoria_fisica = 0x500000 + 0x50000*2 + 0x1000;
     } else {
         memoria_fisica = 0x500000 + ((MAPA_ALTO-2) * MAPA_ANCHO + (MAPA_ANCHO-1)); // TODO: cambiar posiciones
     }
@@ -199,9 +200,9 @@ uint inicializar_tarea(uint jugador, uint jugador_posicion, uint tipo, uint para
 void apilar_parametros(uint x, uint y, uint dir){
     mmu_mapear_pagina(0x402000, rcr3(), dir, 0x7);
 
-    * (uint*) (0x402000 + 0x1000 - 0xC - 0x0) = 0;
-    * (uint*) (0x402000 + 0x1000 - 0xC - 0x4) = y;
-    * (uint*) (0x402000 + 0x1000 - 0xC - 0x8) = x;
+    * (uint*) (0x402000 + 0x1000 - 0x4) = y;
+    * (uint*) (0x402000 + 0x1000 - 0x8) = x;
+    * (uint*) (0x402000 + 0x1000 - 0xC) = 0;
 
     mmu_unmapear_pagina(0x402000, rcr3());
 }

@@ -28,7 +28,7 @@ typedef struct pirata_t{
     struct jugador_t *jugador;
     unsigned char type;
     uint index;
-    uint id;
+    uint id; //104000
     uint clock;
     int  pos;
     uint posDestino;
@@ -55,10 +55,11 @@ uint game_xy2lineal();
 pirata_t* id_pirata2pirata(uint id);
 
 // ~ auxiliares sugeridas o requeridas (segun disponga enunciado) ~
-void game_pirata_inicializar(uint type, uint jugador, uint opcional_pos);
+uint game_pirata_inicializar(uint type, uint jugador, uint opcional_pos);
 void game_pirata_erigir(pirata_t *pirata, jugador_t *j, uint tipo, uint parametros);
 void game_pirata_habilitar_posicion(jugador_t *j, pirata_t *pirata, int x, int y);
 void game_pirata_exploto();
+void eliminar_pirata();
 
 void game_jugador_inicializar(jugador_t *j);
 void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, int x, int y);
@@ -79,6 +80,7 @@ void game_tick(uint id_pirata);
 void game_terminar_si_es_hora();
 void game_atender_teclado(unsigned char tecla);
 uint game_dir2xy(direccion dir, int *x, int *y);
+uint game_xy2lineal(uint x, uint y);
 uint game_lineas2xy_formato(uint pos);
 uint obtener_posicion_botin(uint);
 

@@ -7,6 +7,7 @@
 
 #include "mmu.h"
 #include "i386.h"
+#include "screen.h"
 
 /* Macros */
 /* -------------------------------------------------------------------------- */
@@ -46,7 +47,7 @@ void* mmu_gimme_gimme_page_wachin(){
 
 uint obtener_posicion_inicial_virtual(uint elteam){
 	if (elteam == JUGADOR_A) {
-		return (uint) (0x800000 + 0x50000);
+		return (uint) (0x800000 + 0x50000*2 + 0x1000);
 	} else {
 		return (uint) (0x800000 + 0x1000 * ((MAPA_ALTO-2) * MAPA_ANCHO + (MAPA_ANCHO-1)));
 	}

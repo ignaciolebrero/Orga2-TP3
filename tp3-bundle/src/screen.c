@@ -32,14 +32,26 @@ void screen_actualizar_reloj_pirata(jugador_t *j, pirata_t *pirata){
     pirata->clock = (pirata->clock + 1) % reloj_size;
 
     if (j->index == 0) {
-        screen_pintar(reloj[pirata->clock], C_BG_BLUE, 45, 10 + (pirata->id*4) );
+        screen_pintar(reloj[pirata->clock], C_BG_BLUE, 47, 9  + (pirata->id*2) );
     } else {
-        screen_pintar(reloj[pirata->clock], C_BG_RED , 45, 10 + (pirata->id*4) );
+        screen_pintar(reloj[pirata->clock], C_BG_RED , 47, 55 + ((pirata->id%8)*2) );
     }
 }
 
-void screen_matar_pirata(uint id){
-    screen_pintar(96, C_BG_RED , 47, 10 + ( id * 4 ) ); //ver cual es el caracter que va
+void screen_actualizar_puntaje(jugador_t *jugador){
+    if (jugador->index == 0) {
+        print_dec(jugador->puntuacion, 3, 30, 30, C_FG_WHITE);
+    } else {
+        print_dec(jugador->puntuacion, 3, 30, 33, C_FG_WHITE);
+    }
+}
+
+void screen_matar_pirata(pirata_t *pirata){
+    if (pirata->jugador->index == 0){
+        screen_pintar(88, C_FG_MAGENTA, 47, 9  + (pirata->id*2) );
+    } else {
+        screen_pintar(88, C_FG_MAGENTA, 47, 55  + ((pirata->id%8)*2) );
+    }
 }
 
 void screen_pintar(uchar c, uchar color, uint fila, uint columna)
@@ -160,8 +172,6 @@ void draw_red_team(){
     screen_pintar( 48,  C_FG_WHITE,  47,  32);
     screen_pintar( 48,  C_FG_WHITE,  47,  33);
 
-
-
     screen_pintar(49, C_FG_WHITE, 45, 9 );
     screen_pintar(88, C_FG_MAGENTA, 47, 9 );
     screen_pintar(50, C_FG_WHITE, 45, 11);
@@ -192,20 +202,20 @@ void draw_blue_team(){
     screen_pintar( 48,  C_FG_WHITE,  47,  41);
     screen_pintar( 48,  C_FG_WHITE,  47,  42);
 
-    screen_pintar(49, C_FG_WHITE, 45, 55 );
-    screen_pintar(88, C_FG_MAGENTA, 47, 55);
-    screen_pintar(50, C_FG_WHITE, 45, 57 );
-    screen_pintar(88, C_FG_MAGENTA, 47, 57);
-    screen_pintar(51, C_FG_WHITE, 45, 59 );
-    screen_pintar(88, C_FG_MAGENTA, 47, 59);
-    screen_pintar(52, C_FG_WHITE, 45, 61 );
-    screen_pintar(88, C_FG_MAGENTA, 47, 61);
-    screen_pintar(53, C_FG_WHITE, 45, 63 );
-    screen_pintar(88, C_FG_MAGENTA, 47, 63);
-    screen_pintar(54, C_FG_WHITE, 45, 65 );
-    screen_pintar(88, C_FG_MAGENTA, 47, 65);
-    screen_pintar(55, C_FG_WHITE, 45, 67 );
-    screen_pintar(88, C_FG_MAGENTA, 47, 67);
-    screen_pintar(56, C_FG_WHITE, 45, 69 );
-    screen_pintar(88, C_FG_MAGENTA, 47, 69);
+    screen_pintar(49, C_FG_WHITE  , 45, 55 );
+    screen_pintar(88, C_FG_MAGENTA, 47, 55 );
+    screen_pintar(50, C_FG_WHITE  , 45, 57 );
+    screen_pintar(88, C_FG_MAGENTA, 47, 57 );
+    screen_pintar(51, C_FG_WHITE  , 45, 59 );
+    screen_pintar(88, C_FG_MAGENTA, 47, 59 );
+    screen_pintar(52, C_FG_WHITE  , 45, 61 );
+    screen_pintar(88, C_FG_MAGENTA, 47, 61 );
+    screen_pintar(53, C_FG_WHITE  , 45, 63 );
+    screen_pintar(88, C_FG_MAGENTA, 47, 63 );
+    screen_pintar(54, C_FG_WHITE  , 45, 65 );
+    screen_pintar(88, C_FG_MAGENTA, 47, 65 );
+    screen_pintar(55, C_FG_WHITE  , 45, 67 );
+    screen_pintar(88, C_FG_MAGENTA, 47, 67 );
+    screen_pintar(56, C_FG_WHITE  , 45, 69 );
+    screen_pintar(88, C_FG_MAGENTA, 47, 69 );
 }
