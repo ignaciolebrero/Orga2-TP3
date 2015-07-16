@@ -56,7 +56,7 @@ uint game_lineal2xy_formato (uint pos) {
 }
 
 uint game_posicion_valida(uint x, uint y) {
-	return ( ((x >= 0) && (y >= 1)) && ((x < MAPA_ANCHO) && (y < MAPA_ALTO)) );
+	return ( ((x >= 0) && (y >= 1)) && ((x < MAPA_ANCHO) && (y < MAPA_ALTO+1)) );
 }
 
 pirata_t* id_pirata2pirata(uint id_pirata)
@@ -344,8 +344,6 @@ void game_syscall_cavar(uint id)
 {
     pirata_t* pirata = id_pirata2pirata(id);
     uint i = obtener_posicion_botin(pirata->pos);
-	print_dec(pirata->pos, 3, 30, 15, 0x2);
-	breakpoint();
 
     if ( i < BOTINES_CANTIDAD ) {
     	pirata->jugador->puntuacion++;
@@ -369,9 +367,7 @@ uint game_syscall_pirata_posicion(uint id, int idx)
     	pirata = id_pirata2pirata( (uint) idx);
     }
  
-    uint dev = game_lineal2xy_formato(pirata->pos);
-    breakpoint();
-    return dev;
+    return game_lineal2xy_formato(pirata->pos);
 }
 
 void game_syscall_manejar(uint syscall, uint param1)

@@ -17,7 +17,7 @@ static ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO;
 const char reloj[] = "|/-\\";
 #define reloj_size 4
 
-ca temporal_pantalla[VIDEO_FILS][VIDEO_COLS];
+//ca temporal_pantalla[VIDEO_FILS][VIDEO_COLS];
 
 void screen_actualizar_reloj_global()
 {
@@ -32,25 +32,25 @@ void screen_actualizar_reloj_pirata(jugador_t *j, pirata_t *pirata){
     pirata->clock = (pirata->clock + 1) % reloj_size;
 
     if (j->index == 0) {
-        screen_pintar(reloj[pirata->clock], C_BG_BLUE, 47, 9  + (pirata->id*2) );
+        screen_pintar(reloj[pirata->clock], C_BG_BLUE, 48, 9  + (pirata->id*2) );
     } else {
-        screen_pintar(reloj[pirata->clock], C_BG_RED , 47, 55 + ((pirata->id%8)*2) );
+        screen_pintar(reloj[pirata->clock], C_BG_RED , 48, 55 + ((pirata->id%8)*2) );
     }
 }
 
 void screen_actualizar_puntaje(jugador_t *jugador){
     if (jugador->index == 0) {
-        print_dec(jugador->puntuacion, 3, 30, 30, C_FG_WHITE);
+        print_dec(jugador->puntuacion, 3, 31, 47, C_FG_WHITE);
     } else {
-        print_dec(jugador->puntuacion, 3, 30, 33, C_FG_WHITE);
+        print_dec(jugador->puntuacion, 3, 41, 47, C_FG_WHITE);
     }
 }
 
 void screen_matar_pirata(pirata_t *pirata){
     if (pirata->jugador->index == 0){
-        screen_pintar(88, C_FG_MAGENTA, 47, 9  + (pirata->id*2) );
+        screen_pintar(88, C_FG_MAGENTA, 48, 9  + (pirata->id*2) );
     } else {
-        screen_pintar(88, C_FG_MAGENTA, 47, 55  + ((pirata->id%8)*2) );
+        screen_pintar(88, C_FG_MAGENTA, 48, 55  + ((pirata->id%8)*2) );
     }
 }
 
@@ -111,8 +111,8 @@ void guardar_pantalla_actual(){
     uint fil, col;
     for (fil = 0; fil < VIDEO_FILS; fil++) {
         for (col = 0; col < VIDEO_COLS; col++) {
-            temporal_pantalla[fil][col].a = p[fil][col].a;
-            temporal_pantalla[fil][col].c = p[fil][col].c;
+            //temporal_pantalla[fil][col].a = p[fil][col].a;
+            //temporal_pantalla[fil][col].c = p[fil][col].c;
         }
     }
 }
@@ -188,7 +188,7 @@ void screen_inicializar(){
 
 void draw_map(){
     int i, j;
-    for(i = 0; i < 44; i++){ //filas 0-43 
+    for(i = 0; i < 45; i++){ //filas 0-43 
         for(j = 0; j < 80; j++){ //columnas 0-79
             screen_pintar(32, C_BG_LIGHT_GREY, i, j);
         }
@@ -205,7 +205,7 @@ void draw_header(){
 void draw_footer(){
     //dibujo el area de notificaciones
     int i, j;
-    for(i = 44; i < 50; i++){ //filas 44-49 
+    for(i = 45; i < 50; i++){ //filas 44-49 
         for(j = 0; j < 80; j++){ //columnas 80
             screen_pintar(32, C_BG_BLACK, i, j);
         }
@@ -214,7 +214,7 @@ void draw_footer(){
 
 void draw_red_team(){
     int i, j;
-    for (i=44; i<50; i++){
+    for (i=45; i<50; i++){
         for (j=29; j<36; j++){
             screen_pintar(32, C_BG_BLUE, i, j);
         }
@@ -224,27 +224,27 @@ void draw_red_team(){
     screen_pintar( 48,  C_FG_WHITE,  47,  32);
     screen_pintar( 48,  C_FG_WHITE,  47,  33);
 
-    screen_pintar(49, C_FG_WHITE, 45, 9 );
-    screen_pintar(88, C_FG_MAGENTA, 47, 9 );
-    screen_pintar(50, C_FG_WHITE, 45, 11);
-    screen_pintar(88, C_FG_MAGENTA, 47, 11);
-    screen_pintar(51, C_FG_WHITE, 45, 13);
-    screen_pintar(88, C_FG_MAGENTA, 47, 13);
-    screen_pintar(52, C_FG_WHITE, 45, 15);
-    screen_pintar(88, C_FG_MAGENTA, 47, 15);
-    screen_pintar(53, C_FG_WHITE, 45, 17);
-    screen_pintar(88, C_FG_MAGENTA, 47, 17);
-    screen_pintar(54, C_FG_WHITE, 45, 19);
-    screen_pintar(88, C_FG_MAGENTA, 47, 19);
-    screen_pintar(55, C_FG_WHITE, 45, 21);
-    screen_pintar(88, C_FG_MAGENTA, 47, 21);
-    screen_pintar(56, C_FG_WHITE, 45, 23);
-    screen_pintar(88, C_FG_MAGENTA, 47, 23);
+    screen_pintar(49, C_FG_WHITE, 46, 9 );
+    screen_pintar(88, C_FG_MAGENTA, 48, 9 );
+    screen_pintar(50, C_FG_WHITE, 46, 11);
+    screen_pintar(88, C_FG_MAGENTA, 48, 11);
+    screen_pintar(51, C_FG_WHITE, 46, 13);
+    screen_pintar(88, C_FG_MAGENTA, 48, 13);
+    screen_pintar(52, C_FG_WHITE, 46, 15);
+    screen_pintar(88, C_FG_MAGENTA, 48, 15);
+    screen_pintar(53, C_FG_WHITE, 46, 17);
+    screen_pintar(88, C_FG_MAGENTA, 48, 17);
+    screen_pintar(54, C_FG_WHITE, 46, 19);
+    screen_pintar(88, C_FG_MAGENTA, 48, 19);
+    screen_pintar(55, C_FG_WHITE, 46, 21);
+    screen_pintar(88, C_FG_MAGENTA, 48, 21);
+    screen_pintar(56, C_FG_WHITE, 46, 23);
+    screen_pintar(88, C_FG_MAGENTA, 48, 23);
 }
 
 void draw_blue_team(){
     int i, j;
-    for (i=44; i<50; i++){
+    for (i=45; i<50; i++){
         for (j=38; j<45; j++){
             screen_pintar(32, C_BG_RED, i, j);
         }
@@ -254,20 +254,20 @@ void draw_blue_team(){
     screen_pintar( 48,  C_FG_WHITE,  47,  41);
     screen_pintar( 48,  C_FG_WHITE,  47,  42);
 
-    screen_pintar(49, C_FG_WHITE  , 45, 55 );
-    screen_pintar(88, C_FG_MAGENTA, 47, 55 );
-    screen_pintar(50, C_FG_WHITE  , 45, 57 );
-    screen_pintar(88, C_FG_MAGENTA, 47, 57 );
-    screen_pintar(51, C_FG_WHITE  , 45, 59 );
-    screen_pintar(88, C_FG_MAGENTA, 47, 59 );
-    screen_pintar(52, C_FG_WHITE  , 45, 61 );
-    screen_pintar(88, C_FG_MAGENTA, 47, 61 );
-    screen_pintar(53, C_FG_WHITE  , 45, 63 );
-    screen_pintar(88, C_FG_MAGENTA, 47, 63 );
-    screen_pintar(54, C_FG_WHITE  , 45, 65 );
-    screen_pintar(88, C_FG_MAGENTA, 47, 65 );
-    screen_pintar(55, C_FG_WHITE  , 45, 67 );
-    screen_pintar(88, C_FG_MAGENTA, 47, 67 );
-    screen_pintar(56, C_FG_WHITE  , 45, 69 );
-    screen_pintar(88, C_FG_MAGENTA, 47, 69 );
+    screen_pintar(49, C_FG_WHITE  , 46, 55 );
+    screen_pintar(88, C_FG_MAGENTA, 48, 55 );
+    screen_pintar(50, C_FG_WHITE  , 46, 57 );
+    screen_pintar(88, C_FG_MAGENTA, 48, 57 );
+    screen_pintar(51, C_FG_WHITE  , 46, 59 );
+    screen_pintar(88, C_FG_MAGENTA, 48, 59 );
+    screen_pintar(52, C_FG_WHITE  , 46, 61 );
+    screen_pintar(88, C_FG_MAGENTA, 48, 61 );
+    screen_pintar(53, C_FG_WHITE  , 46, 63 );
+    screen_pintar(88, C_FG_MAGENTA, 48, 63 );
+    screen_pintar(54, C_FG_WHITE  , 46, 65 );
+    screen_pintar(88, C_FG_MAGENTA, 48, 65 );
+    screen_pintar(55, C_FG_WHITE  , 46, 67 );
+    screen_pintar(88, C_FG_MAGENTA, 48, 67 );
+    screen_pintar(56, C_FG_WHITE  , 46, 69 );
+    screen_pintar(88, C_FG_MAGENTA, 48, 69 );
 }

@@ -200,9 +200,6 @@ uint inicializar_tarea(uint jugador, uint jugador_posicion, uint tipo, uint para
 void apilar_parametros(uint x, uint y, uint dir){
     mmu_mapear_pagina(0x402000, rcr3(), dir, 0x7);
 
-    print_dec(x, 5, 30, 35, 0x2); 
-    print_dec(y, 5, 30, 30, 0x2); 
-
     * (uint*) (0x402000 + 0x1000 - 0x4) = y;
     * (uint*) (0x402000 + 0x1000 - 0x8) = x;
     * (uint*) (0x402000 + 0x1000 - 0xC) = 0;
