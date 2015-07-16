@@ -309,7 +309,7 @@ void mover_pirata(uint pos_orig, uint pos_nueva, pirata_t* pirata){
 			pintar_pirata(pos_nueva, pos_orig, pirata->type);
 			pirata->pos = pos_nueva;
 		} else {
-			game_pirata_exploto();
+			tarea_suicidarse();
 		}
 	} else {
 		mmu_mover_codigo_pirata(rcr3(), game_pos2mem_fisica(pos_nueva), game_pos2mem_fisica(pos_orig));
@@ -353,10 +353,10 @@ void game_syscall_cavar(uint id)
     	botines[i][2]--;
 
     	if ( botines[i][2] == 0 ) {
-    		game_pirata_exploto();
+    		tarea_suicidarse();
     	}
     } else {
-		game_pirata_exploto();    	
+		tarea_suicidarse();    	
     }
 }
 
@@ -406,6 +406,10 @@ uint obtener_posicion_botin(uint posicion)
 		i++;
 	}
 	return i;
+}
+
+void tarea_suicidarse(){
+	* (uint*) 0x401000 = 2; //page_fault
 }
 
 void game_pirata_exploto()

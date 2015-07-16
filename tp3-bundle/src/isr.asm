@@ -253,12 +253,12 @@ _isr33:
 	
 	call fin_intr_pic1
 	in  al, 0x60
+	cmp byte al, 0x15 ; codigo de la Y
+ 	je .rutina_debuger
 	cmp byte al, 0x2A
 	je .rutinals
 	cmp byte al, 0x36
 	je .rutinars
-	cmp byte al, 0x15 ; codigo de la Y
- 	je .rutina_debuger
 	jmp pop
 
 _isr33.rutinals:
@@ -270,16 +270,35 @@ _isr33.rutinals:
 
 _isr33.rutinars:
 	xor  eax, eax
-	mov  byte eax, 1
+	mov  eax, 1
 	push eax;jugadorB
 	call game_atender_teclado
 	add  esp, 4
 	jmp  pop
 
-_isr33.rutina_debuger: ;TODO: ver si asi se negaba
+_isr33.rutina_debuger:
 	mov ax, [debug_habilitado]
-	neg ax
+	cmp ax, 0x1
+	je  _isr33.deshabilitar_debugger
+	mov ax, 0x1
 	mov [debug_habilitado], ax	
+	jmp pop
+
+_isr33.deshabilitar_debugger:
+	mov ax,[pantalla_debug_activa]
+	cmp ax, 0x1
+	je  _isr33.desactivar_pantalla_debug
+	jne _isr33.apagar_debugger
+
+_isr33.desactivar_pantalla_debug:
+	;call screen_reprintar_pantalla
+	mov ax, 0x0
+	mov [pantalla_debug_activa], ax
+	jmp _isr33.apagar_debugger
+
+_isr33.apagar_debugger:
+	mov ax, 0x0
+	mov [debug_habilitado], ax
 	jmp pop
 
 pop:
@@ -296,7 +315,8 @@ _isr70:
 		push eax
 		call game_syscall_manejar
 		add  esp, 8
-		mov [ebp-28], eax
+
+		mov [ebp-28], eax ;;revisar si no es esto o algo de la pila!!
 
 		mov ax, 0x70
 		mov [sched_tarea_selector], ax ;idle
@@ -313,10 +333,10 @@ matar_pirata:
 	mov ax, [debug_habilitado]
 	cmp ax, 0x0
 	je  .matar
+	mov ax, 0x1
+	mov [pantalla_debug_activa], ax
+	;call screen_debuggear_tarea
 
-	mov byte [pantalla_debug_activa], 0x0
-
-	;call debuggear_tarea
 	jmp .matar
 
 	.matar:
