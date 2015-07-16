@@ -256,7 +256,7 @@ void game_pirata_habilitar_posicion(jugador_t *j, pirata_t *pirata, int x, int y
 			j->posiciones_descubiertas[j->ultima_posicion_descubierta] = pos; //la agrega a la tabla de posiciones descubiertas del jugador
 			j->ultima_posicion_descubierta++;
 			if( obtener_posicion_botin(pos) < BOTINES_CANTIDAD ) {
-				print_dec(pos, 3, 30, 15, 0x2);
+				screen_pintar(111, C_FG_DARK_GREY, y, x);
 				game_pirata_inicializar(PIRATA_MINERO, j->index, game_lineal2xy_formato(pos));
 			}
 	}

@@ -26,9 +26,34 @@ LS_INLINE unsigned short rtr(void);
 LS_INLINE void hlt(void);
 LS_INLINE void breakpoint(void);
 
-/*
+/*/
+ *
+ * Funciones de Debuggeo
+ *
+/*/
+
+LS_INLINE unsigned int reax(void);
+LS_INLINE unsigned int rebx(void);
+LS_INLINE unsigned int recx(void);
+LS_INLINE unsigned int redx(void);
+LS_INLINE unsigned int resi(void);
+LS_INLINE unsigned int redi(void);
+LS_INLINE unsigned int rebp(void);
+LS_INLINE unsigned int resp(void);
+//LS_INLINE unsigned int reip(void);
+LS_INLINE unsigned int rcs(void);
+LS_INLINE unsigned int rds(void);
+LS_INLINE unsigned int res(void);
+LS_INLINE unsigned int rfs(void);
+LS_INLINE unsigned int rgs(void);
+LS_INLINE unsigned int rss(void);
+LS_INLINE unsigned int reflags(void);
+
+/*/
+ *
  * Implementaciones
- */
+ *
+/*/
 
 LS_INLINE void lcr0(unsigned int val) {
     __asm __volatile("movl %0,%%cr0" : : "r" (val));
@@ -104,4 +129,102 @@ LS_INLINE void breakpoint(void) {
     __asm __volatile("xchg %%bx, %%bx" : :);
 }
 
+/*
+ * para debuggeo
+ */
+LS_INLINE unsigned int reax(void){
+    unsigned int val;
+    __asm __volatile("movl %%eax,%0" : "=r" (val));
+    return val;
+}
+
+LS_INLINE unsigned int rebx(void){
+    unsigned int val;
+    __asm __volatile("movl %%ebx,%0" : "=r" (val));
+    return val;
+}
+
+LS_INLINE unsigned int recx(void){
+    unsigned int val;
+    __asm __volatile("movl %%ecx,%0" : "=r" (val));
+    return val;
+}
+
+LS_INLINE unsigned int redx(void){
+    unsigned int val;
+    __asm __volatile("movl %%edx,%0" : "=r" (val));
+    return val;
+}
+
+LS_INLINE unsigned int resi(void){
+    unsigned int val;
+    __asm __volatile("movl %%esi,%0" : "=r" (val));
+    return val;
+}
+
+LS_INLINE unsigned int redi(void){
+    unsigned int val;
+    __asm __volatile("movl %%edi,%0" : "=r" (val));
+    return val;
+}
+
+LS_INLINE unsigned int rebp(void){
+    unsigned int val;
+    __asm __volatile("movl %%ebp,%0" : "=r" (val));
+    return val;
+}
+
+LS_INLINE unsigned int resp(void){
+    unsigned int val;
+    __asm __volatile("movl %%esp,%0" : "=r" (val));
+    return val;
+}
+
+/*LS_INLINE unsigned int reip(void){
+    unsigned int val;
+    __asm __volatile("movl %%eip,%0" : "=r" (val));
+    return val;
+}*/
+
+LS_INLINE unsigned int rcs(void){
+    unsigned int val;
+    __asm __volatile("movl %%cs,%0" : "=r" (val));
+    return val;
+}
+
+LS_INLINE unsigned int rds(void){
+    unsigned int val;
+    __asm __volatile("movl %%ds,%0" : "=r" (val));
+    return val;
+}
+
+LS_INLINE unsigned int res(void){
+    unsigned int val;
+    __asm __volatile("movl %%es,%0" : "=r" (val));
+    return val;
+}
+
+LS_INLINE unsigned int rfs(void){
+    unsigned int val;
+    __asm __volatile("movl %%fs,%0" : "=r" (val));
+    return val;
+}
+
+LS_INLINE unsigned int rgs(void){
+    unsigned int val;
+    __asm __volatile("movl %%gs,%0" : "=r" (val));
+    return val;
+}
+
+LS_INLINE unsigned int rss(void){
+    unsigned int val;
+    __asm __volatile("movl %%ss,%0" : "=r" (val));
+    return val;
+}
+
+LS_INLINE unsigned int reflags(void){
+    unsigned int val;
+    __asm __volatile("movl %%eflags,%0" : "=r" (val));
+    return val;
+}
 #endif  /* !__i386_H__ */

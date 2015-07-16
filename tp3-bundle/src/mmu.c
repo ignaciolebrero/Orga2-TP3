@@ -36,20 +36,20 @@ void mmu_inicializar(){
 }
 
 void* mmu_gimme_gimme_page_wachin(){
-	void* result = NULL;
+	void* nueva_pagina = NULL;
 	if (paginas_libres.cantidad > 0) {
-		result = paginas_libres.primera_libre;
+		nueva_pagina = paginas_libres.primera_libre;
 		paginas_libres.primera_libre += (uint) 0x1000;
 		paginas_libres.cantidad --;
 	} 
-	return result;
+	return nueva_pagina;
 }
 
 uint obtener_posicion_inicial_virtual(uint elteam){
 	if (elteam == JUGADOR_A) {
 		return (uint) (0x800000 + 0x50000*2 + 0x1000);
 	} else {
-		return (uint) (0x800000 + 0x1000 * ((MAPA_ALTO-2) * MAPA_ANCHO + (MAPA_ANCHO-1)));
+		return (uint) (0x800000 + 0x1000 * ((MAPA_ALTO-2) * MAPA_ANCHO + (MAPA_ANCHO-2)));
 	}
 }
 

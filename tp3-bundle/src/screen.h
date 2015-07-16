@@ -42,6 +42,7 @@ void screen_pintar_linea_h(unsigned char c, unsigned char color, int fila, int c
 void screen_pintar_linea_v(unsigned char c, unsigned char color, int fila, int columna, int alto);
 void screen_inicializar();
 void screen_pintar_puntajes();
+void guardar_pantalla_actual();
 
 unsigned char screen_color_jugador(jugador_t *j);
 unsigned char screen_caracter_pirata(unsigned int tipo);

@@ -8,16 +8,16 @@ definicion de funciones del scheduler
 
 #include "screen.h"
 #include "game.h"
-
+#include "i386.h"
 
 extern jugador_t jugadorA, jugadorB;
-
 
 static ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO;
 
 const char reloj[] = "|/-\\";
 #define reloj_size 4
 
+ca temporal_pantalla[VIDEO_FILS][VIDEO_COLS];
 
 void screen_actualizar_reloj_global()
 {
@@ -63,6 +63,58 @@ void screen_pintar(uchar c, uchar color, uint fila, uint columna)
 uchar screen_valor_actual(uint fila, uint columna)
 {
     return p[fila][columna].c;
+}
+
+//TODO: terminar!!
+void screen_debuggear_tarea(){
+    guardar_pantalla_actual();
+    screen_pintar_rect(0, C_BG_LIGHT_GREY, 42, 54, 40, 30);
+    
+    print("eax"    , 25, 10, C_FG_BLACK);
+    print("ebx"    , 25, 12, C_FG_BLACK);
+    print("ecx"    , 25, 14, C_FG_BLACK);
+    print("edx"    , 25, 16, C_FG_BLACK);
+    print("esi"    , 25, 18, C_FG_BLACK);
+    print("edi"    , 25, 20, C_FG_BLACK);
+    print("ebp"    , 25, 22, C_FG_BLACK);
+    print("esp"    , 25, 24, C_FG_BLACK);
+    print("eip"    , 25, 26, C_FG_BLACK);
+    print("cs"     , 26, 28, C_FG_BLACK);
+    print("ds"     , 26, 30, C_FG_BLACK);
+    print("es"     , 26, 32, C_FG_BLACK);
+    print("fs"     , 26, 34, C_FG_BLACK);
+    print("gs"     , 26, 36, C_FG_BLACK);
+    print("ss"     , 26, 38, C_FG_BLACK);
+    print("eflags" , 26, 40, C_FG_BLACK);
+
+    //cambiarlo para que use de la pila
+    print_hex(reax(), 29, 10, 25, C_FG_WHITE);
+    print_hex(rebx(), 29, 12, 25, C_FG_WHITE);
+    print_hex(rebx(), 29, 14, 25, C_FG_WHITE);
+    print_hex(recx(), 29, 16, 25, C_FG_WHITE);
+    print_hex(redx(), 29, 18, 25, C_FG_WHITE);
+    print_hex(resi(), 29, 20, 25, C_FG_WHITE);
+    print_hex(redi(), 29, 22, 25, C_FG_WHITE);
+    print_hex(rebp(), 29, 24, 25, C_FG_WHITE);
+    print_hex(resp(), 29, 26, 25, C_FG_WHITE);
+//  print_hex(reip(), 29, 28, 25, C_FG_WHITE);
+    print_hex(rcs() , 29, 30, 25, C_FG_WHITE);
+    print_hex(rds() , 29, 32, 25, C_FG_WHITE);
+    print_hex(res() , 29, 34, 25, C_FG_WHITE);
+    print_hex(rfs() , 29, 36, 25, C_FG_WHITE);
+    print_hex(rgs() , 29, 38, 25, C_FG_WHITE);
+    print_hex(rss() , 29, 40, 25, C_FG_WHITE);
+
+}
+
+void guardar_pantalla_actual(){
+    uint fil, col;
+    for (fil = 0; fil < VIDEO_FILS; fil++) {
+        for (col = 0; col < VIDEO_COLS; col++) {
+            temporal_pantalla[fil][col].a = p[fil][col].a;
+            temporal_pantalla[fil][col].c = p[fil][col].c;
+        }
+    }
 }
 
 void print(const char * text, uint x, uint y, unsigned short attr) {
