@@ -368,7 +368,10 @@ uint game_syscall_pirata_posicion(uint id, int idx)
     } else {
     	pirata = id_pirata2pirata( (uint) idx);
     }
-    return game_lineal2xy_formato(pirata->pos);
+ 
+    uint dev = game_lineal2xy_formato(pirata->pos);
+    breakpoint();
+    return dev;
 }
 
 void game_syscall_manejar(uint syscall, uint param1)
