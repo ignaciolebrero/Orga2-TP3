@@ -10,7 +10,6 @@ extern inicializar_dir_pirata
 extern game_syscall_manejar
 extern game_atender_teclado
 extern game_pirata_exploto
-extern screen_debuggear_tarea
 extern mmu_mapear_pagina
 extern habilitar_pic
 extern resetear_pic
@@ -226,11 +225,11 @@ _isr20:
 
 _isr32:
 	pushad
+		call fin_intr_pic1
 		mov ax, [pantalla_debug_activa]
 		cmp ax, 0x1
 		je .fin
 		
-		call fin_intr_pic1
 		call sched_tick
 
 		xor ecx, ecx
@@ -251,13 +250,13 @@ _isr32:
 ;Está parcialmente la implementacion de la activacion del debugger
 _isr33:
 	pushad
+	
 	call fin_intr_pic1
 	in  al, 0x60
 	cmp byte al, 0x15 ; codigo de la Y
  	je .rutina_debuger
  	cmp byte [pantalla_debug_activa], 0x1
- 	je pop
-
+ 	je .desactivar_pantalla_debug
 	cmp byte al, 0x2A
 	je .rutinals
 	cmp byte al, 0x36
@@ -333,13 +332,12 @@ _isr70:
 ;; -------------------------------------------------------------------------- ;;
 
 matar_pirata:
-	xchg bx,bx
 	mov ax, [debug_habilitado]
 	cmp ax, 0x0
 	je  .matar
 	mov ax, 0x1
 	mov [pantalla_debug_activa], ax
-	call screen_debuggear_tarea
+	;call screen_debuggear_tarea
 
 	jmp .matar
 
@@ -348,6 +346,7 @@ matar_pirata:
 	jmp .fin
 
 	.fin:
+	sti
 	mov ax, 0x70
 	mov [sched_tarea_selector], ax ;idle
 	jmp far [sched_tarea_offset]

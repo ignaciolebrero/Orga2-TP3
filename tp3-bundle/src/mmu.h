@@ -72,7 +72,7 @@ void mmu_unmapear_pagina(uint virt, uint cr3);
 
 void mmu_mover_codigo_pirata(uint cr3, uint* source, uint* destino);
 
-
+char hay_paginas();
 	   /* funciones de directorios */
 /* --------------------------------------------- */
 

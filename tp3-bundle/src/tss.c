@@ -141,7 +141,7 @@ uint inicializar_tarea(uint jugador, uint jugador_posicion, uint tipo, uint para
     if (jugador == 0) {
         memoria_fisica = 0x500000 + 0x50000*2 + 0x1000;
     } else {
-        memoria_fisica = 0x500000 + ((MAPA_ALTO-2) * MAPA_ANCHO + (MAPA_ANCHO-1)); // TODO: cambiar posiciones
+        memoria_fisica = 0x500000 + 0x1000 * ((MAPA_ALTO-2) * MAPA_ANCHO + (MAPA_ANCHO-2)); // TODO: cambiar posiciones
     }
 
     jugador_actual[jugador_posicion].ptl     = 0;
@@ -225,4 +225,40 @@ uint tss_obtener_cr3(uint id){
     tss* jugador      = tss_obtener_jugador(id / 8);
     uint posicion_tss = id % 8;
     return jugador[posicion_tss].cr3;
+}
+
+uint tss_obtener_cs(uint id){
+    tss* jugador      = tss_obtener_jugador(id / 8);
+    uint posicion_tss = id % 8;
+    return jugador[posicion_tss].cs;
+}
+
+uint tss_obtener_ds(uint id){
+    tss* jugador      = tss_obtener_jugador(id / 8);
+    uint posicion_tss = id % 8;
+    return jugador[posicion_tss].ds;
+}
+
+uint tss_obtener_es(uint id){
+    tss* jugador      = tss_obtener_jugador(id / 8);
+    uint posicion_tss = id % 8;
+    return jugador[posicion_tss].es;
+}
+
+uint tss_obtener_fs(uint id){
+    tss* jugador      = tss_obtener_jugador(id / 8);
+    uint posicion_tss = id % 8;
+    return jugador[posicion_tss].fs;
+}
+
+uint tss_obtener_gs(uint id){
+    tss* jugador      = tss_obtener_jugador(id / 8);
+    uint posicion_tss = id % 8;
+    return jugador[posicion_tss].gs;
+}
+
+uint tss_obtener_ss(uint id){
+    tss* jugador      = tss_obtener_jugador(id / 8);
+    uint posicion_tss = id % 8;
+    return jugador[posicion_tss].ss;
 }

@@ -34,6 +34,14 @@ jugador_t jugadorB;
 
 pirata_t* piratas[MAX_CANT_PIRATAS_VIVOS*2];
 
+
+uint muerte_subita;
+
+uint botines_pendientes;
+
+uint puntaje_anteriorA;
+uint puntaje_anteriorB;
+
 void* error()
 {
 	__asm__ ("int3");
@@ -56,7 +64,7 @@ uint game_lineal2xy_formato (uint pos) {
 }
 
 uint game_posicion_valida(uint x, uint y) {
-	return ( ((x >= 0) && (y >= 1)) && ((x < MAPA_ANCHO) && (y < MAPA_ALTO+1)) );
+	return ( ((x >= 0) && (y >= 1)) && ((x < MAPA_ANCHO) && (y < MAPA_ALTO)) );
 }
 
 pirata_t* id_pirata2pirata(uint id_pirata)
@@ -111,6 +119,11 @@ void game_calcular_posiciones_vistas(int *vistas_x, int *vistas_y, int x, int y)
 
 void game_inicializar()
 {
+	muerte_subita = 0;
+	botines_pendientes = 8;
+	puntaje_anteriorB = 0;
+	puntaje_anteriorA = 0;
+
 	jugadorA.index = 0;
 	jugadorA.pos_puerto = POS_BASE_MAPA + 81;
 	jugadorA.puntuacion = 0;
@@ -118,7 +131,7 @@ void game_inicializar()
 
 	jugadorB.index = 1;
 	jugadorB.puntuacion = 0;
-	jugadorB.pos_puerto = (MAPA_ALTO-2) * MAPA_ANCHO + (MAPA_ANCHO-1);
+	jugadorB.pos_puerto = (MAPA_ALTO-2) * MAPA_ANCHO + (MAPA_ANCHO-2);
 	jugadorB.ultima_posicion_descubierta = 0;
 
 	uint i;
@@ -164,10 +177,10 @@ ushort game_obtener_posicion_pirata_disponible(jugador_t* jugador)
     return i;
 }
 
-ushort game_obtener_posicion_minero_disponible(jugador_t* jugador)
+uint game_obtener_posicion_minero_disponible(jugador_t* jugador)
 {
-    ushort i = 0;
-    while( (jugador->mineros_pendientes[i].id == NULL_ID_MINERO) && (i < 8) ) { i++; }
+    uint i = 0;
+    while( (jugador->mineros_pendientes[i].id != NULL_ID_MINERO) && (i < 8) ) { i++; }
     return i;
 }
 
@@ -193,6 +206,13 @@ uint game_pirata_inicializar(uint type, uint jugador, uint opcional_pos)
 		game_jugador_erigir_pirata(jugador, &jugador_actual->piratas[i], i, opcional_pos);
 		agregar_posiciones_mapeadas(&jugador_actual->piratas[i]);
 		return jugador_actual->piratas[i].id;
+	} else {
+		if (type == PIRATA_MINERO) {
+			i = game_obtener_posicion_minero_disponible(jugador_actual);
+			jugador_actual->mineros_pendientes[i].id = 1;
+			jugador_actual->mineros_pendientes[i].posDestino = opcional_pos;
+			print_dec(i, 3, 30, 45, 0x2);
+		}
 	}
 	return 17;
 }
@@ -210,13 +230,49 @@ void agregar_posiciones_mapeadas(pirata_t *pirata){
 	}
 }
 
+char hay_pirata_en_puerto(jugador_t *jugador){
+	uint i;
+	char result = FALSE;
+	
+	for(i=0; i < 8 && !result; i++){
+		result = result || jugador->piratas[i].pos == jugador->pos_puerto;
+	}
+	
+	return result;
+}
+
 void game_tick(uint id_pirata)
 {
+	//chequea por piratas pendientes
+	if (hay_mineros_disponibles(&jugadorA) && !hay_pirata_en_puerto(&jugadorA)) {
+		uint posCavar = obtener_pos_cavar_pendiente(&jugadorA);
+		game_pirata_inicializar(PIRATA_MINERO, JUGADOR_A, posCavar);
+	} else if (hay_mineros_disponibles(&jugadorB) && !hay_pirata_en_puerto(&jugadorA)) {
+		uint posCavar = obtener_pos_cavar_pendiente(&jugadorB);
+		game_pirata_inicializar(PIRATA_MINERO, JUGADOR_B, posCavar);
+	}
+
+	if (jugadorA.puntuacion == puntaje_anteriorA && jugadorB.puntuacion == puntaje_anteriorB){
+		muerte_subita++;
+		if (muerte_subita > 40) {
+			game_terminar_si_es_hora();			
+		}
+	} else {
+		muerte_subita = 0;
+	}
+
+	puntaje_anteriorB = jugadorA.puntuacion;
+	puntaje_anteriorA = jugadorB.puntuacion;
+
+	if (botines_pendientes == 0) {
+		game_terminar_si_es_hora();
+	}
+
+	//actualiza pantalla
 	if (id_pirata < NULL_ID_PIRATA) {
 		pirata_t* pirata = id_pirata2pirata(id_pirata);
 		screen_actualizar_reloj_pirata(pirata->jugador, pirata);
 	}
-	
 	screen_actualizar_reloj_global();
 }
 
@@ -231,7 +287,7 @@ void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, int x, int y)
 
 void mapear_posicion_equipo(jugador_t *j, uint pos){
 	uint i;
-	for(i = 0; i < 8; i++){
+	for (i = 0; i < 8; i++) {
 		uint id = j->piratas[i].id;
 		if (id != NULL_ID_PIRATA) {
 			mmu_mapear_posicion_mapa(tss_obtener_cr3(id), pos); //mapea posicion nueva
@@ -337,7 +393,11 @@ void game_syscall_pirata_mover(uint id, direccion dir)
 	uint pos_orig  = game_xy2lineal(pirx, piry);
 	uint pos_nueva = game_xy2lineal(x, y);
 	
-	mover_pirata(pos_orig, pos_nueva, pirata);
+	if (game_posicion_valida(x,y)) {
+		mover_pirata(pos_orig, pos_nueva, pirata);
+	} else {
+		tarea_suicidarse();
+	}
 }
 
 void game_syscall_cavar(uint id)
@@ -351,6 +411,7 @@ void game_syscall_cavar(uint id)
     	botines[i][2]--;
 
     	if ( botines[i][2] == 0 ) {
+    		botines_pendientes--;
     		tarea_suicidarse();
     	}
     } else {
@@ -414,11 +475,6 @@ void game_pirata_exploto()
 	screen_matar_pirata(pirata);
 	pirata->id 	 	 = NULL_ID_PIRATA;
 	scheduler_matar_actual_tarea_pirata();
-	
-	/*if (hay_mineros_disponibles(pirata->jugador)) {
-		uint posCavar = obtener_pos_cavar_pendiente(pirata->jugador);
-		game_pirata_inicializar(PIRATA_MINERO, pirata->jugador->index, posCavar);
-	}*/
 }
 
 char hay_mineros_disponibles(jugador_t* jugador)
@@ -437,8 +493,7 @@ uint obtener_pos_cavar_pendiente(jugador_t* jugador)
 {
 	uint i = 0;
 	while (jugador->mineros_pendientes[i].id == NULL_ID_MINERO) { i++; }		
-	
-	jugador->mineros_pendientes[i].id = NULL_ID_MINERO;
+	jugador->mineros_pendientes[i].id = NULL_ID_MINERO; //Anula al minero
 	return jugador->mineros_pendientes[i].posDestino;
 }
 
@@ -495,6 +550,15 @@ void game_atender_teclado(unsigned char jugador) //manejado desde isr.asm
 {
 	uint id = game_pirata_inicializar(0, jugador, 0);
 	if (id < 17) {
-		game_explorar_posicion(id_pirata2pirata(id), 1, 2);
+		explorar_posiciones_iniciales( id_pirata2pirata(id) );
 	}
 }
+
+void explorar_posiciones_iniciales(pirata_t* pirata) {
+	if(hay_paginas()){
+		if(pirata->jugador->index == JUGADOR_A){
+			game_explorar_posicion(pirata, 1, 2);	
+		} else {
+			game_explorar_posicion(pirata, MAPA_ANCHO-2, MAPA_ALTO-2);	
+		}
+}	}

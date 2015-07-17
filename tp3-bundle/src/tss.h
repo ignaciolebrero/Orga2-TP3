@@ -61,6 +61,12 @@ uint inicializar_tarea(uint, uint, uint, uint);
 void apilar_parametros(uint, uint, uint);
 uint obtener_segmento_disponible();
 uint tss_obtener_cr3(uint id);
+uint tss_obtener_cs(uint id);
+uint tss_obtener_ds(uint id);
+uint tss_obtener_es(uint id);
+uint tss_obtener_fs(uint id);
+uint tss_obtener_gs(uint id);
+uint tss_obtener_ss(uint id);
 tss* tss_obtener_jugador(uint);
 
 #endif  /* !__TSS_H__ */

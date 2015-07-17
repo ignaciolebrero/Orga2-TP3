@@ -104,7 +104,7 @@ void scheduler_matar_actual_tarea_pirata(){
 	}
 }
 
-void ejecutar_tarea(tarea_scheduler *jugador){	
+void ejecutar_tarea(tarea_scheduler *jugador){
 	uint* selector = jugador->tareas[jugador->pos].selector;
 
 	//elimino la tarea del jugador

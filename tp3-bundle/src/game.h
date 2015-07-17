@@ -8,6 +8,7 @@
 #define __GAME_H__
 
 #include "defines.h"
+#include "screen.h"
 
 typedef enum direccion_e { ARR = 0x4, ABA = 0x7, DER = 0xA, IZQ = 0xD} direccion;
 
@@ -83,11 +84,13 @@ uint game_dir2xy(direccion dir, int *x, int *y);
 uint game_xy2lineal(uint x, uint y);
 uint game_lineas2xy_formato(uint pos);
 uint obtener_posicion_botin(uint);
+void atender_debug();
 
 void agregar_posiciones_mapeadas(pirata_t *pirata);
 char hay_mineros_disponibles();
 uint obtener_pos_cavar_pendiente(jugador_t* jugador);
 void game_mapear_posicion(uint id, uint pos);
 char posicion_mapeada(uint pos, jugador_t* jugador);
+void explorar_posiciones_iniciales(pirata_t* pirata);
 
 #endif  /* !__GAME_H__ */

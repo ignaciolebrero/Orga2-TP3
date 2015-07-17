@@ -17,12 +17,14 @@
 
 #include "colors.h"
 #include "defines.h"
+
 /* Estructura de para acceder a memoria de video */
 typedef struct ca_s {
     unsigned char c;
     unsigned char a;
 } ca;
 
+ca temporal_pantalla[20][20];
 
 struct pirata_t;
 typedef struct pirata_t pirata_t;

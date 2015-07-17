@@ -45,11 +45,15 @@ void* mmu_gimme_gimme_page_wachin(){
 	return nueva_pagina;
 }
 
+char hay_paginas(){
+	return paginas_libres.cantidad == 0;	
+}
+
 uint obtener_posicion_inicial_virtual(uint elteam){
 	if (elteam == JUGADOR_A) {
 		return (uint) (0x800000 + 0x50000*2 + 0x1000);
 	} else {
-		return (uint) (0x800000 + 0x1000 * ((MAPA_ALTO-2) * MAPA_ANCHO + (MAPA_ANCHO-2)));
+		return (uint) (0x800000 + 0x1000 * ((MAPA_ALTO-2) * MAPA_ANCHO + (MAPA_ANCHO-1)));
 	}
 }
 
@@ -61,7 +65,7 @@ uint obtener_posicion_fisica_codigo_pirata(uint elteam, uint tipo_pirata){
 	}
 }
 
-uint inicializar_dir_pirata(uint fisicmem, uint elteam, uint tipo_pirata){ //TODO: rearmar las posiciones iiciales del pirata
+uint inicializar_dir_pirata(uint fisicmem, uint elteam, uint tipo_pirata){ 
 	page_directory_entry* pageDirectory = (page_directory_entry*) mmu_gimme_gimme_page_wachin();
 	//inicializa pagedirectory sin entradas
 	init_directory_table(pageDirectory);
