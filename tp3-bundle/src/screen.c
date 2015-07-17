@@ -61,87 +61,12 @@ void screen_pintar(uchar c, uchar color, uint fila, uint columna)
     p[fila][columna].a = color;
 }
 
-uchar screen_valor_actual(uint fila, uint columna)
-{
-    return p[fila][columna].c;
+unsigned char screen_valor_actual(uint y, uint x){
+    return p[y][x].c;
 }
 
-
-void screen_reprintar_pantalla(){
-    int x, y;
-    for(y = 0; y < MAPA_ALTO; y++){
-        for(x = 0; x < MAPA_ANCHO; x++){
-            screen_pintar(temporal_pantalla[x][y].c, temporal_pantalla[x][y].a, x, y);            
-        }
-    }
-}
-
-//TODO: terminar!!
-void screen_debuggear_tarea(uint eflags, uint eip, uint edi, uint esi, uint ebp, uint esp, uint ebx, uint edx, uint ecx, uint eax){
-    uint ss, gs, fs, es, ds, cs;
-    ss = tss_obtener_ss(sched_tarea_actual_id());
-    gs = tss_obtener_gs(sched_tarea_actual_id());
-    fs = tss_obtener_fs(sched_tarea_actual_id());
-    es = tss_obtener_es(sched_tarea_actual_id());
-    ds = tss_obtener_ds(sched_tarea_actual_id());
-    cs = tss_obtener_cs(sched_tarea_actual_id());
- 
-    int x, y;
-    for(y = 10; y < 26; y++){
-        for(x = 25; x < 40; x++){
-            temporal_pantalla[y][x].c = screen_valor_actual(y,x);
-            temporal_pantalla[y][x].a = p[y][x].a;
-        }
-    }
-
-    screen_pintar_rect(0, C_BG_LIGHT_GREY, 8, 30, 8, 1);
-    screen_pintar_rect(0, C_BG_LIGHT_GREY, 10, 30, 42, 1);
-    screen_pintar_rect(0, C_BG_LIGHT_GREY, 10, 30, 20, 1);
-    print("eax"    , 25, 10, C_FG_RED);
-    print("ecx"    , 25, 11, C_FG_RED);
-    print("edx"    , 25, 12, C_FG_RED);
-    print("ebx"    , 25, 13, C_FG_RED);
-    print("esp"    , 25, 14, C_FG_RED);
-    print("ebp"    , 25, 15, C_FG_RED);
-    print("esi"    , 25, 16, C_FG_RED);
-    print("edi"    , 25, 17, C_FG_RED);
-    print("eip"    , 25, 18, C_FG_RED);
-    print("cs"     , 26, 19, C_FG_RED);
-    print("ds"     , 26, 20, C_FG_RED);
-    print("es"     , 26, 21, C_FG_RED);
-    print("fs"     , 26, 22, C_FG_RED);
-    print("gs"     , 26, 23, C_FG_RED);
-    print("ss"     , 26, 24, C_FG_RED);
-    print("eflags" , 20, 25, C_FG_RED);
-
-
-      //cambiarlo para que use de la pila
-    print_hex(eax, 9, 30, 10, C_FG_BROWN);
-    print_hex(ebx, 9, 30, 11, C_FG_BROWN);
-    print_hex(ecx, 9, 30, 12, C_FG_BROWN);
-    print_hex(edx, 9, 30, 13, C_FG_BROWN);
-    print_hex(esi, 9, 30, 14, C_FG_BROWN);
-    print_hex(edi, 9, 30, 15, C_FG_BROWN);
-    print_hex(ebp, 9, 30, 16, C_FG_BROWN);
-    print_hex(esp, 9, 30, 17, C_FG_BROWN);
-    print_hex(eip, 9, 30, 18, C_FG_BROWN);
-    print_hex(cs , 9, 30, 19, C_FG_BROWN);
-    print_hex(ds , 9, 30, 20, C_FG_BROWN);
-    print_hex(es , 9, 30, 21, C_FG_BROWN);
-    print_hex(fs , 9, 30, 22, C_FG_BROWN);
-    print_hex(gs , 9, 30, 23, C_FG_BROWN);
-    print_hex(ss , 9, 30, 24, C_FG_BROWN);
-    print_hex(eflags , 9, 30, 25, C_FG_BROWN);
-}
-
-void guardar_pantalla_actual(){
-    uint fil, col;
-    for (fil = 10; fil < 26; fil++) {
-        for (col = 5; col < 40; col++) {
-            temporal_pantalla[fil][col].a = p[fil][col].a;
-            temporal_pantalla[fil][col].c = p[fil][col].c;
-        }
-    }
+unsigned char screen_attr_actual(uint y, uint x){
+    return p[y][x].a;
 }
 
 void print(const char * text, uint x, uint y, unsigned short attr) {

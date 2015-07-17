@@ -7,7 +7,9 @@
 %include "imprimir.mac"
 
 extern inicializar_dir_pirata
+extern game_reprintar_pantalla
 extern game_syscall_manejar
+extern game_debuggear_tarea
 extern game_atender_teclado
 extern game_pirata_exploto
 extern mmu_mapear_pagina
@@ -256,7 +258,7 @@ _isr33:
 	cmp byte al, 0x15 ; codigo de la Y
  	je .rutina_debuger
  	cmp byte [pantalla_debug_activa], 0x1
- 	je .desactivar_pantalla_debug
+ 	je pop
 	cmp byte al, 0x2A
 	je .rutinals
 	cmp byte al, 0x36
@@ -293,10 +295,11 @@ _isr33.deshabilitar_debugger:
 	jne _isr33.apagar_debugger
 
 _isr33.desactivar_pantalla_debug:
-	;call screen_reprintar_pantalla
+	call game_reprintar_pantalla
 	mov ax, 0x0
 	mov [pantalla_debug_activa], ax
-	jmp _isr33.apagar_debugger
+	mov [debug_habilitado], ax
+	jmp pop
 
 _isr33.apagar_debugger:
 	mov ax, 0x0
@@ -337,7 +340,9 @@ matar_pirata:
 	je  .matar
 	mov ax, 0x1
 	mov [pantalla_debug_activa], ax
-	;call screen_debuggear_tarea
+	popad
+	pushad
+	call game_debuggear_tarea
 
 	jmp .matar
 
@@ -346,7 +351,12 @@ matar_pirata:
 	jmp .fin
 
 	.fin:
-	sti
+	str cx
+	cmp cx, 0x70
+	je .finb
 	mov ax, 0x70
 	mov [sched_tarea_selector], ax ;idle
 	jmp far [sched_tarea_offset]
+.finb:
+popad
+iret
